@@ -36,6 +36,7 @@ import { displayValue, tempSymbol, TempUnit } from '@/lib/temperature';
 import { usePendingOutfits, useAcceptOutfit, useRejectOutfit } from '@/lib/hooks/use-outfits';
 import { useSchedules, useNotificationSettings } from '@/lib/hooks/use-notifications';
 import { useFamily } from '@/lib/hooks/use-family';
+import { FAMILY_ENABLED } from '@/lib/features';
 import { toast } from 'sonner';
 
 function WeatherCard() {
@@ -663,7 +664,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Family feed card */}
-      <FamilyFeedCard />
+      {FAMILY_ENABLED && <FamilyFeedCard />}
     </div>
   );
 }

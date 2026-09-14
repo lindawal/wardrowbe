@@ -30,6 +30,7 @@ import {
 } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
 import { useCreateFamily, useJoinFamily } from '@/lib/hooks/use-family';
+import { FAMILY_ENABLED } from '@/lib/features';
 import { useUpdatePreferences } from '@/lib/hooks/use-preferences';
 import { useCreateItem } from '@/lib/hooks/use-items';
 import { useAuth } from '@/lib/hooks/use-auth';
@@ -41,20 +42,21 @@ import { useTranslations } from 'next-intl';
 function StepIndicator({ currentStep }: { currentStep: number }) {
   const t = useTranslations('onboarding');
 
+  // `step` is the fixed step number used by OnboardingPage, so hiding a step keeps the numbering intact.
   const STEPS = [
-    { id: 'welcome', title: t('steps.welcome'), icon: Shirt },
-    { id: 'family', title: t('steps.family'), icon: Users },
-    { id: 'location', title: t('steps.location'), icon: MapPin },
-    { id: 'preferences', title: t('steps.style'), icon: Palette },
-    { id: 'upload', title: t('steps.firstItem'), icon: Camera },
-  ];
+    { id: 'welcome', step: 0, title: t('steps.welcome'), icon: Shirt },
+    { id: 'family', step: 1, title: t('steps.family'), icon: Users },
+    { id: 'location', step: 2, title: t('steps.location'), icon: MapPin },
+    { id: 'preferences', step: 3, title: t('steps.style'), icon: Palette },
+    { id: 'upload', step: 4, title: t('steps.firstItem'), icon: Camera },
+  ].filter((s) => FAMILY_ENABLED || s.id !== 'family');
 
   return (
     <div className="flex items-center justify-center gap-2 mb-8">
       {STEPS.map((step, index) => {
         const Icon = step.icon;
-        const isComplete = index < currentStep;
-        const isCurrent = index === currentStep;
+        const isComplete = step.step < currentStep;
+        const isCurrent = step.step === currentStep;
 
         return (
           <div key={step.id} className="flex items-center">
@@ -781,8 +783,18 @@ export default function OnboardingPage() {
   const t = useTranslations('onboarding');
   const tc = useTranslations('common');
 
-  const nextStep = () => setCurrentStep((s) => Math.min(s + 1, 5));
-  const prevStep = () => setCurrentStep((s) => Math.max(s - 1, 0));
+  // Step 1 is the family step; jump over it while the feature is hidden.
+  const FAMILY_STEP = 1;
+  const nextStep = () =>
+    setCurrentStep((s) => {
+      const next = Math.min(s + 1, 5);
+      return !FAMILY_ENABLED && next === FAMILY_STEP ? next + 1 : next;
+    });
+  const prevStep = () =>
+    setCurrentStep((s) => {
+      const prev = Math.max(s - 1, 0);
+      return !FAMILY_ENABLED && prev === FAMILY_STEP ? prev - 1 : prev;
+    });
 
   const completeOnboarding = async () => {
     setCompleting(true);

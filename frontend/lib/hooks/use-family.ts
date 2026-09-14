@@ -3,6 +3,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import { api, setAccessToken } from '@/lib/api';
+import { FAMILY_ENABLED } from '@/lib/features';
 import { Family, FamilyCreateResponse, JoinFamilyResponse, FamilyMember } from '@/lib/types';
 
 // Helper to set token if available (for NextAuth mode)
@@ -20,7 +21,8 @@ export function useFamily() {
   return useQuery({
     queryKey: ['family'],
     queryFn: () => api.get<Family>('/families/me'),
-    enabled: status !== 'loading',
+    // While the family feature is hidden, never fetch: every family UI then stays hidden too.
+    enabled: FAMILY_ENABLED && status !== 'loading',
     retry: false, // Don't retry on 404 (user not in family)
   });
 }

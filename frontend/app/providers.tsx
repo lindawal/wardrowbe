@@ -6,9 +6,11 @@ import { useState } from 'react';
 import { toast, Toaster } from 'sonner';
 import { ThemeProvider } from '@/components/theme-provider';
 import { AuthProvider } from '@/components/auth-provider';
-import { ApiError, NetworkError } from '@/lib/api';
+import { ApiError, NetworkError, shouldSilenceError } from '@/lib/api';
 
 function handleError(error: unknown) {
+  if (shouldSilenceError(error)) return;
+
   if (error instanceof NetworkError) {
     toast.error(error.message);
   } else if (error instanceof ApiError) {

@@ -110,6 +110,23 @@ export function getErrorMessage(error: unknown, fallback: string): string {
   return fallback;
 }
 
+export function shouldSilenceError(error: unknown): boolean {
+  if (!(error instanceof ApiError) || error.status !== 404) return false;
+
+  const message = error.message.toLowerCase();
+  const payload = typeof error.data === 'object' && error.data !== null
+    ? JSON.stringify(error.data).toLowerCase()
+    : String(error.data ?? '').toLowerCase();
+  const familyText = `${message} ${payload}`;
+
+  return (
+    familyText.includes('not in a family') ||
+    familyText.includes('not in family') ||
+    familyText.includes('family not found') ||
+    familyText.includes('you are not in a family')
+  );
+}
+
 export function isErrorHandled(error: unknown): boolean {
   return error !== null && typeof error === 'object' && handledErrors.has(error);
 }

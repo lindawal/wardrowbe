@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import { useAcceptOutfit, useRejectOutfit, type Outfit, type OutfitSource, type WoreInsteadItem } from '@/lib/hooks/use-outfits';
+import { FAMILY_ENABLED } from '@/lib/features';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 
@@ -241,7 +242,7 @@ export function OutfitHistoryCard({ outfit, onFeedback, onPreview }: OutfitHisto
         )}
 
         {/* Family ratings summary */}
-        {outfit.family_rating_count != null && outfit.family_rating_count > 0 && (
+        {FAMILY_ENABLED && outfit.family_rating_count != null && outfit.family_rating_count > 0 && (
           <div className="mt-2 pt-2 border-t">
             <div className="flex items-center gap-2 text-xs">
               <Users className="h-3.5 w-3.5 text-muted-foreground" />

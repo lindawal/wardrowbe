@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { api, ApiError, NetworkError, setAccessToken } from '@/lib/api'
+import { api, ApiError, NetworkError, setAccessToken, shouldSilenceError } from '@/lib/api'
 
 describe('API Client', () => {
   beforeEach(() => {
@@ -99,6 +99,15 @@ describe('API Client', () => {
         expect((error as ApiError).status).toBe(404)
         expect((error as ApiError).message).toBe('Not found')
       }
+    })
+
+    it('should suppress expected family membership errors', () => {
+      const familyError = new ApiError('You are not in a family', 404, {
+        detail: 'You are not in a family',
+      })
+
+      expect(shouldSilenceError(familyError)).toBe(true)
+      expect(shouldSilenceError(new ApiError('Not found', 404, {}))).toBe(false)
     })
 
     it('should throw NetworkError when offline', async () => {
