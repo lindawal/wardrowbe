@@ -23,6 +23,9 @@ class Settings(BaseSettings):
     debug: bool = False
     secret_key: str = Field(default=DEFAULT_SECRET_KEY)
     studio_disabled: bool = False
+    # Wash tracking: when off, unwashed items stay in AI suggestions and no wash reminders are sent.
+    # Counters (wears_since_wash, needs_wash) keep updating so turning it back on loses nothing.
+    wash_tracking_enabled: bool = False
 
     # CORS
     cors_origins: list[str] = Field(default=["http://localhost:3000", "http://localhost:8081"])

@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { Check, Loader2, Search } from 'lucide-react';
 
 import { Input } from '@/components/ui/input';
+import { WASH_ENABLED } from '@/lib/features';
 import { useItems } from '@/lib/hooks/use-items';
 import { cn } from '@/lib/utils';
 import type { Item } from '@/lib/types';
@@ -52,7 +53,8 @@ export function ItemPicker({
       search: debouncedSearch || undefined,
       is_archived: false,
       type: filterType,
-      needs_wash: hideNeedsWash ? false : undefined,
+      // With wash tracking hidden nobody can mark items clean, so never hide "dirty" ones.
+      needs_wash: WASH_ENABLED && hideNeedsWash ? false : undefined,
     },
     page,
     PAGE_SIZE

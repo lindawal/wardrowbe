@@ -66,6 +66,7 @@ import { useClothingTypes, useClothingColors } from '@/lib/hooks/use-translated-
 import { ColorEyedropper } from '@/components/color-eyedropper';
 import { GeneratePairingsDialog } from '@/components/generate-pairings-dialog';
 import { useFeatures } from '@/lib/hooks/use-features';
+import { WASH_ENABLED } from '@/lib/features';
 import { useTranslations } from 'next-intl';
 
 interface ItemDetailDialogProps {
@@ -111,7 +112,8 @@ export function ItemDetailDialog({ item, open, onOpenChange }: ItemDetailDialogP
   const replaceImageInputRef = useRef<HTMLInputElement>(null);
   const { data: features } = useFeatures();
   const logWash = useLogWash();
-  const { data: washHistory } = useWashHistory(item?.id || '');
+  // An empty id disables the query, so hidden wash tracking makes no request.
+  const { data: washHistory } = useWashHistory(WASH_ENABLED ? item?.id || '' : '');
   const { data: wearStats } = useItemWearStats(item?.id || '');
   const { data: wearHistory } = useItemWearHistory(item?.id || '', 20);
   const addImage = useAddItemImage();
@@ -645,20 +647,22 @@ export function ItemDetailDialog({ item, open, onOpenChange }: ItemDetailDialogP
                       rows={3}
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label>{t('washInterval')} ({t('view.wears')})</Label>
-                    <Input
-                      type="number"
-                      min={1}
-                      max={100}
-                      value={editForm.wash_interval ?? ''}
-                      onChange={(e) => setEditForm({ ...editForm, wash_interval: e.target.value ? parseInt(e.target.value) : undefined })}
-                      placeholder={t('placeholders.washIntervalDefault', { count: item.effective_wash_interval })}
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      {t('view.washIntervalHint')}
-                    </p>
-                  </div>
+                  {WASH_ENABLED && (
+                    <div className="space-y-2">
+                      <Label>{t('washInterval')} ({t('view.wears')})</Label>
+                      <Input
+                        type="number"
+                        min={1}
+                        max={100}
+                        value={editForm.wash_interval ?? ''}
+                        onChange={(e) => setEditForm({ ...editForm, wash_interval: e.target.value ? parseInt(e.target.value) : undefined })}
+                        placeholder={t('placeholders.washIntervalDefault', { count: item.effective_wash_interval })}
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        {t('view.washIntervalHint')}
+                      </p>
+                    </div>
+                  )}
                   <div className="flex gap-2 pt-2">
                     <Button
                       variant="outline"
@@ -723,6 +727,7 @@ export function ItemDetailDialog({ item, open, onOpenChange }: ItemDetailDialogP
                   </div>
 
                   {/* Wash Status */}
+                  {WASH_ENABLED && (
                   <div className="space-y-2 pt-2 border-t">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2 text-sm font-medium">
@@ -781,6 +786,7 @@ export function ItemDetailDialog({ item, open, onOpenChange }: ItemDetailDialogP
                       </Collapsible>
                     )}
                   </div>
+                  )}
 
                   {/* Wear History */}
                   {item.wear_count > 0 && wearStats && (

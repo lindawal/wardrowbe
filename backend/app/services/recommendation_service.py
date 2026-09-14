@@ -10,6 +10,7 @@ from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from app.config import get_settings
 from app.models.item import ClothingItem, ItemStatus
 from app.models.learning import ItemPairScore, UserLearningProfile
 from app.models.outfit import (
@@ -114,7 +115,8 @@ class RecommendationService:
         if not items:
             return []
 
-        items = [i for i in items if not i.needs_wash]
+        if get_settings().wash_tracking_enabled:
+            items = [i for i in items if not i.needs_wash]
         items = [i for i in items if i.type and i.type != "unknown"]
 
         if exclude_items:

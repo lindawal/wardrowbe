@@ -6,6 +6,7 @@ from zoneinfo import ZoneInfo
 from sqlalchemy import and_, select
 from sqlalchemy.orm import selectinload
 
+from app.config import get_settings
 from app.models.item import ClothingItem
 from app.models.learning import UserLearningProfile
 from app.models.notification import Notification, NotificationSettings, NotificationStatus
@@ -340,6 +341,10 @@ async def check_scheduled_notifications(ctx: dict):
 
 
 async def check_wash_reminders(ctx: dict):
+    if not get_settings().wash_tracking_enabled:
+        logger.debug("Skipping wash reminders — wash tracking is disabled")
+        return {"notified": 0, "skipped": "disabled"}
+
     logger.info("Checking wash reminders...")
 
     # Non-blocking global lock: if another worker already running this job, skip.

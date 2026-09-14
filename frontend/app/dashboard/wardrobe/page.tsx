@@ -33,6 +33,7 @@ import { Item } from '@/lib/types';
 import { useClothingTypes, useClothingColors } from '@/lib/hooks/use-translated-constants';
 import { toast } from 'sonner';
 import { formatWornAgo, getWornAgoColorClass } from '@/lib/utils';
+import { WASH_ENABLED } from '@/lib/features';
 import { useTranslations } from 'next-intl';
 
 const PAGE_SIZE_OPTIONS = [10, 20, 50, 100];
@@ -131,7 +132,7 @@ function ItemCard({
             <Heart className="h-4 w-4 fill-red-500 text-red-500" />
           </div>
         )}
-        {item.needs_wash && (
+        {WASH_ENABLED && item.needs_wash && (
           <div className="absolute bottom-2 right-2 z-10">
             <div className="bg-amber-500/90 text-white rounded-full p-1" title={t('needsWash')}>
               <Droplets className="h-3.5 w-3.5" />
@@ -339,8 +340,9 @@ export default function WardrobePage() {
     const raw = Number(searchParams.get('sort'));
     return Number.isInteger(raw) && raw >= 0 && raw < SORT_OPTIONS.length ? raw : 0;
   });
+  // While wash tracking is hidden an old ?needsWash=true link must not filter the list silently.
   const [needsWash, setNeedsWash] = useState<boolean | undefined>(() =>
-    searchParams.get('needsWash') === 'true' ? true : undefined
+    WASH_ENABLED && searchParams.get('needsWash') === 'true' ? true : undefined
   );
   const [favoriteFilter, setFavoriteFilter] = useState<boolean | undefined>(() =>
     searchParams.get('favorite') === 'true' ? true : undefined
@@ -811,18 +813,20 @@ export default function WardrobePage() {
               </SelectContent>
             </Select>
 
-            <Button
-              variant={needsWash === true ? 'default' : 'outline'}
-              size="sm"
-              className="h-8 text-xs gap-1.5"
-              onClick={() => {
-                setNeedsWash(needsWash === true ? undefined : true);
-                setPage(1);
-              }}
-            >
-              <Droplets className="h-3.5 w-3.5" />
-              {t('needsWash')}
-            </Button>
+            {WASH_ENABLED && (
+              <Button
+                variant={needsWash === true ? 'default' : 'outline'}
+                size="sm"
+                className="h-8 text-xs gap-1.5"
+                onClick={() => {
+                  setNeedsWash(needsWash === true ? undefined : true);
+                  setPage(1);
+                }}
+              >
+                <Droplets className="h-3.5 w-3.5" />
+                {t('needsWash')}
+              </Button>
+            )}
 
             <Button
               variant={favoriteFilter === true ? 'default' : 'outline'}
