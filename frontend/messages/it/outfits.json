@@ -51,6 +51,7 @@
   },
   "detail": {
     "addedToToday": "Aggiunto a oggi",
+    "backToLookbook": "Torna al lookbook",
     "backToOutfits": "Torna agli outfit",
     "deleteConfirm": "Eliminare questo outfit? Questa azione non può essere annullata.",
     "deleteError": "Eliminazione fallita",
@@ -79,6 +80,8 @@
     "occasion": "Occasione",
     "pickOccasion": "Scegli un'occasione prima di salvare.",
     "skippedItem": "{name} saltato: {reason}",
+    "tags": "Tag",
+    "tagsHint": "Facoltativo. Tag come «ufficio» o «vacanza» organizzano il tuo lookbook.",
     "warnings": {
       "multipleBottoms": "Più bassi selezionati.",
       "noBottoms": "Nessun basso selezionato.",

@@ -1,0 +1,41 @@
+{
+  "all": "全部",
+  "attributes": {
+    "addTagPlaceholder": "輸入標籤後按 Enter",
+    "invalidTag": "標籤不能空白或包含逗號",
+    "noSeasons": "未設定季節",
+    "noTags": "還沒有標籤",
+    "noWeather": "未設定天氣",
+    "removeTag": "移除標籤 {tag}",
+    "saveError": "儲存造型冊詳情失敗",
+    "saved": "已儲存造型冊詳情",
+    "seasons": "季節",
+    "suggestedHint": "儲存造型時會依據單品建議季節與天氣，你可以隨時調整。",
+    "suggestions": "建議：",
+    "tagLimitReached": "已達 {max} 個標籤上限",
+    "tagTooLong": "標籤最多 {max} 個字元",
+    "tags": "標籤",
+    "title": "造型冊詳情",
+    "tooManyTags": "每套造型最多只能有 {max} 個標籤",
+    "weather": "天氣"
+  },
+  "empty": {
+    "filtered": "沒有符合篩選條件的造型。",
+    "none": "在工作室儲存造型，或複製已穿過的穿搭，開始建立你的造型冊。",
+    "noneTitle": "你的造型冊是空的"
+  },
+  "filters": {
+    "allSeasons": "所有季節",
+    "anyWeather": "所有天氣",
+    "clear": "清除篩選",
+    "season": "季節",
+    "weather": "天氣"
+  },
+  "loadError": "載入造型冊失敗",
+  "newOutfit": "新增穿搭",
+  "search": "搜尋造型...",
+  "subcategories": "標籤",
+  "subtitle": "你儲存的造型，依標籤、季節與天氣分類",
+  "title": "造型冊",
+  "totalCount": "{count, plural, other {# 套造型}}"
+}

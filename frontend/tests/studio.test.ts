@@ -128,6 +128,13 @@ describe('studioReducer', () => {
     expect(next).toBe(state);
   });
 
+  it('sets tags and no-ops when they are unchanged', () => {
+    const state = studioReducer(INITIAL_STUDIO_STATE, { type: 'SET_TAGS', tags: ['work', 'date'] });
+    expect(state.tags).toEqual(['work', 'date']);
+    expect(state.isDirty).toBe(true);
+    expect(studioReducer(state, { type: 'SET_TAGS', tags: ['work', 'date'] })).toBe(state);
+  });
+
   it('no-ops on REMOVE_ITEM with non-existent id', () => {
     const state = studioReducer(INITIAL_STUDIO_STATE, { type: 'REMOVE_ITEM', itemId: 'nope' });
     expect(state).toBe(INITIAL_STUDIO_STATE);
@@ -198,6 +205,11 @@ describe('draft-storage', () => {
     expect(loaded!.items).toEqual(['a', 'b']);
     expect(loaded!.name).toBe('My draft');
     expect(loaded!.occasion).toBe('casual');
+  });
+
+  it('keeps tags in a saved draft', () => {
+    saveDraft({ items: ['a'], name: 'Office', occasion: 'office', tags: ['work'] });
+    expect(loadDraft()?.tags).toEqual(['work']);
   });
 
   it('returns null when no draft saved', () => {

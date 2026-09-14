@@ -33,6 +33,10 @@ class OutfitListFilters:
     family_member_view: bool = False
     search: str | None = None
     cloned_from_outfit_id: UUID | None = None
+    # Each list matches outfits carrying any of its values; different lists are ANDed.
+    tags: list[str] | None = None
+    seasons: list[str] | None = None
+    weather_tags: list[str] | None = None
 
 
 class OutfitService:
@@ -129,6 +133,15 @@ class OutfitService:
         if filters.cloned_from_outfit_id is not None:
             clauses.append(Outfit.cloned_from_outfit_id == filters.cloned_from_outfit_id)
 
+        if filters.tags:
+            clauses.append(Outfit.tags.overlap(filters.tags))
+
+        if filters.seasons:
+            clauses.append(Outfit.seasons.overlap(filters.seasons))
+
+        if filters.weather_tags:
+            clauses.append(Outfit.weather_tags.overlap(filters.weather_tags))
+
         return clauses
 
     async def get_ids_by_filter(
@@ -177,6 +190,24 @@ class OutfitService:
         result = await self.db.execute(query)
         outfits = list(result.scalars().all())
         return outfits, total
+
+    async def get_lookbook_tag_counts(self, user_id: UUID) -> tuple[int, list[tuple[str, int]]]:
+        """Total lookbook outfits plus every tag in use with its outfit count, most used first."""
+        lookbook = and_(Outfit.user_id == user_id, Outfit.scheduled_for.is_(None))
+
+        total = (
+            await self.db.execute(select(func.count()).select_from(Outfit).where(lookbook))
+        ).scalar_one()
+
+        # Postgres does not allow a set-returning function in GROUP BY, so unnest in a subquery.
+        tag_rows = select(func.unnest(Outfit.tags).label("tag")).where(lookbook).subquery()
+        count = func.count().label("count")
+        result = await self.db.execute(
+            select(tag_rows.c.tag, count)
+            .group_by(tag_rows.c.tag)
+            .order_by(count.desc(), tag_rows.c.tag.asc())
+        )
+        return total, [(row.tag, row.count) for row in result]
 
     async def verify_family_access(self, current_user: User, family_member_id: UUID) -> UUID:
         if not current_user.family_id:

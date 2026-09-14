@@ -1,0 +1,41 @@
+{
+  "all": "전체",
+  "attributes": {
+    "addTagPlaceholder": "태그를 입력하고 Enter를 누르세요",
+    "invalidTag": "태그는 비워 둘 수 없고 쉼표를 넣을 수 없어요",
+    "noSeasons": "설정된 계절이 없어요",
+    "noTags": "아직 태그가 없어요",
+    "noWeather": "설정된 날씨가 없어요",
+    "removeTag": "{tag} 태그 삭제",
+    "saveError": "룩북 정보 저장 실패",
+    "saved": "룩북 정보가 저장되었어요",
+    "seasons": "계절",
+    "suggestedHint": "룩을 저장하면 아이템을 바탕으로 계절과 날씨를 추천해요. 언제든지 바꿀 수 있어요.",
+    "suggestions": "추천:",
+    "tagLimitReached": "태그는 최대 {max}개까지 추가할 수 있어요",
+    "tagTooLong": "태그는 최대 {max}자까지 입력할 수 있어요",
+    "tags": "태그",
+    "title": "룩북 정보",
+    "tooManyTags": "룩 하나에 태그는 최대 {max}개까지 달 수 있어요",
+    "weather": "날씨"
+  },
+  "empty": {
+    "filtered": "필터 조건에 맞는 룩이 없어요.",
+    "none": "스튜디오에서 룩을 저장하거나 착용한 코디를 복사해서 룩북을 시작해 보세요.",
+    "noneTitle": "룩북이 비어 있어요"
+  },
+  "filters": {
+    "allSeasons": "전체 계절",
+    "anyWeather": "전체 날씨",
+    "clear": "필터 초기화",
+    "season": "계절",
+    "weather": "날씨"
+  },
+  "loadError": "룩북을 불러오지 못했어요",
+  "newOutfit": "새 코디",
+  "search": "룩 검색...",
+  "subcategories": "태그",
+  "subtitle": "저장한 룩을 태그, 계절, 날씨별로 정리해요",
+  "title": "룩북",
+  "totalCount": "{count, plural, other {룩 #개}}"
+}

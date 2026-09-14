@@ -3,6 +3,7 @@ import { join, resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { CLOTHING_COLORS, CLOTHING_TYPES, OCCASIONS } from '@/lib/types';
 import { SUPPORTED_LOCALES } from '@/lib/i18n/locales';
+import { LOOKBOOK_SEASONS, WEATHER_TAGS } from '@/lib/lookbook/vocab';
 
 // scripts/i18n-keys.mjs resolves t('literal') call sites, but several components build the key at
 // runtime, e.g. t(`status.${status}`) or t(ct.value). Those are invisible to static analysis and
@@ -54,6 +55,8 @@ const DYNAMIC_KEYS: Array<[string, readonly string[]]> = [
   ['constants.occasions', OCCASIONS.map((o) => o.value)],
   ['constants.styles', STYLE_VALUES],
   ['constants.weatherConditions', WEATHER_CONDITIONS],
+  ['constants.seasons', LOOKBOOK_SEASONS],
+  ['constants.weatherTags', WEATHER_TAGS],
   ['history.status', OUTFIT_STATUSES],
   ['notifications.days', NOTIFICATION_DAYS],
   ['outfits.calendar.weekDays', CALENDAR_WEEKDAYS],

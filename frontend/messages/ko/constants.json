@@ -31,6 +31,12 @@
     "outdoor": "아웃도어",
     "sporty": "스포티"
   },
+  "seasons": {
+    "fall": "가을",
+    "spring": "봄",
+    "summer": "여름",
+    "winter": "겨울"
+  },
   "styles": {
     "bold": "볼드",
     "casual": "캐주얼",
@@ -94,5 +100,12 @@
     "cloudy": "흐림",
     "rain": "비",
     "snow": "눈"
+  },
+  "weatherTags": {
+    "cold": "추움",
+    "mild": "온화함",
+    "rain": "비",
+    "snow": "눈",
+    "warm": "따뜻함"
   }
 }

@@ -1,0 +1,41 @@
+{
+  "all": "すべて",
+  "attributes": {
+    "addTagPlaceholder": "タグを入力してEnterで追加",
+    "invalidTag": "タグを空欄にしたり、カンマを含めたりすることはできません",
+    "noSeasons": "季節が未設定",
+    "noTags": "タグはまだありません",
+    "noWeather": "天気が未設定",
+    "removeTag": "タグ「{tag}」を削除",
+    "saveError": "ルックブック詳細の保存に失敗しました",
+    "saved": "ルックブック詳細を保存しました",
+    "seasons": "季節",
+    "suggestedHint": "コーデを保存すると、アイテムから季節と天気が提案されます。いつでも変更できます。",
+    "suggestions": "候補：",
+    "tagLimitReached": "タグは最大{max}個までです",
+    "tagTooLong": "タグは{max}文字以内にしてください",
+    "tags": "タグ",
+    "title": "ルックブック詳細",
+    "tooManyTags": "1つのコーデに付けられるタグは最大{max}個です",
+    "weather": "天気"
+  },
+  "empty": {
+    "filtered": "条件に一致するコーデがありません。",
+    "none": "スタジオでコーデを保存するか、着用済みのコーデをコピーしてルックブックを始めましょう。",
+    "noneTitle": "ルックブックは空です"
+  },
+  "filters": {
+    "allSeasons": "すべての季節",
+    "anyWeather": "すべての天気",
+    "clear": "フィルターをクリア",
+    "season": "季節",
+    "weather": "天気"
+  },
+  "loadError": "ルックブックの読み込みに失敗しました",
+  "newOutfit": "新しいコーデ",
+  "search": "コーデを検索...",
+  "subcategories": "タグ",
+  "subtitle": "保存したコーデをタグ・季節・天気で整理",
+  "title": "ルックブック",
+  "totalCount": "{count, plural, other {# 件のコーデ}}"
+}

@@ -1,0 +1,41 @@
+{
+  "all": "Tous",
+  "attributes": {
+    "addTagPlaceholder": "Ajoutez un tag et appuyez sur Entrée",
+    "invalidTag": "Les tags ne peuvent pas être vides ni contenir de virgules",
+    "noSeasons": "Aucune saison définie",
+    "noTags": "Pas encore de tags",
+    "noWeather": "Aucune météo définie",
+    "removeTag": "Retirer le tag {tag}",
+    "saveError": "Échec de la sauvegarde des détails du lookbook",
+    "saved": "Détails du lookbook sauvegardés",
+    "seasons": "Saison",
+    "suggestedHint": "La saison et la météo sont suggérées à partir des articles lors de la sauvegarde d'un look. Vous pouvez les modifier à tout moment.",
+    "suggestions": "Suggestions :",
+    "tagLimitReached": "Limite de {max} tags atteinte",
+    "tagTooLong": "Les tags ne peuvent pas dépasser {max} caractères",
+    "tags": "Tags",
+    "title": "Détails du lookbook",
+    "tooManyTags": "Un look peut avoir au maximum {max} tags",
+    "weather": "Météo"
+  },
+  "empty": {
+    "filtered": "Aucun look ne correspond à ces filtres.",
+    "none": "Sauvegardez un look depuis le studio ou copiez une tenue portée pour commencer votre lookbook.",
+    "noneTitle": "Votre lookbook est vide"
+  },
+  "filters": {
+    "allSeasons": "Toutes les saisons",
+    "anyWeather": "Toute météo",
+    "clear": "Effacer les filtres",
+    "season": "Saison",
+    "weather": "Météo"
+  },
+  "loadError": "Échec du chargement de votre lookbook",
+  "newOutfit": "Nouvelle tenue",
+  "search": "Rechercher des looks...",
+  "subcategories": "Tags",
+  "subtitle": "Vos looks sauvegardés, classés par tags, saison et météo",
+  "title": "Lookbook",
+  "totalCount": "{count, plural, one {# look} other {# looks}}"
+}

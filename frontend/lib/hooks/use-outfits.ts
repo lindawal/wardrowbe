@@ -1,4 +1,10 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+  type QueryClient,
+} from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import { api, setAccessToken } from '@/lib/api';
 import { FamilyRating } from '@/lib/types';
@@ -61,6 +67,9 @@ export interface Outfit {
   notes: string | null;
   highlights: string[] | null;
   weather: Record<string, unknown> | null;
+  tags: string[];
+  seasons: string[];
+  weather_tags: string[];
   items: OutfitItem[];
   feedback: FeedbackSummary | null;
   family_ratings: FamilyRating[] | null;
@@ -89,6 +98,20 @@ export interface OutfitFilters {
   has_source_item?: boolean;
   search?: string;
   cloned_from_outfit_id?: string;
+  // Each list matches outfits with any of its values.
+  tags?: string[];
+  seasons?: string[];
+  weather_tags?: string[];
+}
+
+export interface LookbookTagCount {
+  tag: string;
+  count: number;
+}
+
+export interface LookbookTagsResponse {
+  total: number;
+  tags: LookbookTagCount[];
 }
 
 export interface FeedbackData {
@@ -120,10 +143,11 @@ export interface FeedbackResponse {
   created_at: string;
 }
 
-export function useOutfits(filters: OutfitFilters = {}, page = 1, pageSize = 20) {
-  const { status } = useSession();
-  useSetTokenIfAvailable();
-
+export function buildOutfitListParams(
+  filters: OutfitFilters,
+  page: number,
+  pageSize: number
+): Record<string, string> {
   const params: Record<string, string> = {
     page: String(page),
     page_size: String(pageSize),
@@ -142,10 +166,56 @@ export function useOutfits(filters: OutfitFilters = {}, page = 1, pageSize = 20)
   if (filters.search) params.search = filters.search;
   if (filters.cloned_from_outfit_id)
     params.cloned_from_outfit_id = filters.cloned_from_outfit_id;
+  if (filters.tags?.length) params.tags = filters.tags.join(',');
+  if (filters.seasons?.length) params.seasons = filters.seasons.join(',');
+  if (filters.weather_tags?.length) params.weather_tags = filters.weather_tags.join(',');
+
+  return params;
+}
+
+// Lookbook queries live outside the ['outfits'] key on purpose: useBulkDeleteOutfits rewrites
+// every ['outfits', ...] cache entry as a flat list, which would break infinite-query data.
+export function invalidateLookbookQueries(queryClient: QueryClient) {
+  queryClient.invalidateQueries({ queryKey: ['lookbookOutfits'] });
+  queryClient.invalidateQueries({ queryKey: ['lookbookTags'] });
+}
+
+export function useOutfits(filters: OutfitFilters = {}, page = 1, pageSize = 20) {
+  const { status } = useSession();
+  useSetTokenIfAvailable();
+
+  const params = buildOutfitListParams(filters, page, pageSize);
 
   return useQuery({
     queryKey: ['outfits', filters, page, pageSize],
     queryFn: () => api.get<OutfitListResponse>('/outfits', { params }),
+    enabled: status !== 'loading',
+  });
+}
+
+export function useLookbookOutfits(filters: OutfitFilters = {}, pageSize = 24) {
+  const { status } = useSession();
+  useSetTokenIfAvailable();
+
+  return useInfiniteQuery({
+    queryKey: ['lookbookOutfits', filters, pageSize],
+    queryFn: ({ pageParam }) =>
+      api.get<OutfitListResponse>('/outfits', {
+        params: buildOutfitListParams({ ...filters, is_lookbook: true }, pageParam, pageSize),
+      }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => (lastPage.has_more ? lastPage.page + 1 : undefined),
+    enabled: status !== 'loading',
+  });
+}
+
+export function useLookbookTags() {
+  const { status } = useSession();
+  useSetTokenIfAvailable();
+
+  return useQuery({
+    queryKey: ['lookbookTags'],
+    queryFn: () => api.get<LookbookTagsResponse>('/outfits/lookbook/tags'),
     enabled: status !== 'loading',
   });
 }
@@ -217,6 +287,7 @@ export function useDeleteOutfit() {
       queryClient.invalidateQueries({ queryKey: ['calendarOutfits'] });
       queryClient.invalidateQueries({ queryKey: ['pendingOutfits'] });
       queryClient.invalidateQueries({ queryKey: ['analytics'] });
+      invalidateLookbookQueries(queryClient);
     },
   });
 }
@@ -288,6 +359,7 @@ export function useBulkDeleteOutfits() {
       queryClient.invalidateQueries({ queryKey: ['calendarOutfits'] });
       queryClient.invalidateQueries({ queryKey: ['pendingOutfits'] });
       queryClient.invalidateQueries({ queryKey: ['analytics'] });
+      invalidateLookbookQueries(queryClient);
     },
   });
 }

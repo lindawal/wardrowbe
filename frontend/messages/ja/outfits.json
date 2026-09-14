@@ -51,6 +51,7 @@
   },
   "detail": {
     "addedToToday": "今日のコーデに追加しました",
+    "backToLookbook": "ルックブックに戻る",
     "backToOutfits": "コーデ一覧に戻る",
     "deleteConfirm": "このコーデを削除しますか？この操作は取り消せません。",
     "deleteError": "削除に失敗しました",
@@ -79,6 +80,8 @@
     "occasion": "シーン",
     "pickOccasion": "保存する前にシーンを選んでください。",
     "skippedItem": "{name}をスキップ：{reason}",
+    "tags": "タグ",
+    "tagsHint": "任意。「オフィス」や「旅行」などのタグでルックブックを整理できます。",
     "warnings": {
       "multipleBottoms": "ボトムスが複数選択されています。",
       "noBottoms": "ボトムスが選択されていません。",

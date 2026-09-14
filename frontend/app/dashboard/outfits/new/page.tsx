@@ -88,6 +88,7 @@ export default function StudioEditorPage() {
         items,
         name: editOutfit.name ?? '',
         occasion: editOutfit.occasion ?? null,
+        tags: editOutfit.tags ?? [],
       },
     });
     setEditLoaded(true);
@@ -132,6 +133,7 @@ export default function StudioEditorPage() {
         items: resumedItems,
         name: pendingDraft.name,
         occasion: pendingDraft.occasion,
+        tags: pendingDraft.tags ?? [],
       },
     });
     setPendingDraft(null);
@@ -150,10 +152,11 @@ export default function StudioEditorPage() {
         items: state.items.map((i) => i.id),
         name: state.name,
         occasion: state.occasion,
+        tags: state.tags,
       });
     }, 500);
     return () => clearTimeout(timer);
-  }, [state.isDirty, state.items, state.name, state.occasion, isEditMode]);
+  }, [state.isDirty, state.items, state.name, state.occasion, state.tags, isEditMode]);
 
   const selectedIds = useMemo(
     () => new Set(state.items.map((i) => i.id)),
@@ -196,6 +199,7 @@ export default function StudioEditorPage() {
           payload: {
             name: state.name.trim() || undefined,
             items: state.items.map((i) => i.id),
+            tags: state.tags,
           },
         });
         toast.success(t('new.outfitUpdated'));
@@ -224,13 +228,15 @@ export default function StudioEditorPage() {
           ? new Date().toISOString().slice(0, 10)
           : null,
         mark_worn: markWorn,
+        // Tags organize the lookbook, so a look worn today does not carry them.
+        tags: markWorn ? undefined : state.tags,
       });
       clearDraft();
       toast.success(markWorn ? t('new.savedAndMarkedWorn') : t('new.savedToLookbook'));
       router.push(
         markWorn
           ? '/dashboard/outfits?filter=worn'
-          : '/dashboard/outfits?filter=my-looks'
+          : '/dashboard/lookbook'
       );
     } catch (error) {
       toast.error(getErrorMessage(error, t('new.saveError')));
@@ -419,10 +425,12 @@ export default function StudioEditorPage() {
                 items={state.items}
                 name={state.name}
                 occasion={state.occasion}
+                tags={state.tags}
                 onNameChange={(n) => dispatch({ type: 'SET_NAME', name: n })}
                 onOccasionChange={(o) =>
                   dispatch({ type: 'SET_OCCASION', occasion: o })
                 }
+                onTagsChange={(tags) => dispatch({ type: 'SET_TAGS', tags })}
                 onAiMerge={(merged) =>
                   dispatch({ type: 'REPLACE_CANVAS', items: merged })
                 }

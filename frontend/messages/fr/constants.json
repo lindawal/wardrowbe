@@ -31,6 +31,12 @@
     "outdoor": "Plein air",
     "sporty": "Sportif"
   },
+  "seasons": {
+    "fall": "Automne",
+    "spring": "Printemps",
+    "summer": "Été",
+    "winter": "Hiver"
+  },
   "styles": {
     "bold": "Audacieux",
     "casual": "Décontracté",
@@ -94,5 +100,12 @@
     "cloudy": "Nuageux",
     "rain": "Pluie",
     "snow": "Neige"
+  },
+  "weatherTags": {
+    "cold": "Froid",
+    "mild": "Doux",
+    "rain": "Pluie",
+    "snow": "Neige",
+    "warm": "Chaud"
   }
 }

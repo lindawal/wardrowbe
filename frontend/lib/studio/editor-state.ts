@@ -13,6 +13,7 @@ export interface StudioEditorState {
   items: StudioItem[];
   name: string;
   occasion: string | null;
+  tags: string[];
   isDirty: boolean;
   lastModified: number;
 }
@@ -21,6 +22,7 @@ export const INITIAL_STUDIO_STATE: StudioEditorState = {
   items: [],
   name: '',
   occasion: null,
+  tags: [],
   isDirty: false,
   lastModified: 0,
 };
@@ -31,6 +33,7 @@ export type StudioAction =
   | { type: 'TOGGLE_ITEM'; item: StudioItem }
   | { type: 'SET_NAME'; name: string }
   | { type: 'SET_OCCASION'; occasion: string }
+  | { type: 'SET_TAGS'; tags: string[] }
   | { type: 'REPLACE_CANVAS'; items: StudioItem[] }
   | { type: 'LOAD'; state: Partial<StudioEditorState> }
   | { type: 'RESET' };
@@ -79,6 +82,13 @@ export function studioReducer(
     case 'SET_OCCASION': {
       if (state.occasion === action.occasion) return state;
       return touch({ ...state, occasion: action.occasion });
+    }
+    case 'SET_TAGS': {
+      const unchanged =
+        state.tags.length === action.tags.length &&
+        state.tags.every((tag, i) => tag === action.tags[i]);
+      if (unchanged) return state;
+      return touch({ ...state, tags: action.tags });
     }
     case 'REPLACE_CANVAS': {
       return touch({

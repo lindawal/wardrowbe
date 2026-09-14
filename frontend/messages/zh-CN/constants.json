@@ -31,6 +31,12 @@
     "outdoor": "户外",
     "sporty": "运动"
   },
+  "seasons": {
+    "fall": "秋季",
+    "spring": "春季",
+    "summer": "夏季",
+    "winter": "冬季"
+  },
   "styles": {
     "bold": "大胆",
     "casual": "休闲",
@@ -94,5 +100,12 @@
     "cloudy": "多云",
     "rain": "雨天",
     "snow": "雪天"
+  },
+  "weatherTags": {
+    "cold": "寒冷",
+    "mild": "温和",
+    "rain": "雨天",
+    "snow": "雪天",
+    "warm": "温暖"
   }
 }

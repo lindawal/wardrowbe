@@ -31,6 +31,12 @@
     "outdoor": "アウトドア",
     "sporty": "スポーティ"
   },
+  "seasons": {
+    "fall": "秋",
+    "spring": "春",
+    "summer": "夏",
+    "winter": "冬"
+  },
   "styles": {
     "bold": "ボールド",
     "casual": "カジュアル",
@@ -94,5 +100,12 @@
     "cloudy": "曇り",
     "rain": "雨",
     "snow": "雪"
+  },
+  "weatherTags": {
+    "cold": "寒い日",
+    "mild": "穏やかな日",
+    "rain": "雨",
+    "snow": "雪",
+    "warm": "暖かい日"
   }
 }

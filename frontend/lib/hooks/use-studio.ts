@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 
 import { api, setAccessToken } from '@/lib/api';
-import type { Outfit } from '@/lib/hooks/use-outfits';
+import { invalidateLookbookQueries, type Outfit } from '@/lib/hooks/use-outfits';
 
 function useSetTokenIfAvailable() {
   const { data: session } = useSession();
@@ -11,7 +11,13 @@ function useSetTokenIfAvailable() {
   }
 }
 
-export interface StudioCreatePayload {
+export interface LookbookAttributesPayload {
+  tags?: string[];
+  seasons?: string[];
+  weather_tags?: string[];
+}
+
+export interface StudioCreatePayload extends LookbookAttributesPayload {
   items: string[];
   occasion: string;
   name?: string;
@@ -30,6 +36,7 @@ export function useCreateStudioOutfit() {
       qc.invalidateQueries({ queryKey: ['outfits'] });
       qc.invalidateQueries({ queryKey: ['analytics'] });
       qc.invalidateQueries({ queryKey: ['learning'] });
+      invalidateLookbookQueries(qc);
     },
   });
 }
@@ -66,6 +73,7 @@ export function useCloneToLookbook(sourceOutfitId: string) {
       api.post<Outfit>(`/outfits/${sourceOutfitId}/clone-to-lookbook`, payload),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['outfits'] });
+      invalidateLookbookQueries(qc);
     },
   });
 }
@@ -84,7 +92,7 @@ export function useWearToday(templateId: string) {
   });
 }
 
-export interface PatchOutfitPayload {
+export interface PatchOutfitPayload extends LookbookAttributesPayload {
   name?: string;
   items?: string[];
 }
@@ -98,6 +106,7 @@ export function usePatchOutfit() {
     onSuccess: (_, { id }) => {
       qc.invalidateQueries({ queryKey: ['outfit', id] });
       qc.invalidateQueries({ queryKey: ['outfits'] });
+      invalidateLookbookQueries(qc);
     },
   });
 }

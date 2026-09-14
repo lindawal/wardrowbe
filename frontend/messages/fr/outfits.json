@@ -51,6 +51,7 @@
   },
   "detail": {
     "addedToToday": "Ajoutée à aujourd'hui",
+    "backToLookbook": "Retour au lookbook",
     "backToOutfits": "Retour aux tenues",
     "deleteConfirm": "Supprimer cette tenue ? Cette action est irréversible.",
     "deleteError": "Échec de la suppression",
@@ -79,6 +80,8 @@
     "occasion": "Occasion",
     "pickOccasion": "Choisissez une occasion avant de sauvegarder.",
     "skippedItem": "{name} ignoré : {reason}",
+    "tags": "Tags",
+    "tagsHint": "Facultatif. Des tags comme « bureau » ou « vacances » organisent votre lookbook.",
     "warnings": {
       "multipleBottoms": "Plusieurs bas sélectionnés.",
       "noBottoms": "Aucun bas sélectionné.",

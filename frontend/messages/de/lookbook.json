@@ -1,0 +1,41 @@
+{
+  "all": "Alle",
+  "attributes": {
+    "addTagPlaceholder": "Tag eingeben und Enter drücken",
+    "invalidTag": "Tags dürfen nicht leer sein und keine Kommas enthalten",
+    "noSeasons": "Keine Jahreszeit festgelegt",
+    "noTags": "Noch keine Tags",
+    "noWeather": "Kein Wetter festgelegt",
+    "removeTag": "Tag {tag} entfernen",
+    "saveError": "Speichern der Lookbook-Details fehlgeschlagen",
+    "saved": "Lookbook-Details gespeichert",
+    "seasons": "Jahreszeit",
+    "suggestedHint": "Jahreszeit und Wetter werden beim Speichern eines Looks anhand der Stücke vorgeschlagen. Du kannst sie jederzeit anpassen.",
+    "suggestions": "Vorschläge:",
+    "tagLimitReached": "Maximal {max} Tags erreicht",
+    "tagTooLong": "Tags dürfen höchstens {max} Zeichen lang sein",
+    "tags": "Tags",
+    "title": "Lookbook-Details",
+    "tooManyTags": "Ein Look kann höchstens {max} Tags haben",
+    "weather": "Wetter"
+  },
+  "empty": {
+    "filtered": "Keine Looks passen zu diesen Filtern.",
+    "none": "Speichere einen Look aus dem Studio oder kopiere ein getragenes Outfit, um dein Lookbook zu starten.",
+    "noneTitle": "Dein Lookbook ist leer"
+  },
+  "filters": {
+    "allSeasons": "Alle Jahreszeiten",
+    "anyWeather": "Jedes Wetter",
+    "clear": "Filter zurücksetzen",
+    "season": "Jahreszeit",
+    "weather": "Wetter"
+  },
+  "loadError": "Dein Lookbook konnte nicht geladen werden",
+  "newOutfit": "Neues Outfit",
+  "search": "Looks durchsuchen...",
+  "subcategories": "Tags",
+  "subtitle": "Deine gespeicherten Looks, sortiert nach Tags, Jahreszeit und Wetter",
+  "title": "Lookbook",
+  "totalCount": "{count, plural, one {# Look} other {# Looks}}"
+}

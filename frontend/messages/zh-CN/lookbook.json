@@ -1,0 +1,41 @@
+{
+  "all": "全部",
+  "attributes": {
+    "addTagPlaceholder": "输入标签后按回车键",
+    "invalidTag": "标签不能为空或包含逗号",
+    "noSeasons": "未设置季节",
+    "noTags": "还没有标签",
+    "noWeather": "未设置天气",
+    "removeTag": "移除标签 {tag}",
+    "saveError": "保存造型册详情失败",
+    "saved": "造型册详情已保存",
+    "seasons": "季节",
+    "suggestedHint": "保存造型时会根据单品推荐季节和天气，您可以随时调整。",
+    "suggestions": "建议：",
+    "tagLimitReached": "已达到 {max} 个标签的上限",
+    "tagTooLong": "标签最多 {max} 个字符",
+    "tags": "标签",
+    "title": "造型册详情",
+    "tooManyTags": "每套造型最多只能有 {max} 个标签",
+    "weather": "天气"
+  },
+  "empty": {
+    "filtered": "没有符合筛选条件的造型。",
+    "none": "在工作室中保存造型，或复制已穿着的穿搭，开始打造您的造型册。",
+    "noneTitle": "您的造型册还是空的"
+  },
+  "filters": {
+    "allSeasons": "所有季节",
+    "anyWeather": "所有天气",
+    "clear": "清除筛选",
+    "season": "季节",
+    "weather": "天气"
+  },
+  "loadError": "加载造型册失败",
+  "newOutfit": "新建穿搭",
+  "search": "搜索造型...",
+  "subcategories": "标签",
+  "subtitle": "已保存的造型，按标签、季节和天气整理",
+  "title": "造型册",
+  "totalCount": "{count, plural, other {# 套造型}}"
+}

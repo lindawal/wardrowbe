@@ -31,6 +31,12 @@
     "outdoor": "Outdoor",
     "sporty": "Sporty"
   },
+  "seasons": {
+    "fall": "Fall",
+    "spring": "Spring",
+    "summer": "Summer",
+    "winter": "Winter"
+  },
   "styles": {
     "bold": "Bold",
     "casual": "Casual",
@@ -94,5 +100,12 @@
     "cloudy": "Cloudy",
     "rain": "Rain",
     "snow": "Snow"
+  },
+  "weatherTags": {
+    "cold": "Cold",
+    "mild": "Mild",
+    "rain": "Rain",
+    "snow": "Snow",
+    "warm": "Warm"
   }
 }

@@ -17,8 +17,11 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
 import type { Outfit } from '@/lib/hooks/use-outfits';
+import { formatTag } from '@/lib/lookbook/tags';
 import { buildMosaicLayout } from '@/lib/outfits/mosaic-layout';
 import { useTranslations } from 'next-intl';
+
+const MAX_VISIBLE_TAGS = 3;
 
 interface OutfitCardProps {
   outfit: Outfit;
@@ -26,6 +29,9 @@ interface OutfitCardProps {
   selectMode?: boolean;
   selected?: boolean;
   onSelect?: (id: string, checked: boolean) => void;
+  // Link target when the card navigates; defaults to the outfit detail page.
+  href?: string;
+  showTags?: boolean;
 }
 
 function getSourceBadge(outfit: Outfit, t: any): {
@@ -100,10 +106,19 @@ function getMetaLabel(outfit: Outfit, t: any): string {
   }
 }
 
-export function OutfitCard({ outfit, onClick, selectMode, selected, onSelect }: OutfitCardProps) {
+export function OutfitCard({
+  outfit,
+  onClick,
+  selectMode,
+  selected,
+  onSelect,
+  href,
+  showTags,
+}: OutfitCardProps) {
   const t = useTranslations('outfits.cards');
   const badge = getSourceBadge(outfit, t);
   const mosaic = buildMosaicLayout(outfit.items);
+  const tags = showTags ? outfit.tags ?? [] : [];
 
   const handleCheckboxClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -184,6 +199,20 @@ export function OutfitCard({ outfit, onClick, selectMode, selected, onSelect }: 
           <h3 className="text-sm font-semibold leading-tight truncate">
             {getCardTitle(outfit, t)}
           </h3>
+          {tags.length > 0 && (
+            <div className="flex flex-wrap gap-1">
+              {tags.slice(0, MAX_VISIBLE_TAGS).map((tag) => (
+                <Badge key={tag} variant="secondary" className="px-1.5 py-0 text-[10px]">
+                  {formatTag(tag)}
+                </Badge>
+              ))}
+              {tags.length > MAX_VISIBLE_TAGS && (
+                <Badge variant="outline" className="px-1.5 py-0 text-[10px]">
+                  +{tags.length - MAX_VISIBLE_TAGS}
+                </Badge>
+              )}
+            </div>
+          )}
           <div className="flex items-center justify-between text-xs text-muted-foreground">
             <Badge variant="outline" className="capitalize">
               {outfit.occasion}
@@ -197,7 +226,7 @@ export function OutfitCard({ outfit, onClick, selectMode, selected, onSelect }: 
 
   if (selectMode || onClick) return content;
   return (
-    <Link href={`/dashboard/outfits/${outfit.id}`} className="block">
+    <Link href={href ?? `/dashboard/outfits/${outfit.id}`} className="block">
       {content}
     </Link>
   );

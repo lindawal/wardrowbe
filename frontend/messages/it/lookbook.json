@@ -1,0 +1,41 @@
+{
+  "all": "Tutti",
+  "attributes": {
+    "addTagPlaceholder": "Aggiungi un tag e premi Invio",
+    "invalidTag": "I tag non possono essere vuoti o contenere virgole",
+    "noSeasons": "Nessuna stagione impostata",
+    "noTags": "Nessun tag ancora",
+    "noWeather": "Nessun meteo impostato",
+    "removeTag": "Rimuovi tag {tag}",
+    "saveError": "Salvataggio dei dettagli del lookbook fallito",
+    "saved": "Dettagli del lookbook salvati",
+    "seasons": "Stagione",
+    "suggestedHint": "Stagione e meteo vengono suggeriti in base ai capi quando salvi un look. Puoi modificarli in qualsiasi momento.",
+    "suggestions": "Suggerimenti:",
+    "tagLimitReached": "Raggiunto il limite di {max} tag",
+    "tagTooLong": "I tag possono avere al massimo {max} caratteri",
+    "tags": "Tag",
+    "title": "Dettagli lookbook",
+    "tooManyTags": "Un look può avere al massimo {max} tag",
+    "weather": "Meteo"
+  },
+  "empty": {
+    "filtered": "Nessun look corrisponde a questi filtri.",
+    "none": "Salva un look dallo studio o copia un outfit indossato per iniziare il tuo lookbook.",
+    "noneTitle": "Il tuo lookbook è vuoto"
+  },
+  "filters": {
+    "allSeasons": "Tutte le stagioni",
+    "anyWeather": "Qualsiasi meteo",
+    "clear": "Cancella filtri",
+    "season": "Stagione",
+    "weather": "Meteo"
+  },
+  "loadError": "Caricamento del lookbook fallito",
+  "newOutfit": "Nuovo outfit",
+  "search": "Cerca look...",
+  "subcategories": "Tag",
+  "subtitle": "I tuoi look salvati, organizzati per tag, stagione e meteo",
+  "title": "Lookbook",
+  "totalCount": "{count, plural, one {# look} other {# look}}"
+}

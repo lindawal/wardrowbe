@@ -51,6 +51,7 @@
   },
   "detail": {
     "addedToToday": "오늘 코디에 추가되었어요",
+    "backToLookbook": "룩북으로",
     "backToOutfits": "코디 목록으로",
     "deleteConfirm": "이 코디를 삭제하시겠어요? 되돌릴 수 없어요.",
     "deleteError": "삭제 실패",
@@ -79,6 +80,8 @@
     "occasion": "상황",
     "pickOccasion": "저장하기 전에 상황을 선택하세요.",
     "skippedItem": "{name} 건너뜀: {reason}",
+    "tags": "태그",
+    "tagsHint": "선택 사항이에요. \"오피스\"나 \"휴가\" 같은 태그로 룩북을 정리할 수 있어요.",
     "warnings": {
       "multipleBottoms": "하의가 여러 개 선택되었어요.",
       "noBottoms": "하의가 선택되지 않았어요.",

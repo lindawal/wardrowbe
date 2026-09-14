@@ -22,7 +22,11 @@ from app.models.outfit import (
 )
 from app.models.user import User
 from app.schemas.item import DEFAULT_WASH_INTERVALS
-from app.schemas.outfit import MAX_AUTHORING_TEXT_LENGTH, OutfitAttributeFields
+from app.schemas.outfit import (
+    MAX_AUTHORING_TEXT_LENGTH,
+    LookbookAttributeFields,
+    OutfitAttributeFields,
+)
 from app.services.ai_service import AIDisabledError
 from app.services.external_outfit_service import ExternalOutfitService
 from app.services.item_service import ItemService
@@ -42,6 +46,7 @@ from app.services.studio_service import (
 from app.services.suggestion_cache import clear_suggestions
 from app.services.weather_service import WeatherData
 from app.utils.auth import get_current_user
+from app.utils.lookbook import parse_csv_seasons, parse_csv_tags, parse_csv_weather_tags
 from app.utils.rate_limit import rate_limit_by_user
 from app.utils.signed_urls import sign_image_url
 
@@ -195,7 +200,11 @@ class OutfitResponse(BaseModel):
     palette: list[str] | None = None
     notes: str | None = None
     highlights: list[str] | None = None
+    # AI weather snapshot; the user-facing lookbook categories are weather_tags.
     weather: dict | None = None
+    tags: list[str] = Field(default_factory=list)
+    seasons: list[str] = Field(default_factory=list)
+    weather_tags: list[str] = Field(default_factory=list)
     items: list[OutfitItemResponse]
     feedback: FeedbackSummary | None = None
     family_ratings: list[FamilyRatingResponse] | None = None
@@ -213,6 +222,16 @@ class OutfitListResponse(BaseModel):
     has_more: bool
 
 
+class LookbookTagCount(BaseModel):
+    tag: str
+    count: int
+
+
+class LookbookTagsResponse(BaseModel):
+    total: int
+    tags: list[LookbookTagCount]
+
+
 class BulkOutfitFilters(BaseModel):
     status_filter: str | None = None
     occasion: str | None = None
@@ -225,6 +244,10 @@ class BulkOutfitFilters(BaseModel):
     item_type: str | None = None
     search: str | None = None
     cloned_from_outfit_id: UUID | None = None
+    # Must mirror the list filters, or a filtered select-all delete would reach hidden outfits.
+    tags: list[str] | None = None
+    seasons: list[str] | None = None
+    weather_tags: list[str] | None = None
 
 
 class BulkDeleteOutfitsRequest(BaseModel):
@@ -422,6 +445,9 @@ def outfit_to_response(
         notes=outfit.notes,
         highlights=highlights,
         weather=outfit.weather_data,
+        tags=outfit.tags or [],
+        seasons=outfit.seasons or [],
+        weather_tags=outfit.weather_tags or [],
         items=items,
         feedback=feedback_summary,
         family_ratings=family_ratings_list,
@@ -671,6 +697,11 @@ async def list_outfits(
     cloned_from_outfit_id: UUID | None = Query(
         None, description="Filter to wear instances of a specific template"
     ),
+    tags: str | None = Query(None, max_length=500, description="Comma-separated lookbook tags"),
+    seasons: str | None = Query(None, max_length=100, description="Comma-separated seasons"),
+    weather_tags: str | None = Query(
+        None, max_length=100, description="Comma-separated weather tags"
+    ),
 ) -> OutfitListResponse:
     service = OutfitService(db)
 
@@ -692,6 +723,9 @@ async def list_outfits(
         family_member_view=family_member_id is not None,
         search=search,
         cloned_from_outfit_id=cloned_from_outfit_id,
+        tags=parse_csv_tags(tags),
+        seasons=parse_csv_seasons(seasons),
+        weather_tags=parse_csv_weather_tags(weather_tags),
     )
 
     outfits, total = await service.list_with_filters(filters, page, page_size)
@@ -706,6 +740,19 @@ async def list_outfits(
         page=page,
         page_size=page_size,
         has_more=(page * page_size) < total,
+    )
+
+
+# Registered before /{outfit_id} so "lookbook" is never parsed as an outfit id.
+@router.get("/lookbook/tags", response_model=LookbookTagsResponse)
+async def list_lookbook_tags(
+    db: Annotated[AsyncSession, Depends(get_db)],
+    current_user: Annotated[User, Depends(get_current_user)],
+) -> LookbookTagsResponse:
+    total, tag_counts = await OutfitService(db).get_lookbook_tag_counts(current_user.id)
+    return LookbookTagsResponse(
+        total=total,
+        tags=[LookbookTagCount(tag=tag, count=count) for tag, count in tag_counts],
     )
 
 
@@ -738,6 +785,15 @@ async def bulk_delete_outfits(
             search=request.filters.search if request.filters else None,
             cloned_from_outfit_id=request.filters.cloned_from_outfit_id
             if request.filters
+            else None,
+            tags=parse_csv_tags(",".join(request.filters.tags))
+            if request.filters and request.filters.tags
+            else None,
+            seasons=parse_csv_seasons(",".join(request.filters.seasons))
+            if request.filters and request.filters.seasons
+            else None,
+            weather_tags=parse_csv_weather_tags(",".join(request.filters.weather_tags))
+            if request.filters and request.filters.weather_tags
             else None,
         )
         outfit_ids = await service.get_ids_by_filter(
@@ -1231,7 +1287,7 @@ def _check_studio_kill_switch() -> None:
         )
 
 
-class StudioCreateRequest(OutfitAttributeFields):
+class StudioCreateRequest(OutfitAttributeFields, LookbookAttributeFields):
     model_config = ConfigDict(extra="forbid")
 
     items: list[UUID] = Field(min_length=1, max_length=20)
@@ -1273,7 +1329,7 @@ class WearTodayRequest(BaseModel):
     scheduled_for: date | None = None
 
 
-class PatchOutfitRequest(BaseModel):
+class PatchOutfitRequest(LookbookAttributeFields):
     model_config = ConfigDict(extra="forbid")
 
     name: Annotated[str | None, Field(max_length=100)] = None
@@ -1312,6 +1368,9 @@ async def create_studio_outfit(
             formality=request.formality,
             palette=request.palette,
             notes=request.notes,
+            tags=request.tags,
+            seasons=request.seasons,
+            weather_tags=request.weather_tags,
         )
     except ItemOwnershipError:
         raise HTTPException(
@@ -1457,7 +1516,8 @@ async def patch_outfit_endpoint(
         str(current_user.id), "patch_outfit", max_requests=30, window_seconds=60
     )
 
-    if request.name is None and request.items is None:
+    provided = (request.name, request.items, request.tags, request.seasons, request.weather_tags)
+    if all(value is None for value in provided):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail={"error_code": "PATCH_EMPTY", "message": "No fields provided"},
@@ -1470,6 +1530,9 @@ async def patch_outfit_endpoint(
             outfit_id=outfit_id,
             name=request.name,
             items=request.items,
+            tags=request.tags,
+            seasons=request.seasons,
+            weather_tags=request.weather_tags,
         )
     except LookupError:
         raise HTTPException(

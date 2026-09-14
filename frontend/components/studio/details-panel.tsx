@@ -8,20 +8,23 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { TagInput } from '@/components/lookbook/tag-input';
 import { OccasionChips } from '@/components/shared/occasion-chips';
 import { api, getErrorMessage } from '@/lib/api';
 import { ITEM_ROLE } from '@/lib/studio/canonical-order';
 import { mergeAiAssist } from '@/lib/studio/ai-assist-merge';
 import type { StudioItem } from '@/lib/studio/editor-state';
-import type { Outfit, OutfitItem } from '@/lib/hooks/use-outfits';
+import { useLookbookTags, type Outfit, type OutfitItem } from '@/lib/hooks/use-outfits';
 import { useTranslations } from 'next-intl';
 
 interface DetailsPanelProps {
   items: StudioItem[];
   name: string;
   occasion: string | null;
+  tags: string[];
   onNameChange: (name: string) => void;
   onOccasionChange: (occasion: string) => void;
+  onTagsChange: (tags: string[]) => void;
   onAiMerge: (merged: StudioItem[]) => void;
 }
 
@@ -70,12 +73,15 @@ export function DetailsPanel({
   items,
   name,
   occasion,
+  tags,
   onNameChange,
   onOccasionChange,
+  onTagsChange,
   onAiMerge,
 }: DetailsPanelProps) {
   const t = useTranslations('outfits.details');
   const [aiLoading, setAiLoading] = useState(false);
+  const { data: tagCounts } = useLookbookTags();
   const warnings = computeWarnings(items, t);
 
   const handleAiAssist = async () => {
@@ -144,6 +150,17 @@ export function DetailsPanel({
             {t('pickOccasion')}
           </p>
         )}
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="studio-tags">{t('tags')}</Label>
+        <TagInput
+          id="studio-tags"
+          value={tags}
+          onChange={onTagsChange}
+          suggestions={tagCounts?.tags.map((c) => c.tag)}
+        />
+        <p className="text-xs text-muted-foreground">{t('tagsHint')}</p>
       </div>
 
       {warnings.length > 0 && (

@@ -35,6 +35,7 @@ export const NAMESPACES = [
   'learning',
   'pairings',
   'outfits',
+  'lookbook',
   'constants',
   'errors',
 ] as const;

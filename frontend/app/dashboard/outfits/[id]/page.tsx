@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { format, formatDistanceToNow, parseISO } from 'date-fns';
 import {
@@ -24,6 +24,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { LineageCard } from '@/components/shared/lineage-card';
 import { CloneToLookbookDialog } from '@/components/shared/clone-to-lookbook-dialog';
+import { LookbookAttributesCard } from '@/components/lookbook/lookbook-attributes-card';
 import { useDeleteOutfit, useOutfit, useOutfits } from '@/lib/hooks/use-outfits';
 import { useWearToday } from '@/lib/hooks/use-studio';
 import { getErrorMessage } from '@/lib/api';
@@ -33,7 +34,10 @@ export default function OutfitDetailPage() {
   const tc = useTranslations('common');
   const router = useRouter();
   const params = useParams<{ id: string }>();
+  const searchParams = useSearchParams();
   const outfitId = params?.id;
+  const fromLookbook = searchParams.get('from') === 'lookbook';
+  const backHref = fromLookbook ? '/dashboard/lookbook' : '/dashboard/outfits';
 
   const { data: outfit, isLoading } = useOutfit(outfitId);
   const deleteMutation = useDeleteOutfit();
@@ -75,7 +79,7 @@ export default function OutfitDetailPage() {
     try {
       await deleteMutation.mutateAsync(outfit.id);
       toast.success(t('detail.deleted'));
-      router.push('/dashboard/outfits');
+      router.push(backHref);
     } catch (error) {
       toast.error(getErrorMessage(error, t('detail.deleteError')));
     }
@@ -90,9 +94,9 @@ export default function OutfitDetailPage() {
     <div className="space-y-6 max-w-4xl mx-auto">
       <div className="flex items-center justify-between gap-4">
         <Button variant="ghost" size="sm" asChild>
-          <Link href="/dashboard/outfits">
+          <Link href={backHref}>
             <ChevronLeft className="h-4 w-4 mr-1" />
-            {t('detail.backToOutfits')}
+            {fromLookbook ? t('detail.backToLookbook') : t('detail.backToOutfits')}
           </Link>
         </Button>
       </div>
@@ -148,6 +152,8 @@ export default function OutfitDetailPage() {
       </div>
 
       <LineageCard outfit={outfit} />
+
+      {isTemplate && <LookbookAttributesCard outfit={outfit} />}
 
       <Card>
         <CardContent className="p-4">

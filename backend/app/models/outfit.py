@@ -13,8 +13,9 @@ from sqlalchemy import (
     String,
     Text,
     func,
+    text,
 )
-from sqlalchemy.dialects.postgresql import JSONB, UUID
+from sqlalchemy.dialects.postgresql import ARRAY, JSONB, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
@@ -65,6 +66,17 @@ class Outfit(Base):
     formality: Mapped[str | None] = mapped_column(String(50), nullable=True)
     palette: Mapped[list | None] = mapped_column(JSONB, nullable=True)
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+    # Lookbook attributes; vocabulary and normalization live in app/utils/lookbook.py
+    tags: Mapped[list[str]] = mapped_column(
+        ARRAY(String), nullable=False, default=list, server_default=text("'{}'")
+    )
+    seasons: Mapped[list[str]] = mapped_column(
+        ARRAY(String), nullable=False, default=list, server_default=text("'{}'")
+    )
+    weather_tags: Mapped[list[str]] = mapped_column(
+        ARRAY(String), nullable=False, default=list, server_default=text("'{}'")
+    )
 
     # Status
     status: Mapped[OutfitStatus] = mapped_column(

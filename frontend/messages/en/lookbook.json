@@ -1,0 +1,41 @@
+{
+  "all": "All",
+  "attributes": {
+    "addTagPlaceholder": "Add a tag and press Enter",
+    "invalidTag": "Tags can't be empty or contain commas",
+    "noSeasons": "No season set",
+    "noTags": "No tags yet",
+    "noWeather": "No weather set",
+    "removeTag": "Remove tag {tag}",
+    "saveError": "Failed to save lookbook details",
+    "saved": "Lookbook details saved",
+    "seasons": "Season",
+    "suggestedHint": "Season and weather are suggested from the items when a look is saved. Adjust them anytime.",
+    "suggestions": "Suggestions:",
+    "tagLimitReached": "Maximum of {max} tags reached",
+    "tagTooLong": "Tags can be at most {max} characters",
+    "tags": "Tags",
+    "title": "Lookbook details",
+    "tooManyTags": "A look can have at most {max} tags",
+    "weather": "Weather"
+  },
+  "empty": {
+    "filtered": "No looks match these filters.",
+    "none": "Save a look from the studio or copy a worn outfit to start your lookbook.",
+    "noneTitle": "Your lookbook is empty"
+  },
+  "filters": {
+    "allSeasons": "All seasons",
+    "anyWeather": "Any weather",
+    "clear": "Clear filters",
+    "season": "Season",
+    "weather": "Weather"
+  },
+  "loadError": "Failed to load your lookbook",
+  "newOutfit": "New Outfit",
+  "search": "Search looks...",
+  "subcategories": "Tags",
+  "subtitle": "Your saved looks, organized by tags, season and weather",
+  "title": "Lookbook",
+  "totalCount": "{count, plural, one {# look} other {# looks}}"
+}

@@ -51,6 +51,7 @@
   },
   "detail": {
     "addedToToday": "已加入今天",
+    "backToLookbook": "返回造型冊",
     "backToOutfits": "返回穿搭列表",
     "deleteConfirm": "刪除這套穿搭？此操作無法復原。",
     "deleteError": "刪除失敗",
@@ -79,6 +80,8 @@
     "occasion": "場合",
     "pickOccasion": "儲存前請先選擇場合。",
     "skippedItem": "已略過 {name}：{reason}",
+    "tags": "標籤",
+    "tagsHint": "選填。用「辦公室」或「度假」等標籤整理你的造型冊。",
     "warnings": {
       "multipleBottoms": "選擇了多件下身單品。",
       "noBottoms": "未選擇下身單品。",

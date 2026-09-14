@@ -31,6 +31,12 @@
     "outdoor": "All'aperto",
     "sporty": "Sportivo"
   },
+  "seasons": {
+    "fall": "Autunno",
+    "spring": "Primavera",
+    "summer": "Estate",
+    "winter": "Inverno"
+  },
   "styles": {
     "bold": "Audace",
     "casual": "Casual",
@@ -94,5 +100,12 @@
     "cloudy": "Nuvoloso",
     "rain": "Pioggia",
     "snow": "Neve"
+  },
+  "weatherTags": {
+    "cold": "Freddo",
+    "mild": "Mite",
+    "rain": "Pioggia",
+    "snow": "Neve",
+    "warm": "Caldo"
   }
 }

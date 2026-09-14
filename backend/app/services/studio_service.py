@@ -18,6 +18,7 @@ from app.models.outfit import (
 from app.models.user import User
 from app.schemas.item import DEFAULT_WASH_INTERVALS
 from app.services.learning_service import LearningService
+from app.services.lookbook_suggestions import suggest_seasons, suggest_weather_tags
 from app.utils.clothing import canonical_item_order
 
 
@@ -150,11 +151,21 @@ class StudioService:
         formality: str | None = None,
         palette: list[str] | None = None,
         notes: str | None = None,
+        tags: list[str] | None = None,
+        seasons: list[str] | None = None,
+        weather_tags: list[str] | None = None,
     ) -> Outfit:
         items = await validate_item_ownership(self.db, user.id, item_ids)
         ordered = self._order_items_canonically(items)
 
         effective_worn = scheduled_for if mark_worn else None
+
+        # Lookbook entries get season/weather suggested from their items unless the caller chose.
+        if scheduled_for is None:
+            if seasons is None:
+                seasons = suggest_seasons(items, season)
+            if weather_tags is None:
+                weather_tags = suggest_weather_tags(items, seasons)
 
         outfit = Outfit(
             user_id=user.id,
@@ -168,6 +179,9 @@ class StudioService:
             formality=formality,
             palette=palette,
             notes=notes,
+            tags=tags or [],
+            seasons=seasons or [],
+            weather_tags=weather_tags or [],
         )
         self.db.add(outfit)
         await self.db.flush()
@@ -291,6 +305,9 @@ class StudioService:
         if existing is not None:
             return existing
 
+        source_items = [oi.item for oi in source.items if oi.item is not None]
+        seasons = suggest_seasons(source_items, source.season)
+
         clone = Outfit(
             user_id=user.id,
             occasion=source.occasion,
@@ -300,6 +317,9 @@ class StudioService:
             cloned_from_outfit_id=source.id,
             source_item_id=source.source_item_id,
             name=name,
+            tags=list(source.tags or []),
+            seasons=seasons,
+            weather_tags=suggest_weather_tags(source_items, seasons),
         )
         self.db.add(clone)
         await self.db.flush()
@@ -376,6 +396,9 @@ class StudioService:
         outfit_id: UUID,
         name: str | None,
         items: list[UUID] | None,
+        tags: list[str] | None = None,
+        seasons: list[str] | None = None,
+        weather_tags: list[str] | None = None,
     ) -> Outfit:
         result = await self.db.execute(
             select(Outfit)
@@ -391,6 +414,14 @@ class StudioService:
 
         if name is not None:
             outfit.name = name
+
+        # Labels, not wear history, so unlike items they stay editable on worn outfits.
+        if tags is not None:
+            outfit.tags = tags
+        if seasons is not None:
+            outfit.seasons = seasons
+        if weather_tags is not None:
+            outfit.weather_tags = weather_tags
 
         if items is not None:
             if outfit.feedback is not None and outfit.feedback.worn_at is not None:

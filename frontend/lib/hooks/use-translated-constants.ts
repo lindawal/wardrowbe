@@ -7,6 +7,7 @@ import {
   CLOTHING_COLORS,
   OCCASIONS,
 } from '@/lib/types';
+import { LOOKBOOK_SEASONS, WEATHER_TAGS } from '@/lib/lookbook/vocab';
 
 const STYLE_VALUES = ['bold', 'casual', 'formal', 'minimalist', 'sporty'] as const;
 const WEATHER_CONDITION_VALUES = ['clear', 'cloudy', 'rain', 'snow'] as const;
@@ -51,6 +52,24 @@ export function useWeatherConditions() {
   const t = useTranslations('constants.weatherConditions');
 
   return useMemo(() => WEATHER_CONDITION_VALUES.map((value) => ({
+    value,
+    label: t(value),
+  })), [t]);
+}
+
+export function useLookbookSeasons() {
+  const t = useTranslations('constants.seasons');
+
+  return useMemo(() => LOOKBOOK_SEASONS.map((value) => ({
+    value,
+    label: t(value),
+  })), [t]);
+}
+
+export function useWeatherTags() {
+  const t = useTranslations('constants.weatherTags');
+
+  return useMemo(() => WEATHER_TAGS.map((value) => ({
     value,
     label: t(value),
   })), [t]);

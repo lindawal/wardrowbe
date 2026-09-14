@@ -51,6 +51,7 @@
   },
   "detail": {
     "addedToToday": "Zu heute hinzugefügt",
+    "backToLookbook": "Zurück zum Lookbook",
     "backToOutfits": "Zurück zu den Outfits",
     "deleteConfirm": "Dieses Outfit löschen? Das kann nicht rückgängig gemacht werden.",
     "deleteError": "Löschen fehlgeschlagen",
@@ -79,6 +80,8 @@
     "occasion": "Anlass",
     "pickOccasion": "Wähle vor dem Speichern einen Anlass.",
     "skippedItem": "{name} übersprungen: {reason}",
+    "tags": "Tags",
+    "tagsHint": "Optional. Tags wie „Büro“ oder „Urlaub“ ordnen dein Lookbook.",
     "warnings": {
       "multipleBottoms": "Mehrere Unterteile ausgewählt.",
       "noBottoms": "Kein Unterteil ausgewählt.",

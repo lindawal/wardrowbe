@@ -51,6 +51,7 @@
   },
   "detail": {
     "addedToToday": "Added to today",
+    "backToLookbook": "Back to Lookbook",
     "backToOutfits": "Back to Outfits",
     "deleteConfirm": "Delete this outfit? This cannot be undone.",
     "deleteError": "Failed to delete",
@@ -79,6 +80,8 @@
     "occasion": "Occasion",
     "pickOccasion": "Pick an occasion before saving.",
     "skippedItem": "Skipped {name}: {reason}",
+    "tags": "Tags",
+    "tagsHint": "Optional. Tags like \"office\" or \"vacation\" organize your lookbook.",
     "warnings": {
       "multipleBottoms": "Multiple bottoms selected.",
       "noBottoms": "No bottoms selected.",

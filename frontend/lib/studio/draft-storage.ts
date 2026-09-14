@@ -5,6 +5,8 @@ export interface StudioDraft {
   items: string[];
   name: string;
   occasion: string | null;
+  // Optional so drafts saved before tags existed still load.
+  tags?: string[];
   timestamp: number;
 }
 

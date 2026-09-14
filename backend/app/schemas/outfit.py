@@ -2,6 +2,8 @@ from typing import Annotated
 
 from pydantic import BaseModel, Field, field_validator
 
+from app.utils.lookbook import normalize_seasons, normalize_tags, normalize_weather_tags
+
 MAX_AUTHORING_TEXT_LENGTH = 2000
 
 
@@ -38,3 +40,28 @@ class OutfitAttributeFields(BaseModel):
             raise ValueError("Palette colors must be 1-50 characters")
         # [] collapses to None so "no palette" has a single representation
         return colors or None
+
+
+class LookbookAttributeFields(BaseModel):
+    """User-managed lookbook attributes. None leaves a stored value unchanged,
+    while [] clears it, so unlike palette an empty list is kept as-is.
+    """
+
+    tags: list[str] | None = Field(default=None, max_length=50)
+    seasons: list[str] | None = Field(default=None, max_length=10)
+    weather_tags: list[str] | None = Field(default=None, max_length=10)
+
+    @field_validator("tags")
+    @classmethod
+    def validate_tags(cls, v: list[str] | None) -> list[str] | None:
+        return None if v is None else normalize_tags(v)
+
+    @field_validator("seasons")
+    @classmethod
+    def validate_seasons(cls, v: list[str] | None) -> list[str] | None:
+        return None if v is None else normalize_seasons(v)
+
+    @field_validator("weather_tags")
+    @classmethod
+    def validate_weather_tags(cls, v: list[str] | None) -> list[str] | None:
+        return None if v is None else normalize_weather_tags(v)
