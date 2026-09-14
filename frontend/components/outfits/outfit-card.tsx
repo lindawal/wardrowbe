@@ -17,6 +17,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
 import type { Outfit } from '@/lib/hooks/use-outfits';
+import { buildMosaicLayout } from '@/lib/outfits/mosaic-layout';
 import { useTranslations } from 'next-intl';
 
 interface OutfitCardProps {
@@ -102,8 +103,7 @@ function getMetaLabel(outfit: Outfit, t: any): string {
 export function OutfitCard({ outfit, onClick, selectMode, selected, onSelect }: OutfitCardProps) {
   const t = useTranslations('outfits.cards');
   const badge = getSourceBadge(outfit, t);
-  const visibleItems = outfit.items.slice(0, 4);
-  const overflow = outfit.items.length - visibleItems.length;
+  const mosaic = buildMosaicLayout(outfit.items);
 
   const handleCheckboxClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -136,11 +136,11 @@ export function OutfitCard({ outfit, onClick, selectMode, selected, onSelect }: 
               />
             </div>
           )}
-          <div className="absolute inset-0 grid grid-cols-4 gap-0.5 p-2">
-            {visibleItems.map((item, idx) => (
+          <div className={cn('absolute inset-0 grid gap-0.5 p-2', mosaic.gridClassName)}>
+            {mosaic.tiles.map(({ item, className }, idx) => (
               <div
                 key={`${item.id}-${idx}`}
-                className="relative rounded overflow-hidden bg-background"
+                className={cn('relative rounded overflow-hidden bg-background', className)}
               >
                 {item.thumbnail_url || item.image_url ? (
                   <Image
@@ -148,7 +148,7 @@ export function OutfitCard({ outfit, onClick, selectMode, selected, onSelect }: 
                     alt={item.name || item.type}
                     fill
                     className="object-cover"
-                    sizes="(max-width: 640px) 25vw, 15vw"
+                    sizes="(max-width: 768px) 50vw, 25vw"
                     loading="lazy"
                   />
                 ) : (
@@ -160,10 +160,10 @@ export function OutfitCard({ outfit, onClick, selectMode, selected, onSelect }: 
                 )}
               </div>
             ))}
-            {overflow > 0 && (
+            {mosaic.overflow > 0 && (
               <div className="relative rounded overflow-hidden bg-background flex items-center justify-center">
                 <span className="text-sm font-medium text-muted-foreground">
-                  +{overflow}
+                  +{mosaic.overflow}
                 </span>
               </div>
             )}
