@@ -36,6 +36,7 @@
     "lookbookTemplate": "Modello lookbook",
     "outfitFallback": "Outfit {occasion}",
     "pairing": "Abbinamento",
+    "photo": "Foto",
     "replacement": "Sostituzione",
     "studio": "Studio",
     "worn": "Indossati"
@@ -63,6 +64,7 @@
     "seeAll": "Vedi tutto",
     "stylingTip": "Suggerimento:",
     "undated": "Non datato",
+    "viewPhoto": "Visualizza foto a schermo intero",
     "wearToday": "Indossa oggi",
     "wearTodayError": "Impossibile segnare come indossato oggi",
     "wornCount": "Indossato {count, plural, one {# volta} other {# volte}}"

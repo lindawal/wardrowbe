@@ -4,8 +4,9 @@ from typing import Annotated, Literal
 from uuid import UUID
 from zoneinfo import ZoneInfo
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
-from pydantic import BaseModel, ConfigDict, Field, computed_field, field_validator
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile, status
+from fastapi.exceptions import RequestValidationError
+from pydantic import BaseModel, ConfigDict, Field, ValidationError, computed_field, field_validator
 from sqlalchemy import and_, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -31,6 +32,13 @@ from app.services.ai_service import AIDisabledError
 from app.services.external_outfit_service import ExternalOutfitService
 from app.services.item_service import ItemService
 from app.services.learning_service import LearningService
+from app.services.outfit_photo_service import (
+    OutfitPhotoService,
+    PhotoInvalidError,
+    PhotoTooLargeError,
+    delete_photo_files,
+    photo_paths,
+)
 from app.services.outfit_service import OutfitListFilters, OutfitService
 from app.services.recommendation_service import (
     AIRecommendationError,
@@ -39,6 +47,7 @@ from app.services.recommendation_service import (
 )
 from app.services.studio_service import (
     ItemOwnershipError,
+    OutfitIsPhotoLookError,
     OutfitNotTemplateError,
     OutfitWornImmutableError,
     StudioService,
@@ -205,6 +214,11 @@ class OutfitResponse(BaseModel):
     tags: list[str] = Field(default_factory=list)
     seasons: list[str] = Field(default_factory=list)
     weather_tags: list[str] = Field(default_factory=list)
+    is_photo_look: bool = False
+    # Signed URLs for uploaded photo looks; the storage paths themselves stay internal.
+    photo_url: str | None = None
+    photo_medium_url: str | None = None
+    photo_thumbnail_url: str | None = None
     items: list[OutfitItemResponse]
     feedback: FeedbackSummary | None = None
     family_ratings: list[FamilyRatingResponse] | None = None
@@ -448,6 +462,14 @@ def outfit_to_response(
         tags=outfit.tags or [],
         seasons=outfit.seasons or [],
         weather_tags=outfit.weather_tags or [],
+        is_photo_look=outfit.is_photo_look,
+        photo_url=sign_image_url(outfit.photo_path) if outfit.photo_path else None,
+        photo_medium_url=sign_image_url(outfit.photo_medium_path)
+        if outfit.photo_medium_path
+        else None,
+        photo_thumbnail_url=sign_image_url(outfit.photo_thumbnail_path)
+        if outfit.photo_thumbnail_path
+        else None,
         items=items,
         feedback=feedback_summary,
         family_ratings=family_ratings_list,
@@ -766,6 +788,7 @@ async def bulk_delete_outfits(
     deleted = 0
     failed = 0
     errors: list[str] = []
+    orphaned_photos: list[str] = []
     limit = get_settings().max_bulk_action_count
     next_cursor: UUID | None = None
     has_more = False
@@ -828,6 +851,7 @@ async def bulk_delete_outfits(
                 continue
 
             await db.delete(outfit)
+            orphaned_photos.extend(photo_paths(outfit))
             deleted += 1
         except Exception as e:
             logger.error(f"Failed to delete outfit {outfit_id}: {e}")
@@ -835,6 +859,7 @@ async def bulk_delete_outfits(
             failed += 1
 
     await db.commit()
+    delete_photo_files(orphaned_photos)
 
     return BulkDeleteOutfitsResponse(
         deleted=deleted,
@@ -978,8 +1003,11 @@ async def delete_outfit(
             detail={"message": "Outfit not found", "error_code": "OUTFIT_NOT_FOUND"},
         )
 
+    files = photo_paths(outfit)
     await db.delete(outfit)
     await db.commit()
+    # Photo files go only once the row is gone for good.
+    delete_photo_files(files)
 
 
 @router.post("/{outfit_id}/feedback", response_model=FeedbackResponse)
@@ -1287,6 +1315,16 @@ def _check_studio_kill_switch() -> None:
         )
 
 
+def _photo_look_unsupported(action: str) -> HTTPException:
+    return HTTPException(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        detail={
+            "error_code": "OUTFIT_IS_PHOTO_LOOK",
+            "message": f"{action} is not supported for photo looks",
+        },
+    )
+
+
 class StudioCreateRequest(OutfitAttributeFields, LookbookAttributeFields):
     model_config = ConfigDict(extra="forbid")
 
@@ -1389,6 +1427,82 @@ async def create_studio_outfit(
     return outfit_to_response(full)
 
 
+class PhotoLookCreateRequest(LookbookAttributeFields):
+    model_config = ConfigDict(extra="forbid")
+
+    name: str = Field(min_length=1, max_length=100)
+    occasion: str = Field(max_length=50)
+
+    @field_validator("name", mode="before")
+    @classmethod
+    def strip_name(cls, v: str) -> str:
+        return v.strip() if isinstance(v, str) else v
+
+    @field_validator("occasion")
+    @classmethod
+    def validate_occasion(cls, v: str) -> str:
+        v = v.strip().lower()
+        if v not in VALID_OCCASIONS:
+            raise ValueError(
+                f"Invalid occasion '{v}'. Must be one of: {', '.join(sorted(VALID_OCCASIONS))}"
+            )
+        return v
+
+
+@router.post("/photo", response_model=OutfitResponse, status_code=status.HTTP_201_CREATED)
+async def create_photo_look(
+    db: Annotated[AsyncSession, Depends(get_db)],
+    current_user: Annotated[User, Depends(get_current_user)],
+    image: UploadFile = File(...),
+    name: str = Form(...),
+    occasion: str = Form(...),
+    tags: list[str] | None = Form(None),
+    seasons: list[str] | None = Form(None),
+    weather_tags: list[str] | None = Form(None),
+) -> OutfitResponse:
+    _check_studio_kill_switch()
+    await rate_limit_by_user(
+        str(current_user.id), "photo_look_create", max_requests=10, window_seconds=60
+    )
+
+    # Validate the form fields before any file is written.
+    try:
+        request = PhotoLookCreateRequest(
+            name=name, occasion=occasion, tags=tags, seasons=seasons, weather_tags=weather_tags
+        )
+    except ValidationError as e:
+        raise RequestValidationError(e.errors(include_url=False, include_context=False)) from None
+
+    service = OutfitPhotoService(db)
+    try:
+        outfit = await service.create_photo_look(
+            user=current_user,
+            image_data=await image.read(),
+            content_type=image.content_type,
+            filename=image.filename,
+            name=request.name,
+            occasion=request.occasion,
+            tags=request.tags,
+            seasons=request.seasons,
+            weather_tags=request.weather_tags,
+        )
+    except PhotoTooLargeError:
+        raise HTTPException(
+            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            detail={"error_code": "PHOTO_TOO_LARGE", "message": "Photo is too large"},
+        ) from None
+    except PhotoInvalidError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={
+                "error_code": "PHOTO_INVALID",
+                "message": "Invalid image file. Supported formats: JPEG, PNG, WebP, HEIC",
+            },
+        ) from None
+
+    return outfit_to_response(outfit)
+
+
 @router.post("/{outfit_id}/wore-instead", response_model=OutfitResponse)
 async def create_wore_instead_outfit(
     outfit_id: UUID,
@@ -1457,6 +1571,8 @@ async def clone_outfit_to_lookbook(
             status_code=status.HTTP_404_NOT_FOUND,
             detail={"error_code": "OUTFIT_NOT_FOUND", "message": "Outfit not found"},
         ) from None
+    except OutfitIsPhotoLookError:
+        raise _photo_look_unsupported("clone-to-lookbook") from None
 
     await db.commit()
     await _run_learning_safely(db, clone.id, current_user.id)
@@ -1495,6 +1611,8 @@ async def wear_outfit_today(
                 "message": "wear-today requires a lookbook template",
             },
         ) from None
+    except OutfitIsPhotoLookError:
+        raise _photo_look_unsupported("wear-today") from None
 
     await db.commit()
     await _run_learning_safely(db, wear.id, current_user.id)
@@ -1547,6 +1665,8 @@ async def patch_outfit_endpoint(
                 "message": "One or more items do not belong to you",
             },
         ) from None
+    except OutfitIsPhotoLookError:
+        raise _photo_look_unsupported("Changing items") from None
     except OutfitWornImmutableError:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,

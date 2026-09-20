@@ -120,7 +120,10 @@ export function LookbookAttributesCard({ outfit }: { outfit: Outfit }) {
                 disabled={pending}
               />
             </div>
-            <p className="text-xs text-muted-foreground">{t('suggestedHint')}</p>
+            {/* Photo looks have no items to suggest season and weather from. */}
+            {!outfit.is_photo_look && (
+              <p className="text-xs text-muted-foreground">{t('suggestedHint')}</p>
+            )}
             <div className="flex justify-end gap-2">
               <Button variant="outline" size="sm" onClick={() => setEditing(false)} disabled={pending}>
                 {tc('cancel')}

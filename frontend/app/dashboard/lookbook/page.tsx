@@ -4,7 +4,7 @@ import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { BookMarked, Loader2, Plus, Search, X } from 'lucide-react';
+import { BookMarked, Camera, Loader2, Plus, Search, X } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
+import { PhotoLookDialog } from '@/components/lookbook/photo-look-dialog';
 import { OutfitCard } from '@/components/outfits/outfit-card';
 import {
   useLookbookOutfits,
@@ -68,6 +69,7 @@ function LookbookContent() {
 
   const urlState = useMemo(() => parseLookbookParams(searchParams), [searchParams]);
   const [searchInput, setSearchInput] = useState(urlState.q);
+  const [photoDialogOpen, setPhotoDialogOpen] = useState(false);
 
   const updateUrl = useCallback(
     (patch: Partial<LookbookUrlState>) => {
@@ -111,6 +113,13 @@ function LookbookContent() {
     router.replace(pathname, { scroll: false });
   };
 
+  const uploadPhotoButton = (
+    <Button variant="outline" onClick={() => setPhotoDialogOpen(true)}>
+      <Camera className="h-4 w-4 mr-2" />
+      {t('photo.upload')}
+    </Button>
+  );
+
   return (
     <div className="space-y-6">
       <div className="flex items-start justify-between gap-4 flex-wrap">
@@ -121,12 +130,15 @@ function LookbookContent() {
           </h1>
           <p className="text-muted-foreground">{t('subtitle')}</p>
         </div>
-        <Button asChild>
-          <Link href="/dashboard/outfits/new">
-            <Plus className="h-4 w-4 mr-2" />
-            {t('newOutfit')}
-          </Link>
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          {uploadPhotoButton}
+          <Button asChild>
+            <Link href="/dashboard/outfits/new">
+              <Plus className="h-4 w-4 mr-2" />
+              {t('newOutfit')}
+            </Link>
+          </Button>
+        </div>
       </div>
 
       <div
@@ -250,12 +262,15 @@ function LookbookContent() {
             </div>
             <h3 className="text-lg font-semibold mb-2">{t('empty.noneTitle')}</h3>
             <p className="text-muted-foreground mb-6 max-w-sm">{t('empty.none')}</p>
-            <Button asChild>
-              <Link href="/dashboard/outfits/new">
-                <Plus className="h-4 w-4 mr-2" />
-                {t('newOutfit')}
-              </Link>
-            </Button>
+            <div className="flex flex-wrap justify-center gap-2">
+              {uploadPhotoButton}
+              <Button asChild>
+                <Link href="/dashboard/outfits/new">
+                  <Plus className="h-4 w-4 mr-2" />
+                  {t('newOutfit')}
+                </Link>
+              </Button>
+            </div>
           </div>
         )
       ) : (
@@ -284,6 +299,8 @@ function LookbookContent() {
           )}
         </>
       )}
+
+      <PhotoLookDialog open={photoDialogOpen} onOpenChange={setPhotoDialogOpen} />
     </div>
   );
 }

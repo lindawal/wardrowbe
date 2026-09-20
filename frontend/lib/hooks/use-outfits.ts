@@ -8,6 +8,7 @@ import {
 import { useSession } from 'next-auth/react';
 import { api, setAccessToken } from '@/lib/api';
 import { FamilyRating } from '@/lib/types';
+import { buildPhotoLookFormData, type PhotoLookInput } from '@/lib/lookbook/photo-look';
 
 // Helper to set token if available (for NextAuth mode)
 function useSetTokenIfAvailable() {
@@ -70,6 +71,11 @@ export interface Outfit {
   tags: string[];
   seasons: string[];
   weather_tags: string[];
+  // Uploaded photo looks carry a photo instead of items.
+  is_photo_look: boolean;
+  photo_url: string | null;
+  photo_medium_url: string | null;
+  photo_thumbnail_url: string | null;
   items: OutfitItem[];
   feedback: FeedbackSummary | null;
   family_ratings: FamilyRating[] | null;
@@ -217,6 +223,25 @@ export function useLookbookTags() {
     queryKey: ['lookbookTags'],
     queryFn: () => api.get<LookbookTagsResponse>('/outfits/lookbook/tags'),
     enabled: status !== 'loading',
+  });
+}
+
+export function useCreatePhotoLook() {
+  const queryClient = useQueryClient();
+  const { data: session } = useSession();
+
+  return useMutation({
+    mutationFn: (input: PhotoLookInput) => {
+      if (session?.accessToken) {
+        setAccessToken(session.accessToken as string);
+      }
+      return api.postForm<Outfit>('/outfits/photo', buildPhotoLookFormData(input));
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['outfits'] });
+      queryClient.invalidateQueries({ queryKey: ['analytics'] });
+      invalidateLookbookQueries(queryClient);
+    },
   });
 }
 

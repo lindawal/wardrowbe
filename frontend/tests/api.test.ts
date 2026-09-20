@@ -7,6 +7,32 @@ describe('API Client', () => {
     setAccessToken(null)
   })
 
+  describe('multipart requests', () => {
+    it('sends FormData without a JSON content type and maps structured errors', async () => {
+      setAccessToken('test-token')
+      vi.mocked(global.fetch).mockResolvedValueOnce({
+        ok: false,
+        status: 400,
+        json: async () => ({ detail: { error_code: 'PHOTO_INVALID', message: 'Invalid image file' } }),
+      } as Response)
+
+      const form = new FormData()
+      form.append('name', 'Look')
+
+      await expect(api.postForm('/outfits/photo', form)).rejects.toMatchObject({
+        status: 400,
+        message: 'Invalid image file',
+      })
+
+      const [, init] = vi.mocked(global.fetch).mock.calls[0]
+      const headers = init?.headers as Record<string, string>
+      expect(init?.method).toBe('POST')
+      expect(init?.body).toBe(form)
+      expect(headers['Content-Type']).toBeUndefined()
+      expect(headers.Authorization).toBe('Bearer test-token')
+    })
+  })
+
   describe('GET requests', () => {
     it('should make a successful GET request', async () => {
       const mockData = { id: 1, name: 'Test' }

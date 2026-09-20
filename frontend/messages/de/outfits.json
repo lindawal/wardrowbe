@@ -36,6 +36,7 @@
     "lookbookTemplate": "Lookbook-Vorlage",
     "outfitFallback": "{occasion}-Outfit",
     "pairing": "Kombination",
+    "photo": "Foto",
     "replacement": "Ersatz",
     "studio": "Studio",
     "worn": "Getragen"
@@ -63,6 +64,7 @@
     "seeAll": "Alle anzeigen",
     "stylingTip": "Tipp:",
     "undated": "Ohne Datum",
+    "viewPhoto": "Foto im Vollbild ansehen",
     "wearToday": "Heute tragen",
     "wearTodayError": "Konnte nicht als heute getragen markiert werden",
     "wornCount": "{count, plural, one {# Mal getragen} other {# Mal getragen}}"

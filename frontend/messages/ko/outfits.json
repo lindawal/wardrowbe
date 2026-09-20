@@ -36,6 +36,7 @@
     "lookbookTemplate": "룩북 템플릿",
     "outfitFallback": "{occasion} 코디",
     "pairing": "페어링",
+    "photo": "사진",
     "replacement": "대체",
     "studio": "스튜디오",
     "worn": "착용함"
@@ -63,6 +64,7 @@
     "seeAll": "전체 보기",
     "stylingTip": "팁:",
     "undated": "날짜 없음",
+    "viewPhoto": "사진 전체 화면으로 보기",
     "wearToday": "오늘 입기",
     "wearTodayError": "오늘 입기 기록 실패",
     "wornCount": "{count, plural, other {#회 착용}}"

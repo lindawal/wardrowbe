@@ -34,6 +34,10 @@ class OutfitNotTemplateError(Exception):
     pass
 
 
+class OutfitIsPhotoLookError(Exception):
+    """Actions that copy or change clothing items make no sense for an uploaded photo look."""
+
+
 async def load_full_outfit(db: AsyncSession, outfit_id: UUID) -> Outfit:
     result = await db.execute(
         select(Outfit)
@@ -284,6 +288,8 @@ class StudioService:
         source = result.scalar_one_or_none()
         if source is None:
             raise LookupError("source outfit not found")
+        if source.is_photo_look:
+            raise OutfitIsPhotoLookError("photo looks cannot be cloned")
 
         recent_cutoff = datetime.now(UTC) - timedelta(seconds=self.CLONE_SOFT_IDEMPOTENCY_SECONDS)
         recent_result = await self.db.execute(
@@ -354,6 +360,8 @@ class StudioService:
 
         if template.scheduled_for is not None:
             raise OutfitNotTemplateError("wear_today requires a lookbook template")
+        if template.is_photo_look:
+            raise OutfitIsPhotoLookError("photo looks have no items to wear")
 
         target_date = scheduled_for or date.today()
 
@@ -424,6 +432,8 @@ class StudioService:
             outfit.weather_tags = weather_tags
 
         if items is not None:
+            if outfit.is_photo_look:
+                raise OutfitIsPhotoLookError("photo looks have no items to change")
             if outfit.feedback is not None and outfit.feedback.worn_at is not None:
                 raise OutfitWornImmutableError("cannot modify items on a worn outfit")
 

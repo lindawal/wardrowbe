@@ -78,6 +78,15 @@ class Outfit(Base):
         ARRAY(String), nullable=False, default=list, server_default=text("'{}'")
     )
 
+    # Uploaded photo looks: paths follow ImageService's layout, and such outfits have no items.
+    photo_path: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    photo_medium_path: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    photo_thumbnail_path: Mapped[str | None] = mapped_column(String(500), nullable=True)
+
+    @property
+    def is_photo_look(self) -> bool:
+        return self.photo_path is not None
+
     # Status
     status: Mapped[OutfitStatus] = mapped_column(
         Enum(OutfitStatus, name="outfit_status", create_type=False),

@@ -42,8 +42,10 @@ async function fetchApi<T>(endpoint: string, options: FetchOptions = {}): Promis
     url += `?${searchParams.toString()}`;
   }
 
+  // The browser sets the multipart boundary itself, so FormData bodies must not get a JSON type.
+  const isFormData = typeof FormData !== 'undefined' && fetchOptions.body instanceof FormData;
   const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
+    ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
     ...(fetchOptions.headers as Record<string, string>),
   };
 
@@ -90,6 +92,9 @@ export const api = {
       method: 'POST',
       body: data ? JSON.stringify(data) : undefined,
     }),
+
+  postForm: <T>(endpoint: string, data: FormData, options?: FetchOptions) =>
+    fetchApi<T>(endpoint, { ...options, method: 'POST', body: data }),
 
   patch: <T>(endpoint: string, data?: unknown, options?: FetchOptions) =>
     fetchApi<T>(endpoint, {

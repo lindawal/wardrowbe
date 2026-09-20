@@ -28,6 +28,8 @@ import { LookbookAttributesCard } from '@/components/lookbook/lookbook-attribute
 import { useDeleteOutfit, useOutfit, useOutfits } from '@/lib/hooks/use-outfits';
 import { useWearToday } from '@/lib/hooks/use-studio';
 import { getErrorMessage } from '@/lib/api';
+import { localUrisToLightboxImages } from '@/lib/lightbox-adapters';
+import { useLightbox } from '@/lib/lightbox-context';
 
 export default function OutfitDetailPage() {
   const t = useTranslations('outfits');
@@ -35,6 +37,7 @@ export default function OutfitDetailPage() {
   const router = useRouter();
   const params = useParams<{ id: string }>();
   const searchParams = useSearchParams();
+  const lightbox = useLightbox();
   const outfitId = params?.id;
   const fromLookbook = searchParams.get('from') === 'lookbook';
   const backHref = fromLookbook ? '/dashboard/lookbook' : '/dashboard/outfits';
@@ -48,9 +51,11 @@ export default function OutfitDetailPage() {
   const isTemplate =
     outfit !== undefined && outfit !== null && outfit.scheduled_for === null;
   const isWorn = !!outfit?.feedback?.worn_at;
+  // Photo looks have no items, so wearing, editing in the studio and wear history don't apply.
+  const isPhotoLook = !!outfit?.is_photo_look;
 
   const { data: wearInstancesData } = useOutfits(
-    isTemplate && outfitId ? { cloned_from_outfit_id: outfitId } : {},
+    isTemplate && !isPhotoLook && outfitId ? { cloned_from_outfit_id: outfitId } : {},
     1,
     10
   );
@@ -89,6 +94,8 @@ export default function OutfitDetailPage() {
     outfit.name ||
     outfit.reasoning ||
     t('cards.outfitFallback', { occasion: outfit.occasion });
+  const photoUrl = isPhotoLook ? outfit.photo_url : null;
+  const showWearHistory = isTemplate && !isPhotoLook;
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
@@ -108,7 +115,7 @@ export default function OutfitDetailPage() {
             {outfit.occasion}
           </Badge>
           <Badge variant="outline" className="capitalize">
-            {outfit.source.replace('_', ' ')}
+            {isPhotoLook ? t('cards.photo') : outfit.source.replace('_', ' ')}
           </Badge>
           <span className="text-sm text-muted-foreground">
             {outfit.scheduled_for
@@ -155,46 +162,68 @@ export default function OutfitDetailPage() {
 
       {isTemplate && <LookbookAttributesCard outfit={outfit} />}
 
-      <Card>
-        <CardContent className="p-4">
-          <h2 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wide">
-            {t('detail.items', { count: outfit.items.length })}
-          </h2>
-          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
-            {outfit.items.map((item) => (
-              <Link
-                key={item.id}
-                href={`/dashboard/wardrobe?itemId=${item.id}`}
-                className="group"
-              >
-                <div className="relative aspect-square rounded-lg overflow-hidden border bg-muted">
-                  {item.thumbnail_url || item.image_url ? (
-                    <Image
-                      src={(item.thumbnail_url || item.image_url)!}
-                      alt={item.name || item.type}
-                      fill
-                      className="object-cover transition-transform group-hover:scale-105"
-                      sizes="(max-width: 640px) 33vw, 20vw"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <span className="text-xs text-muted-foreground">
-                        {item.type}
-                      </span>
-                    </div>
-                  )}
-                </div>
-                <p className="text-xs text-muted-foreground mt-1 truncate">
-                  {item.name || item.type}
-                </p>
-              </Link>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+      {photoUrl ? (
+        <Card>
+          <CardContent className="p-2">
+            <button
+              type="button"
+              aria-label={t('detail.viewPhoto')}
+              onClick={() => lightbox.open(localUrisToLightboxImages([photoUrl]).images, 0)}
+              className="relative block h-[60vh] w-full overflow-hidden rounded-md bg-muted"
+            >
+              <Image
+                src={outfit.photo_medium_url || photoUrl}
+                alt={title}
+                fill
+                priority
+                className="object-contain"
+                sizes="(max-width: 896px) 100vw, 896px"
+              />
+            </button>
+          </CardContent>
+        </Card>
+      ) : (
+        <Card>
+          <CardContent className="p-4">
+            <h2 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wide">
+              {t('detail.items', { count: outfit.items.length })}
+            </h2>
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
+              {outfit.items.map((item) => (
+                <Link
+                  key={item.id}
+                  href={`/dashboard/wardrobe?itemId=${item.id}`}
+                  className="group"
+                >
+                  <div className="relative aspect-square rounded-lg overflow-hidden border bg-muted">
+                    {item.thumbnail_url || item.image_url ? (
+                      <Image
+                        src={(item.thumbnail_url || item.image_url)!}
+                        alt={item.name || item.type}
+                        fill
+                        className="object-cover transition-transform group-hover:scale-105"
+                        sizes="(max-width: 640px) 33vw, 20vw"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <span className="text-xs text-muted-foreground">
+                          {item.type}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1 truncate">
+                    {item.name || item.type}
+                  </p>
+                </Link>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <div className="flex flex-wrap gap-2">
-        {isTemplate && (
+        {isTemplate && !isPhotoLook && (
           <Button onClick={handleWearToday} disabled={wearTodayMutation.isPending}>
             {wearTodayMutation.isPending ? (
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -210,7 +239,7 @@ export default function OutfitDetailPage() {
             {t('detail.saveToLookbook')}
           </Button>
         )}
-        {!isWorn && (
+        {!isWorn && !isPhotoLook && (
           <Button variant="outline" asChild>
             <Link href={`/dashboard/outfits/new?edit=${outfit.id}`}>
               <Pencil className="h-4 w-4 mr-2" />
@@ -229,7 +258,7 @@ export default function OutfitDetailPage() {
         </Button>
       </div>
 
-      {isTemplate && wearInstancesData && wearInstancesData.total > 0 && (
+      {showWearHistory && wearInstancesData && wearInstancesData.total > 0 && (
         <Card>
           <CardContent className="p-4">
             <h2 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wide">
@@ -267,7 +296,7 @@ export default function OutfitDetailPage() {
         </Card>
       )}
 
-      {isTemplate && wearInstancesData && wearInstancesData.total === 0 && (
+      {showWearHistory && wearInstancesData && wearInstancesData.total === 0 && (
         <Alert className="border-muted">
           <AlertDescription className="text-sm text-muted-foreground">
             {t('detail.notWornYet')}

@@ -30,6 +30,7 @@ ALLOWED_MIME_TYPES = {
     "image/heic",
     "image/heif",
 }
+MAX_IMAGE_BYTES = 20 * 1024 * 1024
 
 
 class ImageTooLargeError(ValueError):
@@ -200,8 +201,7 @@ class ImageService:
         if content_type not in ALLOWED_MIME_TYPES:
             return False
 
-        # Check file size (max 20MB)
-        if len(image_data) > 20 * 1024 * 1024:
+        if len(image_data) > MAX_IMAGE_BYTES:
             return False
 
         # Try to open as image

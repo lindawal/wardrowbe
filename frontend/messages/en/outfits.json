@@ -36,6 +36,7 @@
     "lookbookTemplate": "Lookbook template",
     "outfitFallback": "{occasion} outfit",
     "pairing": "Pairing",
+    "photo": "Photo",
     "replacement": "Replacement",
     "studio": "Studio",
     "worn": "Worn"
@@ -63,6 +64,7 @@
     "seeAll": "See all",
     "stylingTip": "Tip:",
     "undated": "Undated",
+    "viewPhoto": "View photo full screen",
     "wearToday": "Wear today",
     "wearTodayError": "Failed to wear today",
     "wornCount": "Worn {count, plural, one {# time} other {# times}}"

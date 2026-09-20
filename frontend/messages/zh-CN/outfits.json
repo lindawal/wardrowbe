@@ -36,6 +36,7 @@
     "lookbookTemplate": "造型册模板",
     "outfitFallback": "{occasion}搭配",
     "pairing": "搭配",
+    "photo": "照片",
     "replacement": "替换",
     "studio": "工作室",
     "worn": "已穿着"
@@ -63,6 +64,7 @@
     "seeAll": "查看全部",
     "stylingTip": "小贴士：",
     "undated": "未设日期",
+    "viewPhoto": "全屏查看照片",
     "wearToday": "今天穿",
     "wearTodayError": "记录今天穿着失败",
     "wornCount": "已穿着 {count, plural, one {# 次} other {# 次}}"

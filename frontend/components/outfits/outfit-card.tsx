@@ -6,6 +6,7 @@ import { formatDistanceToNow, parseISO } from 'date-fns';
 import {
   BookmarkCheck,
   Bot,
+  Camera,
   Layers,
   RefreshCw,
   Shirt,
@@ -39,6 +40,13 @@ function getSourceBadge(outfit: Outfit, t: any): {
   icon: React.ReactNode;
   className: string;
 } | null {
+  if (outfit.is_photo_look) {
+    return {
+      label: t('photo'),
+      icon: <Camera className="h-3 w-3" />,
+      className: 'bg-pink-100 text-pink-700 border-pink-200',
+    };
+  }
   if (outfit.replaces_outfit_id) {
     return {
       label: t('replacement'),
@@ -119,6 +127,8 @@ export function OutfitCard({
   const badge = getSourceBadge(outfit, t);
   const mosaic = buildMosaicLayout(outfit.items);
   const tags = showTags ? outfit.tags ?? [] : [];
+  // The 400px thumbnail of a portrait photo looks soft at card size, so prefer the medium image.
+  const photoSrc = outfit.is_photo_look ? outfit.photo_medium_url || outfit.photo_url : null;
 
   const handleCheckboxClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -151,38 +161,49 @@ export function OutfitCard({
               />
             </div>
           )}
-          <div className={cn('absolute inset-0 grid gap-0.5 p-2', mosaic.gridClassName)}>
-            {mosaic.tiles.map(({ item, className }, idx) => (
-              <div
-                key={`${item.id}-${idx}`}
-                className={cn('relative rounded overflow-hidden bg-background', className)}
-              >
-                {item.thumbnail_url || item.image_url ? (
-                  <Image
-                    src={(item.thumbnail_url || item.image_url)!}
-                    alt={item.name || item.type}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 50vw, 25vw"
-                    loading="lazy"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <span className="text-[10px] text-muted-foreground">
-                      {item.type}
-                    </span>
-                  </div>
-                )}
-              </div>
-            ))}
-            {mosaic.overflow > 0 && (
-              <div className="relative rounded overflow-hidden bg-background flex items-center justify-center">
-                <span className="text-sm font-medium text-muted-foreground">
-                  +{mosaic.overflow}
-                </span>
-              </div>
-            )}
-          </div>
+          {photoSrc ? (
+            <Image
+              src={photoSrc}
+              alt={getCardTitle(outfit, t)}
+              fill
+              className="object-contain"
+              sizes="(max-width: 768px) 100vw, 33vw"
+              loading="lazy"
+            />
+          ) : (
+            <div className={cn('absolute inset-0 grid gap-0.5 p-2', mosaic.gridClassName)}>
+              {mosaic.tiles.map(({ item, className }, idx) => (
+                <div
+                  key={`${item.id}-${idx}`}
+                  className={cn('relative rounded overflow-hidden bg-background', className)}
+                >
+                  {item.thumbnail_url || item.image_url ? (
+                    <Image
+                      src={(item.thumbnail_url || item.image_url)!}
+                      alt={item.name || item.type}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 50vw, 25vw"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <span className="text-[10px] text-muted-foreground">
+                        {item.type}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              ))}
+              {mosaic.overflow > 0 && (
+                <div className="relative rounded overflow-hidden bg-background flex items-center justify-center">
+                  <span className="text-sm font-medium text-muted-foreground">
+                    +{mosaic.overflow}
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
           {badge && (
             <div
               className={cn(
