@@ -569,14 +569,14 @@ class TestIncludeItems:
             )
 
     @pytest.mark.asyncio
-    async def test_suggest_options_endpoint_returns_multiple(self, client, auth_headers):
+    async def test_suggest_options_endpoint_requests_one_outfit(self, client, auth_headers):
         with patch.object(
             RecommendationService,
             "generate_recommendations",
             AsyncMock(),
         ) as mock_generate:
             fake_outfits = []
-            for _ in range(3):
+            for _ in range(1):
                 o = MagicMock()
                 o.id = uuid4()
                 o.occasion = "casual"
@@ -608,5 +608,5 @@ class TestIncludeItems:
             assert response.status_code == 200
             data = response.json()
             assert isinstance(data, list)
-            assert len(data) == 3
-            assert mock_generate.call_args.kwargs["count"] == 3
+            assert len(data) == 1
+            assert mock_generate.call_args.kwargs["count"] == 1

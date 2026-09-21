@@ -593,7 +593,7 @@ async def suggest_outfit_options(
             exclude_items=request.exclude_items,
             include_items=request.include_items,
             time_of_day=request.time_of_day,
-            count=3,
+            count=1,
         )
     except InsufficientWardrobeError as e:
         raise HTTPException(
