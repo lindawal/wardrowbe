@@ -12,20 +12,14 @@ Create {num_pairings} DIFFERENT complete outfits. Each MUST:
 - NEVER combine two items from the same slot. Bottoms (pants, jeans, shorts, skirt) are the SAME slot. Tops (shirt, t-shirt, blouse, sweater, hoodie, polo, tank-top, cardigan, vest) are the SAME slot.
 - Optionally add accessories (belt, bag, jewelry, scarf) if they complement
 
-For each outfit, explain WHY the items complement the source item (color harmony, style match, formality level).
+Choose items that complement the source item through color harmony, style match and formality level.
 
-Return ONLY a JSON array:
+Return ONLY a JSON array with the item numbers of each outfit:
 [
-  {{
-    "items": [{source_number}, ...other_item_numbers],
-    "headline": "Short outfit title (3-5 words)",
-    "highlights": ["Why item X complements source", "Color/style note", "Occasion fit"],
-    "styling_tip": "Brief practical advice"
-  }}
+  {{"items": [{source_number}, ...other_item_numbers]}}
 ]
 
 RULES:
 - Each outfit must be distinctly different in style or occasion
 - Consider color coordination and occasion formality
-- Explain the pairing logic in highlights
 - Output ONLY the JSON array, no other text

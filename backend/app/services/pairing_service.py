@@ -11,6 +11,7 @@ from app.models.item import ClothingItem, ItemStatus
 from app.models.outfit import FamilyOutfitRating, Outfit, OutfitItem, OutfitSource, OutfitStatus
 from app.models.user import User
 from app.services.ai_service import AIResponseTruncatedError, AIService, require_internal_ai
+from app.services.outfit_explanation import describe_item, explain_outfit, strip_explanation
 from app.utils.clothing import deduplicate_by_body_slot
 from app.utils.prompts import load_prompt
 from app.utils.timezone import get_user_today
@@ -62,38 +63,7 @@ class PairingService:
         return list(result.scalars().all())
 
     def _format_item_description(self, item: ClothingItem) -> str:
-        parts = []
-
-        # Type and subtype
-        item_type = item.type or "item"
-        if item.subtype:
-            parts.append(f"{item.subtype} ({item_type})")
-        else:
-            parts.append(item_type)
-
-        # Colors
-        if item.colors and len(item.colors) > 1:
-            parts.append(f"colors: {', '.join(item.colors)}")
-        elif item.primary_color:
-            parts.append(item.primary_color)
-
-        # Pattern
-        if item.pattern and item.pattern != "solid":
-            parts.append(item.pattern)
-
-        # Material
-        if item.material:
-            parts.append(item.material)
-
-        # Formality
-        if item.formality:
-            parts.append(item.formality)
-
-        # Name if set
-        if item.name:
-            parts.insert(0, f'"{item.name}"')
-
-        return " | ".join(parts)
+        return describe_item(item)
 
     def _format_items_for_prompt(
         self, source_item: ClothingItem, items: list[ClothingItem]
@@ -245,6 +215,8 @@ class PairingService:
         item_type_map: dict[UUID, str] = {source_item.id: (source_item.type or "").lower()}
         for item in available_items:
             item_type_map[item.id] = (item.type or "").lower()
+        items_by_id = {item.id: item for item in available_items}
+        items_by_id[source_item.id] = source_item
 
         for pairing in pairings_data[:num_pairings]:
             # Get item numbers from the pairing
@@ -271,6 +243,17 @@ class PairingService:
             if len(valid_ids) < 2:
                 logger.warning("Pairing has too few valid items, skipping")
                 continue
+
+            # Explained from the final list, not taken from the selection call
+            # (see outfit_explanation for why the two must not share a response).
+            strip_explanation(pairing)
+            explanation = await explain_outfit(
+                ai_service,
+                [items_by_id[iid] for iid in valid_ids if iid in items_by_id],
+                focus_item=source_item,
+            )
+            if explanation:
+                pairing.update(explanation)
 
             # Create outfit
             outfit = Outfit(

@@ -25,6 +25,7 @@ from app.models.preference import UserPreference
 from app.models.user import User
 from app.services.ai_service import AIResponseTruncatedError, AIService, require_internal_ai
 from app.services.item_scorer import get_season, score_items, scoring_temp_range
+from app.services.outfit_explanation import explain_outfit, strip_explanation
 from app.services.suggestion_cache import pop_suggestion, push_suggestions
 from app.services.weather_service import (
     GeocodingServiceError,
@@ -38,14 +39,9 @@ from app.utils.timezone import get_user_today
 
 logger = logging.getLogger(__name__)
 
-SINGLE_OUTFIT_FORMAT = (
-    "Respond with valid JSON:\n"
-    '{{"items": [item numbers], "headline": "Short catchy outfit title (max 5 words)", '
-    '"highlights": ["One short sentence each — vary your reasoning across color, texture, '
-    'proportion, occasion, weather, or time of day"], '
-    '"styling_tip": "One specific, actionable styling detail — do not suggest rolling up '
-    'sleeves every time, vary your advice"}}'
-)
+# Item numbers only: the headline and highlights are written afterwards from the
+# items that were actually kept (see outfit_explanation).
+SINGLE_OUTFIT_FORMAT = 'Respond with valid JSON:\n{{"items": [item numbers]}}'
 
 
 def get_time_of_day(user: User) -> str:
@@ -596,6 +592,8 @@ class RecommendationService:
         number_map: dict[int, UUID],
         scheduled_date: date | None = None,
         mandatory_item_ids: set[UUID] | None = None,
+        ai_service: AIService | None = None,
+        time_of_day: str | None = None,
     ) -> Outfit:
         selected_numbers = outfit_data.get("items", [])
         valid_ids = []
@@ -633,16 +631,31 @@ class RecommendationService:
 
         # Deduplicate by body slot (e.g. prevent shorts + pants)
         items_result = await self.db.execute(
-            select(ClothingItem.id, ClothingItem.type).where(ClothingItem.id.in_(valid_ids))
+            select(ClothingItem).where(ClothingItem.id.in_(valid_ids))
         )
-        item_type_map = {row.id: (row.type or "").lower() for row in items_result}
+        items_by_id = {item.id: item for item in items_result.scalars()}
+        item_type_map = {iid: (item.type or "").lower() for iid, item in items_by_id.items()}
         valid_ids = deduplicate_by_body_slot(
             valid_ids, item_type_map, mandatory_item_ids=mandatory_item_ids
         )
         valid_ids = canonical_item_order(valid_ids, item_type_map)
 
-        reasoning = outfit_data.get("headline") or outfit_data.get("reasoning")
-        style_notes = outfit_data.get("styling_tip") or outfit_data.get("style_notes")
+        # Explained only now, from the final list: prose from the selection call
+        # predates deduplication and may describe items that were just dropped.
+        strip_explanation(outfit_data)
+        if ai_service is not None:
+            explanation = await explain_outfit(
+                ai_service,
+                [items_by_id[iid] for iid in valid_ids if iid in items_by_id],
+                occasion=occasion,
+                weather=weather,
+                time_of_day=time_of_day,
+            )
+            if explanation:
+                outfit_data.update(explanation)
+
+        reasoning = outfit_data.get("headline")
+        style_notes = outfit_data.get("styling_tip")
 
         outfit = Outfit(
             user_id=user.id,
@@ -829,6 +842,8 @@ class RecommendationService:
                     number_map,
                     scheduled_date=scheduled_date,
                     mandatory_item_ids=set(include_items) if include_items else None,
+                    ai_service=ai_service,
+                    time_of_day=time_of_day,
                 )
                 return [outfit]
 
@@ -893,7 +908,10 @@ class RecommendationService:
         # For single_outfit mode (notifications), replace multi-outfit format
         if single_outfit:
             prompt = re.sub(
-                r"Respond with valid JSON containing exactly 3.*$",
+                # \d+ rather than a literal count: the prompt's number is a product
+                # decision that has already changed once, and a stale literal here
+                # fails silently by leaving the multi-outfit format in place.
+                r"Respond with valid JSON containing exactly \d+.*$",
                 SINGLE_OUTFIT_FORMAT,
                 prompt,
                 flags=re.DOTALL,
@@ -928,6 +946,8 @@ class RecommendationService:
                     number_map,
                     scheduled_date=scheduled_date,
                     mandatory_item_ids=set(include_items) if include_items else None,
+                    ai_service=ai_service,
+                    time_of_day=time_of_day,
                 )
                 return [outfit]
 
@@ -947,6 +967,8 @@ class RecommendationService:
                     number_map,
                     scheduled_date=scheduled_date,
                     mandatory_item_ids=set(include_items) if include_items else None,
+                    ai_service=ai_service,
+                    time_of_day=time_of_day,
                 )
                 outfits.append(outfit)
 
