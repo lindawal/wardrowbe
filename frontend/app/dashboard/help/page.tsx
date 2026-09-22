@@ -10,7 +10,9 @@ const STAND = '22.09.2026';
 const SECTIONS = [
   { id: 'ueberblick', title: 'Überblick und Aufbau' },
   { id: 'kleiderschrank', title: 'Kleiderschrank und Bildanalyse' },
+  { id: 'tags', title: 'Tags der Bildanalyse' },
   { id: 'vorschlaege', title: 'Outfit-Vorschläge' },
+  { id: 'anlass', title: 'Anlass' },
   { id: 'buttons', title: 'Gefällt mir, Verwerfen, Anderes versuchen' },
   { id: 'kombinationen', title: 'Kombinationen' },
   { id: 'lernen', title: 'Lernprofil' },
@@ -22,6 +24,55 @@ const SECTIONS = [
 ] as const;
 
 type SectionId = (typeof SECTIONS)[number]['id'];
+
+// Mirrors the VALID_* sets in backend/app/services/ai_service.py and the TYPE list in
+// backend/app/prompts/clothing_analysis.txt. The value is what the AI stores and what the
+// item detail view shows; the German meaning is for reading only.
+const TAG_ROWS: string[][] = [
+  [
+    'Typ',
+    'ja',
+    'shirt (Hemd), t-shirt, top, blouse (Bluse), polo, tank-top, sweater (Pullover), hoodie, cardigan (Strickjacke), vest (Weste), jacket (Jacke), blazer, coat (Mantel), pants (Hose), jeans, shorts, skirt (Rock), dress (Kleid), jumpsuit, shoes (Schuhe), sneakers, boots (Stiefel), sandals (Sandalen), socks (Socken), tie (Krawatte), hat (Hut), scarf (Schal), belt (Gürtel), bag (Tasche), accessories',
+  ],
+  ['Untertyp', 'nein', 'frei, ohne feste Liste. Beispiele: bomber, chinos, chelsea, turtleneck, maxi'],
+  [
+    'Hauptfarbe, weitere Farben',
+    'Hauptfarbe ja',
+    'black, white, gray, navy, blue, light-blue, red, burgundy, pink, green, olive, yellow, orange, purple, brown, tan, beige, cream, gold, silver',
+  ],
+  [
+    'Muster',
+    'ja',
+    'solid (uni), striped (gestreift), plaid (kariert), checkered (kariert, Schachbrett), floral (geblümt), graphic (Print), geometric, polka-dot (gepunktet), camouflage, animal-print',
+  ],
+  [
+    'Material',
+    'nein',
+    'cotton (Baumwolle), denim, leather (Leder), wool (Wolle), polyester, silk (Seide), linen (Leinen), knit (Strick), fleece, suede (Wildleder), velvet (Samt), nylon, canvas',
+  ],
+  [
+    'Formalität',
+    'ja',
+    'very-casual (sehr leger), casual (leger), smart-casual, business-casual, formal (formell)',
+  ],
+  [
+    'Stil (1 bis 2)',
+    'nein',
+    'casual, classic, sporty, minimalist, bohemian, preppy, streetwear, elegant, athletic, vintage, modern, rugged',
+  ],
+  ['Saison (mehrere)', 'nein', 'spring (Frühling), summer (Sommer), fall (Herbst), winter, all-season (ganzjährig)'],
+  ['Passform', 'nein', 'slim, regular, relaxed, oversized, tailored, cropped'],
+];
+
+// backend/app/services/item_scorer.py, OCCASION_FORMALITY
+const OCCASION_ROWS: string[][] = [
+  ['Freizeit', 'casual', 'very-casual, casual, smart-casual'],
+  ['Sportlich', 'sporty', 'very-casual, casual'],
+  ['Outdoor', 'outdoor', 'very-casual, casual'],
+  ['Büro', 'office', 'smart-casual, business-casual, formal'],
+  ['Date', 'date', 'smart-casual, business-casual, formal'],
+  ['Formell', 'formal', 'business-casual, formal, very-formal'],
+];
 
 function Section({ id, description, children }: { id: SectionId; description?: string; children: ReactNode }) {
   const title = SECTIONS.find((s) => s.id === id)?.title;
@@ -183,8 +234,9 @@ export default function HelpPage() {
 
           <H3>Tags von Hand ändern</H3>
           <p>
-            Korrigierst du Typ, Farbe oder andere Tags, gilt das Teil als „manuell getaggt“. Diese Korrektur
-            bleibt erhalten, auch wenn du später neu analysieren lässt.
+            Korrigierst du Typ, Untertyp oder Hauptfarbe, gilt das Teil als „manuell getaggt“. Diese Korrektur
+            bleibt erhalten, auch wenn du später neu analysieren lässt. Die übrigen Tags lassen sich in der App
+            nicht ändern, siehe <a href="#tags" className="text-primary underline-offset-4 hover:underline">Tags der Bildanalyse</a>.
           </p>
 
           <H3>„Erneut mit KI analysieren“</H3>
@@ -230,6 +282,90 @@ export default function HelpPage() {
               <C>AI_RETRY_COOLDOWN_SECONDS</C> (Standard 120), die Parallelität <C>AI_TAGGING_CONCURRENCY</C>{' '}
               (Standard 1). Ein Job darf höchstens <C>AI_TIMEOUT × AI_MAX_RETRIES + 60</C> Sekunden laufen,
               mindestens aber 10 Minuten.
+            </p>
+          </Tech>
+        </Section>
+
+        <Section id="tags" description="Welche Werte die KI an einem Teil setzen kann.">
+          <p>
+            Die KI darf nur Werte aus festen Listen vergeben. Nennt sie etwas anderes, bleibt das Feld leer, statt
+            einen erfundenen Wert zu speichern. Nur der Untertyp ist frei. In der Detailansicht eines Teils
+            erscheinen die Werte englisch, so wie in der rechten Spalte.
+          </p>
+          <Table head={['Feld', 'Pflicht', 'Mögliche Werte']} rows={TAG_ROWS} />
+          <p>
+            <strong>Erkennt die KI keinen gültigen Typ,</strong> bekommt das Teil den Typ „unknown“ und wird nie
+            für ein Outfit vorgeschlagen, bis du den Typ von Hand setzt.
+          </p>
+
+          <H3>Umgedeutete Farbnamen</H3>
+          <p>Einige Farbnamen außerhalb der Liste werden übersetzt statt verworfen:</p>
+          <Table
+            head={['KI nennt', 'gespeichert als']}
+            rows={[
+              ['grey, light grey, dark grey, charcoal', 'gray'],
+              ['off-white, ivory', 'cream'],
+              ['wine, maroon', 'burgundy'],
+              ['forest green', 'green'],
+              ['dark blue', 'navy'],
+              ['royal blue', 'blue'],
+              ['sky blue, baby blue', 'light-blue'],
+              ['camel, khaki', 'tan'],
+              ['rust', 'orange'],
+              ['coral, rose', 'pink'],
+              ['mauve, lavender', 'purple'],
+              ['mustard', 'yellow'],
+            ]}
+          />
+
+          <H3>Was die KI nie setzt</H3>
+          <p>
+            Marke, Zustand, Anlass und Merkmale gibt es als Felder, die KI füllt sie aber nicht. Die Marke kannst du
+            selbst eintragen.
+          </p>
+
+          <H3>Was du selbst ändern kannst</H3>
+          <List>
+            <li>
+              <strong>In der App änderbar:</strong> Name, Typ, Untertyp, Hauptfarbe, Marke, Notizen, Favorit,
+              Waschintervall.
+            </li>
+            <li>
+              <strong>Nicht änderbar:</strong> Formalität, Muster, Material, Stil, Saison, Passform und weitere
+              Farben. Auch „Erneut mit KI analysieren“ hilft hier nur bei leeren Feldern, einen vorhandenen Wert
+              überschreibt es nicht.
+            </li>
+          </List>
+          <p>
+            Eine falsch erkannte Formalität wirkt sich direkt auf die Vorschläge aus, siehe{' '}
+            <a href="#anlass" className="text-primary underline-offset-4 hover:underline">Anlass</a>. Ändern lässt sie
+            sich derzeit nur direkt in der Datenbank.
+          </p>
+
+          <Tech>
+            <p>
+              Listen: <C>VALID_TYPES</C>, <C>VALID_COLORS</C>, <C>VALID_PATTERNS</C>, <C>VALID_MATERIALS</C>,{' '}
+              <C>VALID_FORMALITY</C>, <C>VALID_STYLES</C>, <C>VALID_SEASONS</C>, <C>VALID_FIT</C> in{' '}
+              <C>backend/app/services/ai_service.py</C>; die Umdeutungen sind <C>COLOR_ALIASES</C> in{' '}
+              <C>_parse_tags_from_response</C>. Der Prompt <C>clothing_analysis.txt</C> nennt dieselben Werte.
+            </p>
+            <p>
+              <C>ai_confidence</C> ist keine Sicherheit des Modells, sondern die Vollständigkeit: Typ 25 %,
+              Hauptfarbe 20 %, Muster und Formalität je 15 %, Material 10 %, Saison, Stil und weitere Farben je 5 %
+              (<C>compute_tag_completeness</C>). Die Anzeige „sicher zu … %“ kommt dagegen aus den
+              Token-Wahrscheinlichkeiten und erscheint nur, wenn das Modell sie liefert.
+            </p>
+            <p>Formalität eines Teils in der Datenbank ändern, Spalte und Anzeige zugleich:</p>
+            <Pre>{`SELECT id, name, type, formality FROM clothing_items WHERE name ILIKE '%blazer%';
+
+UPDATE clothing_items
+SET formality = 'business-casual',
+    tags = jsonb_set(coalesce(tags, '{}'::jsonb), '{formality}', '"business-casual"')
+WHERE id = 'ID-DES-TEILS';`}</Pre>
+            <p>
+              Nicht über <C>PATCH /api/v1/items/{'{id}'}</C> mit <C>tags</C>: Das ersetzt das ganze Tag-Feld durch
+              das Geschickte und setzt dabei Farben, Stil und Saison auf leer, wenn sie fehlen (
+              <C>ItemService.update</C> in <C>backend/app/services/item_service.py</C>).
             </p>
           </Tech>
         </Section>
@@ -292,6 +428,59 @@ export default function HelpPage() {
             <p>
               Der Tagesvorschlag per Benachrichtigung nutzt denselben Weg mit <C>single_outfit=True</C>; dort
               ersetzt <C>SINGLE_OUTFIT_FORMAT</C> das Ausgabeformat im Prompt.
+            </p>
+          </Tech>
+        </Section>
+
+        <Section id="anlass" description="Wie der gewählte Anlass die Auswahl beeinflusst.">
+          <p>
+            Der Anlass bestimmt vor allem, wie formell die Teile sein sollen. Er schließt kein Teil aus, schiebt
+            unpassende aber in der Rangliste weit nach hinten.
+          </p>
+          <Table head={['Anlass in der App', 'Wert', 'Passende Formalität']} rows={OCCASION_ROWS} />
+          <p>Jedes Teil bekommt einen Faktor, je nachdem wie gut seine Formalität passt:</p>
+          <Table
+            head={['Formalität des Teils', 'Faktor']}
+            rows={[
+              ['passt zum Anlass', '1,0'],
+              ['eine Stufe daneben', '0,5'],
+              ['weiter daneben', '0,15'],
+            ]}
+          />
+          <p>
+            Die Stufen in Reihenfolge: very-casual, casual, smart-casual, business-casual, formal, very-formal. Der
+            Faktor wird mit den übrigen Bewertungen <strong>multipliziert</strong>: Wetter, Jahreszeit, wann zuletzt
+            getragen, deine Vorlieben, wie oft getragen. Ein legeres T-Shirt beim Anlass Formell liegt zwei Stufen
+            neben business-casual und behält nur 15 % seines Werts. Die KI könnte es trotzdem wählen, es steht aber
+            ganz unten in ihrer Liste.
+          </p>
+          <p>
+            <strong>Teile ohne Formalität zählen als leger.</strong> Bei Freizeit schadet das nicht, bei Büro oder
+            Formell rutschen sie nach hinten.
+          </p>
+          <H3>Außerdem wirkt der Anlass auf</H3>
+          <List>
+            <li>
+              <strong>die KI:</strong> Sie bekommt den Anlass im Auswahl-Prompt und bei der Beschreibung genannt.
+            </li>
+            <li>
+              <strong>das Lernprofil:</strong> Farbvorlieben werden je Anlass getrennt gelernt, etwa „bei Büro
+              bevorzugst du navy, grau“, und der KI mitgeteilt. Hat ein Anlass eine schlechte Trefferquote, erfährt
+              sie das auch.
+            </li>
+            <li>
+              <strong>die Sperre beim Verwerfen:</strong> Sie gilt nur für denselben Anlass. Bei einem anderen
+              Anlass sind die Teile sofort wieder verfügbar.
+            </li>
+          </List>
+          <p>Wählst du keinen Anlass, gilt der aus deinen Einstellungen, sonst Freizeit.</p>
+          <Tech>
+            <p>
+              <C>OCCASION_FORMALITY</C>, <C>FORMALITY_ORDER</C> und <C>_formality_score</C> in{' '}
+              <C>backend/app/services/item_scorer.py</C>; die Multiplikation steht in <C>score_items</C>. Die
+              Tabelle kennt auch <C>work</C> und <C>party</C>, die die App nicht anbietet. Unbekannte Anlässe
+              behandelt sie wie casual und smart-casual. Anlassbezogene Lernwerte: <C>_get_learned_preferences</C>{' '}
+              und <C>_format_preferences_for_prompt</C> in <C>recommendation_service.py</C>.
             </p>
           </Tech>
         </Section>
@@ -594,6 +783,21 @@ docker compose exec ollama ollama ps`}</Pre>
             <li>
               <strong>T-Shirt unter Pullover geht nicht.</strong> Beide sind „Oberteil“, eins wird entfernt.
               Ebenso Hoodie plus Jacke.
+            </li>
+            <li>
+              <strong>Formalität, Muster, Material, Stil, Saison und Passform lassen sich nicht bearbeiten.</strong>{' '}
+              Die App bietet dafür kein Feld, und neu analysieren überschreibt vorhandene Werte nicht.
+            </li>
+            <li>
+              <strong>Die Auswahllisten der App passen nicht zu den KI-Werten.</strong> Die App kennt Farben wie
+              Khaki, Petrol, Anthrazit, Dunkelbraun und Olivgrün, die die KI nie vergibt. Hellblau, Gold und Silber
+              vergibt die KI, sie fehlen aber in der App. Von den 12 KI-Stilen haben nur 3 einen deutschen Namen,
+              und „ganzjährig“ fehlt bei den Saisons.
+            </li>
+            <li>
+              <strong>Den Typ Anzug</strong> kannst nur du vergeben, nicht die KI. Er hat keine Rolle und deckt
+              deshalb keinen Körperbereich ab: Ein Outfit mit Anzug bekommt trotzdem ein Oberteil und ein Unterteil
+              ergänzt.
             </li>
             <li>
               <strong>Kombinationen werden nicht ergänzt.</strong> Die Kandidaten sind dort nicht nach Eignung
