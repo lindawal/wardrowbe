@@ -16,12 +16,14 @@
     "title": "Noch keine Kombinationen"
   },
   "generate": {
+    "allDiscarded": "Die KI hat nur unvollständige Outfits vorgeschlagen, etwa ohne Oberteil oder Schuhe. Bitte erneut versuchen.",
     "description": "Die KI erstellt komplette Outfits mit diesem Stück",
     "failed": "Kombinationen konnten nicht generiert werden",
     "generate": "Outfits generieren",
     "generating": "Wird generiert...",
     "numOutfits": "Anzahl der Outfits",
     "numOutfitsDesc": "Mehr Outfits = mehr Vielfalt, aber längere Generierungszeit",
+    "someDiscarded": "{count, plural, one {{count} unvollständiges Outfit wurde verworfen} other {{count} unvollständige Outfits wurden verworfen}}",
     "success": "{count, plural, one {{count} Outfit erstellt!} other {{count} Outfits erstellt!}}",
     "successDesc": "Im Kombinationen-Bereich ansehen",
     "title": "Passende Outfits finden",

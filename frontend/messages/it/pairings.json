@@ -16,12 +16,14 @@
     "title": "Nessun abbinamento ancora"
   },
   "generate": {
+    "allDiscarded": "L'IA ha proposto solo outfit incompleti, ad esempio senza parte superiore o scarpe. Riprova.",
     "description": "L'IA creerà outfit completi con questo capo come protagonista",
     "failed": "Generazione abbinamenti fallita",
     "generate": "Genera outfit",
     "generating": "Generazione in corso...",
     "numOutfits": "Numero di outfit",
     "numOutfitsDesc": "Più outfit = più varietà, ma richiede più tempo per generare",
+    "someDiscarded": "{count, plural, one {{count} outfit incompleto è stato scartato} other {{count} outfit incompleti sono stati scartati}}",
     "success": "{count, plural, one {{count} outfit creato!} other {{count} outfit creati!}}",
     "successDesc": "Visualizzali nella sezione Abbinamenti",
     "title": "Trova outfit abbinati",

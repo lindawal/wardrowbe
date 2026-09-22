@@ -37,6 +37,28 @@ ITEM_ROLE: dict[str, str] = {
 }
 
 
+# Which roles count as covering each body region. Deliberately generous: a hoodie
+# is an outer_layer but is routinely worn on its own, so any upper-body piece
+# satisfies "upper". Only a region with nothing at all on it is incomplete.
+BODY_REGIONS: dict[str, frozenset[str]] = {
+    "upper": frozenset({"base_top", "mid_layer", "outer_layer", "full_body"}),
+    "lower": frozenset({"bottom", "full_body"}),
+    "feet": frozenset({"footwear"}),
+}
+
+# The role to add when a region is empty: the plainest piece that covers it.
+REGION_FILL_ROLE: dict[str, str] = {
+    "upper": "base_top",
+    "lower": "bottom",
+    "feet": "footwear",
+}
+
+
+def missing_body_regions(item_ids: list[UUID], item_type_map: dict[UUID, str]) -> list[str]:
+    roles = {ITEM_ROLE.get(item_type_map.get(iid, "")) for iid in item_ids}
+    return [region for region, covering in BODY_REGIONS.items() if not roles & covering]
+
+
 def deduplicate_by_body_slot(
     item_ids: list[UUID],
     item_type_map: dict[UUID, str],

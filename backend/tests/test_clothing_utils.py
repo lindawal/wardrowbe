@@ -1,6 +1,11 @@
 from uuid import uuid4
 
-from app.utils.clothing import ITEM_ROLE, canonical_item_order, deduplicate_by_body_slot
+from app.utils.clothing import (
+    ITEM_ROLE,
+    canonical_item_order,
+    deduplicate_by_body_slot,
+    missing_body_regions,
+)
 
 
 def _ids(n):
@@ -288,3 +293,34 @@ def test_mandatory_item_absent_from_candidates_does_not_empty_its_role():
         mandatory_item_ids={absent_shirt},
     )
     assert result == [shirt_id, pants_id]
+
+
+def _regions(*types):
+    ids = _ids(len(types))
+    return missing_body_regions(ids, dict(zip(ids, types, strict=True)))
+
+
+def test_missing_upper_when_only_bottom_and_shoes():
+    assert _regions("pants", "sneakers") == ["upper"]
+
+
+def test_hoodie_alone_counts_as_upper():
+    # hoodie is an outer_layer, but is worn on its own often enough that
+    # adding a shirt under it would be a wrong correction.
+    assert _regions("hoodie", "jeans", "sneakers") == []
+
+
+def test_dress_covers_upper_and_lower():
+    assert _regions("dress", "shoes") == []
+
+
+def test_missing_lower():
+    assert _regions("shirt", "sneakers") == ["lower"]
+
+
+def test_missing_feet():
+    assert _regions("shirt", "jeans") == ["feet"]
+
+
+def test_accessories_cover_nothing():
+    assert _regions("bag", "belt") == ["upper", "lower", "feet"]

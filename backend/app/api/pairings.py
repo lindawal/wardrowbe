@@ -130,6 +130,8 @@ class PairingListResponse(BaseModel):
 
 class GeneratePairingsResponse(BaseModel):
     generated: int
+    # Pairings the model returned that were dropped as incomplete outfits.
+    discarded: int = 0
     pairings: list[PairingResponse]
 
 
@@ -236,7 +238,7 @@ async def generate_pairings(
     service = PairingService(db)
 
     try:
-        pairings = await service.generate_pairings(
+        result = await service.generate_pairings(
             user=current_user,
             source_item_id=item_id,
             num_pairings=request.num_pairings,
@@ -264,8 +266,9 @@ async def generate_pairings(
         ) from None
 
     return GeneratePairingsResponse(
-        generated=len(pairings),
-        pairings=[pairing_to_response(p) for p in pairings],
+        generated=len(result.outfits),
+        discarded=result.discarded,
+        pairings=[pairing_to_response(p) for p in result.outfits],
     )
 
 

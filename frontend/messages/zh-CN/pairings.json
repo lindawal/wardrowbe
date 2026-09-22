@@ -16,12 +16,14 @@
     "title": "还没有搭配"
   },
   "generate": {
+    "allDiscarded": "AI 只给出了不完整的穿搭，例如缺少上衣或鞋子。请重试。",
     "description": "AI 将为这件单品创建完整的穿搭",
     "failed": "生成搭配失败",
     "generate": "生成穿搭",
     "generating": "生成中...",
     "numOutfits": "穿搭数量",
     "numOutfitsDesc": "数量越多越丰富，但生成时间也更长",
+    "someDiscarded": "{count, plural, other {已舍弃 {count} 套不完整的穿搭}}",
     "success": "{count, plural, other {创建了{count}套穿搭！}}",
     "successDesc": "在搭配页面查看",
     "title": "寻找搭配穿搭",

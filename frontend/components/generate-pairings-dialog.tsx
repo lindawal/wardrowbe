@@ -48,8 +48,17 @@ export function GeneratePairingsDialog({
         itemId: item.id,
         numPairings,
       });
+      const discarded = result.discarded ?? 0;
+      if (result.generated === 0) {
+        // Stay on the form so the user can retry instead of landing on "0 created".
+        toast.error(discarded > 0 ? t('allDiscarded') : t('failed'));
+        return;
+      }
       setGeneratedPairings(result.pairings);
       toast.success(t('success', { count: result.generated }));
+      if (discarded > 0) {
+        toast.warning(t('someDiscarded', { count: discarded }));
+      }
     } catch (error) {
       const message = error instanceof Error ? error.message : t('failed');
       toast.error(message);

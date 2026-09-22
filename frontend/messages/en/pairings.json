@@ -16,12 +16,14 @@
     "title": "No pairings yet"
   },
   "generate": {
+    "allDiscarded": "The AI only suggested incomplete outfits, for example without a top or shoes. Please try again.",
     "description": "AI will create complete outfits featuring this item",
     "failed": "Failed to generate pairings",
     "generate": "Generate Outfits",
     "generating": "Generating...",
     "numOutfits": "Number of outfits",
     "numOutfitsDesc": "More outfits = more variety, but takes longer to generate",
+    "someDiscarded": "{count, plural, one {{count} incomplete outfit was discarded} other {{count} incomplete outfits were discarded}}",
     "success": "{count, plural, one {{count} outfit created!} other {{count} outfits created!}}",
     "successDesc": "View them in the Pairings section",
     "title": "Find Matching Outfits",

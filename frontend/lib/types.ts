@@ -407,5 +407,7 @@ export interface GeneratePairingsRequest {
 
 export interface GeneratePairingsResponse {
   generated: number;
+  // Optional so a frontend deployed ahead of its backend still works.
+  discarded?: number;
   pairings: Pairing[];
 }

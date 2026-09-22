@@ -33,7 +33,13 @@ from app.services.weather_service import (
     WeatherService,
     WeatherServiceError,
 )
-from app.utils.clothing import canonical_item_order, deduplicate_by_body_slot
+from app.utils.clothing import (
+    ITEM_ROLE,
+    REGION_FILL_ROLE,
+    canonical_item_order,
+    deduplicate_by_body_slot,
+    missing_body_regions,
+)
 from app.utils.prompts import load_prompt
 from app.utils.timezone import get_user_today
 
@@ -582,6 +588,58 @@ class RecommendationService:
 
         return [parsed]
 
+    async def _fill_empty_regions(
+        self,
+        valid_ids: list[UUID],
+        items_by_id: dict[UUID, ClothingItem],
+        item_type_map: dict[UUID, str],
+        number_map: dict[int, UUID],
+    ) -> list[UUID]:
+        """Add the best-ranked piece for any body region the model left empty.
+
+        number_map follows the scoring order, so the lowest free number with the
+        right role is the most suitable candidate. Asking the model again would
+        be a second full selection pass, which on slow local hardware pushes the
+        request past the frontend proxy's timeout.
+
+        Adds any newly loaded items to items_by_id and item_type_map, so the
+        caller's ordering and explanation see them too.
+        """
+        missing = missing_body_regions(valid_ids, item_type_map)
+        if not missing:
+            return valid_ids
+
+        ranked_ids = [number_map[n] for n in sorted(number_map)]
+        unloaded = [iid for iid in ranked_ids if iid not in items_by_id]
+        if unloaded:
+            result = await self.db.execute(
+                select(ClothingItem).where(ClothingItem.id.in_(unloaded))
+            )
+            for item in result.scalars():
+                items_by_id[item.id] = item
+                item_type_map[item.id] = (item.type or "").lower()
+
+        filled = list(valid_ids)
+        for region in missing:
+            role = REGION_FILL_ROLE[region]
+            pick = next(
+                (
+                    iid
+                    for iid in ranked_ids
+                    if iid not in filled and ITEM_ROLE.get(item_type_map.get(iid, "")) == role
+                ),
+                None,
+            )
+            if pick is None:
+                logger.warning(f"AI outfit has no {region} piece and no {role} candidate to add")
+                continue
+            logger.warning(
+                f"AI outfit has no {region} piece; added best-ranked "
+                f"{item_type_map[pick]} item {pick}"
+            )
+            filled.append(pick)
+        return filled
+
     async def _materialize_outfit(
         self,
         outfit_data: dict,
@@ -637,6 +695,9 @@ class RecommendationService:
         item_type_map = {iid: (item.type or "").lower() for iid, item in items_by_id.items()}
         valid_ids = deduplicate_by_body_slot(
             valid_ids, item_type_map, mandatory_item_ids=mandatory_item_ids
+        )
+        valid_ids = await self._fill_empty_regions(
+            valid_ids, items_by_id, item_type_map, number_map
         )
         valid_ids = canonical_item_order(valid_ids, item_type_map)
 

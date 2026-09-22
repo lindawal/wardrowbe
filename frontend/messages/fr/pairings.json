@@ -16,12 +16,14 @@
     "title": "Aucune combinaison pour le moment"
   },
   "generate": {
+    "allDiscarded": "L'IA n'a proposé que des tenues incomplètes, par exemple sans haut ni chaussures. Veuillez réessayer.",
     "description": "L'IA créera des tenues complètes avec cet article",
     "failed": "Échec de la génération des combinaisons",
     "generate": "Générer des tenues",
     "generating": "Génération en cours...",
     "numOutfits": "Nombre de tenues",
     "numOutfitsDesc": "Plus de tenues = plus de variété, mais la génération est plus longue",
+    "someDiscarded": "{count, plural, one {{count} tenue incomplète a été écartée} other {{count} tenues incomplètes ont été écartées}}",
     "success": "{count, plural, one {{count} tenue créée !} other {{count} tenues créées !}}",
     "successDesc": "Consultez-les dans la section Combinaisons",
     "title": "Trouver des tenues assorties",

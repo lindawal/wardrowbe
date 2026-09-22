@@ -1,6 +1,7 @@
 import json
 import logging
 import re
+from dataclasses import dataclass
 from uuid import UUID
 
 from sqlalchemy import and_, or_, select
@@ -12,7 +13,12 @@ from app.models.outfit import FamilyOutfitRating, Outfit, OutfitItem, OutfitSour
 from app.models.user import User
 from app.services.ai_service import AIResponseTruncatedError, AIService, require_internal_ai
 from app.services.outfit_explanation import describe_item, explain_outfit, strip_explanation
-from app.utils.clothing import deduplicate_by_body_slot
+from app.utils.clothing import (
+    BODY_REGIONS,
+    ITEM_ROLE,
+    deduplicate_by_body_slot,
+    missing_body_regions,
+)
 from app.utils.prompts import load_prompt
 from app.utils.timezone import get_user_today
 
@@ -26,6 +32,15 @@ PAIRING_PROMPT_TEMPLATE = load_prompt("item_pairing")
 # hard-deleting the source item must not silently reclassify the row as a suggestion.
 # "pairing" is absent from VALID_OCCASIONS, so an authoring client cannot forge it.
 PAIRING_OCCASION = "pairing"
+
+
+@dataclass
+class PairingGenerationResult:
+    outfits: list[Outfit]
+    # Returned by the model but dropped as unwearable, reported so the user
+    # is not left wondering why fewer outfits arrived than they asked for.
+    discarded: int = 0
+
 
 PAIRING_SOURCE_CLAUSE = or_(
     Outfit.source == OutfitSource.pairing,
@@ -147,7 +162,7 @@ class PairingService:
         user: User,
         source_item_id: UUID,
         num_pairings: int = 3,
-    ) -> list[Outfit]:
+    ) -> PairingGenerationResult:
         # Guard first so deferral is unconditional, before any item lookup.
         require_internal_ai("text")
 
@@ -218,6 +233,14 @@ class PairingService:
         items_by_id = {item.id: item for item in available_items}
         items_by_id[source_item.id] = source_item
 
+        # Only a region the wardrobe can cover at all makes a pairing incomplete:
+        # without any shoes, every pairing would otherwise be thrown away.
+        available_roles = {ITEM_ROLE.get(t) for t in item_type_map.values()}
+        coverable_regions = {
+            region for region, covering in BODY_REGIONS.items() if available_roles & covering
+        }
+        discarded = 0
+
         for pairing in pairings_data[:num_pairings]:
             # Get item numbers from the pairing
             selected_numbers = pairing.get("items", [])
@@ -241,7 +264,20 @@ class PairingService:
             valid_ids = deduplicate_by_body_slot(valid_ids, item_type_map)
 
             if len(valid_ids) < 2:
-                logger.warning("Pairing has too few valid items, skipping")
+                logger.warning("Pairing has too few valid items, discarding")
+                discarded += 1
+                continue
+
+            # Not auto-filled as recommendations are: candidates here arrive in
+            # database order, not ranked, so a filler would be an arbitrary piece.
+            incomplete = [
+                region
+                for region in missing_body_regions(valid_ids, item_type_map)
+                if region in coverable_regions
+            ]
+            if incomplete:
+                logger.warning(f"Pairing has no {', '.join(incomplete)} piece, discarding")
+                discarded += 1
                 continue
 
             # Explained from the final list, not taken from the selection call
@@ -299,7 +335,7 @@ class PairingService:
             loaded_outfits.append(result.scalar_one())
 
         logger.info(f"Created {len(loaded_outfits)} pairings for item {source_item_id}")
-        return loaded_outfits
+        return PairingGenerationResult(outfits=loaded_outfits, discarded=discarded)
 
     async def get_pairings_for_item(
         self,

@@ -16,12 +16,14 @@
     "title": "아직 페어링이 없어요"
   },
   "generate": {
+    "allDiscarded": "AI가 상의나 신발이 빠진 불완전한 코디만 제안했습니다. 다시 시도해 주세요.",
     "description": "AI가 이 아이템을 포함한 완성된 코디를 만들어요",
     "failed": "페어링 생성 실패",
     "generate": "코디 생성",
     "generating": "생성 중...",
     "numOutfits": "코디 수",
     "numOutfitsDesc": "코디가 많을수록 다양하지만 생성에 더 오래 걸려요",
+    "someDiscarded": "{count, plural, one {불완전한 코디 {count}개를 제외했습니다} other {불완전한 코디 {count}개를 제외했습니다}}",
     "success": "{count, plural, one {{count}개 코디 생성!} other {{count}개 코디 생성!}}",
     "successDesc": "페어링 섹션에서 확인하세요",
     "title": "어울리는 코디 찾기",

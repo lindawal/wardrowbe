@@ -277,15 +277,174 @@ class TestPairingGrounding:
         generate_text = AsyncMock(side_effect=[selection, json.dumps(GROUNDED)])
 
         with patch.object(AIService, "generate_text", generate_text):
-            outfits = await PairingService(db_session).generate_pairings(
+            result = await PairingService(db_session).generate_pairings(
                 user, shirt.id, num_pairings=1
             )
 
-        assert len(outfits) == 1
-        outfit = outfits[0]
+        assert len(result.outfits) == 1
+        assert result.discarded == 0
+        outfit = result.outfits[0]
         assert outfit.reasoning == GROUNDED["headline"]
         assert outfit.ai_raw_response["highlights"] == GROUNDED["highlights"]
         assert "bomber" not in json.dumps(outfit.ai_raw_response)
 
         explanation_prompt = generate_text.call_args_list[1].args[0]
         assert "Built around: shirt | white" in explanation_prompt
+
+
+class TestRecommendationRegionFill:
+    @pytest.mark.asyncio
+    async def test_missing_top_is_filled_with_best_ranked_top(self, db_session, test_user):
+        # The reported case: the model picked only jeans and sneakers.
+        jeans = _item(test_user.id, "jeans", primary_color="blue")
+        sneakers = _item(test_user.id, "sneakers", primary_color="white")
+        best_top = _item(test_user.id, "t-shirt", primary_color="white")
+        worse_top = _item(test_user.id, "shirt", primary_color="orange")
+        db_session.add_all([jeans, sneakers, best_top, worse_top])
+        await db_session.commit()
+
+        service = RecommendationService(db_session)
+        ai_service = _ai_service(json.dumps(GROUNDED))
+
+        outfit = await service._materialize_outfit(
+            {"items": [1, 2]},
+            test_user,
+            _weather(),
+            occasion="casual",
+            source=OutfitSource.on_demand,
+            # Numbered in ranking order, as _format_items_for_prompt produces it.
+            number_map={1: jeans.id, 2: sneakers.id, 3: best_top.id, 4: worse_top.id},
+            ai_service=ai_service,
+        )
+
+        item_ids = {oi.item_id for oi in outfit.items}
+        assert item_ids == {jeans.id, sneakers.id, best_top.id}
+        # Filled before the explanation, so the text covers the added top.
+        section = _outfit_section(ai_service.generate_text.call_args.args[0])
+        assert "t-shirt | white" in section
+
+    @pytest.mark.asyncio
+    async def test_complete_outfit_is_left_alone(self, db_session, test_user):
+        shirt = _item(test_user.id, "shirt")
+        jeans = _item(test_user.id, "jeans")
+        sneakers = _item(test_user.id, "sneakers")
+        spare = _item(test_user.id, "t-shirt")
+        db_session.add_all([shirt, jeans, sneakers, spare])
+        await db_session.commit()
+
+        outfit = await RecommendationService(db_session)._materialize_outfit(
+            {"items": [1, 2, 3]},
+            test_user,
+            _weather(),
+            occasion="casual",
+            source=OutfitSource.on_demand,
+            number_map={1: shirt.id, 2: jeans.id, 3: sneakers.id, 4: spare.id},
+        )
+
+        assert {oi.item_id for oi in outfit.items} == {shirt.id, jeans.id, sneakers.id}
+
+    @pytest.mark.asyncio
+    async def test_no_candidate_for_region_keeps_outfit(self, db_session, test_user):
+        jeans = _item(test_user.id, "jeans")
+        sneakers = _item(test_user.id, "sneakers")
+        db_session.add_all([jeans, sneakers])
+        await db_session.commit()
+
+        outfit = await RecommendationService(db_session)._materialize_outfit(
+            {"items": [1, 2]},
+            test_user,
+            _weather(),
+            occasion="casual",
+            source=OutfitSource.on_demand,
+            number_map={1: jeans.id, 2: sneakers.id},
+        )
+
+        assert {oi.item_id for oi in outfit.items} == {jeans.id, sneakers.id}
+
+
+async def _user_with_preferences(db_session, test_user) -> User:
+    # generate_pairings reads user.preferences, which the fixture does not load.
+    return (
+        await db_session.execute(
+            select(User).where(User.id == test_user.id).options(selectinload(User.preferences))
+        )
+    ).scalar_one()
+
+
+def _selection(pairings: list[list[int]]) -> TextGenerationResult:
+    return TextGenerationResult(
+        content=json.dumps([{"items": items} for items in pairings]),
+        model="qwen2.5:3b",
+        endpoint="default",
+    )
+
+
+class TestPairingDiscard:
+    @pytest.mark.asyncio
+    async def test_incomplete_pairing_is_discarded_and_counted(self, db_session, test_user):
+        shirt = _item(test_user.id, "shirt")
+        jeans = _item(test_user.id, "jeans")
+        sneakers = _item(test_user.id, "sneakers")
+        db_session.add_all([shirt, jeans, sneakers])
+        await db_session.commit()
+        user = await _user_with_preferences(db_session, test_user)
+
+        # 2 and 3 are jeans and sneakers in database order. Whichever 2 is, the
+        # shirt plus that one piece leaves a region the wardrobe could cover.
+        generate_text = AsyncMock(
+            side_effect=[_selection([[1, 2], [1, 2, 3]]), json.dumps(GROUNDED)]
+        )
+
+        with patch.object(AIService, "generate_text", generate_text):
+            result = await PairingService(db_session).generate_pairings(
+                user, shirt.id, num_pairings=2
+            )
+
+        assert len(result.outfits) == 1
+        assert result.discarded == 1
+        # Only the kept pairing was sent for an explanation.
+        assert generate_text.call_count == 2
+
+    @pytest.mark.asyncio
+    async def test_region_the_wardrobe_cannot_cover_is_not_required(self, db_session, test_user):
+        shirt = _item(test_user.id, "shirt")
+        jeans = _item(test_user.id, "jeans")
+        cap = _item(test_user.id, "hat")
+        db_session.add_all([shirt, jeans, cap])
+        await db_session.commit()
+        user = await _user_with_preferences(db_session, test_user)
+
+        # No shoes anywhere: requiring feet would discard every pairing.
+        generate_text = AsyncMock(side_effect=[_selection([[1, 2, 3]]), json.dumps(GROUNDED)])
+
+        with patch.object(AIService, "generate_text", generate_text):
+            result = await PairingService(db_session).generate_pairings(
+                user, shirt.id, num_pairings=1
+            )
+
+        assert len(result.outfits) == 1
+        assert result.discarded == 0
+
+    @pytest.mark.asyncio
+    async def test_api_reports_discarded_count(self, client, auth_headers, db_session, test_user):
+        shirt = _item(test_user.id, "shirt")
+        jeans = _item(test_user.id, "jeans")
+        sneakers = _item(test_user.id, "sneakers")
+        db_session.add_all([shirt, jeans, sneakers])
+        await db_session.commit()
+
+        generate_text = AsyncMock(
+            side_effect=[_selection([[1, 2], [1, 2, 3]]), json.dumps(GROUNDED)]
+        )
+
+        with patch.object(AIService, "generate_text", generate_text):
+            response = await client.post(
+                f"/api/v1/pairings/generate/{shirt.id}",
+                json={"num_pairings": 2},
+                headers=auth_headers,
+            )
+
+        assert response.status_code == 200
+        body = response.json()
+        assert body["generated"] == 1
+        assert body["discarded"] == 1
