@@ -28,11 +28,8 @@
   },
   "occasions": {
     "casual": "Décontracté",
-    "date": "Rendez-vous",
-    "formal": "Habillé",
-    "office": "Bureau",
-    "outdoor": "Plein air",
-    "sporty": "Sportif"
+    "going-out": "Sortie",
+    "work": "Travail"
   },
   "seasons": {
     "fall": "Automne",

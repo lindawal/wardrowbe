@@ -95,7 +95,7 @@ class NotificationSettingsResponse(NotificationSettingsBase):
         from_attributes = True
 
 
-VALID_OCCASIONS = {"casual", "office", "formal", "date", "sporty", "outdoor", "work", "party"}
+VALID_OCCASIONS = {"work", "casual", "going-out"}
 
 
 # Schedule schemas

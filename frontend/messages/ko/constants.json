@@ -28,11 +28,8 @@
   },
   "occasions": {
     "casual": "캐주얼",
-    "date": "데이트",
-    "formal": "포멀",
-    "office": "오피스",
-    "outdoor": "아웃도어",
-    "sporty": "스포티"
+    "going-out": "외출",
+    "work": "업무"
   },
   "seasons": {
     "fall": "가을",

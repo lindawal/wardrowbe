@@ -28,11 +28,8 @@
   },
   "occasions": {
     "casual": "Casual",
-    "date": "Date",
-    "formal": "Formal",
-    "office": "Office",
-    "outdoor": "Outdoor",
-    "sporty": "Sporty"
+    "going-out": "Going Out",
+    "work": "Work"
   },
   "seasons": {
     "fall": "Fall",

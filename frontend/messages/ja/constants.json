@@ -28,11 +28,8 @@
   },
   "occasions": {
     "casual": "カジュアル",
-    "date": "デート",
-    "formal": "フォーマル",
-    "office": "オフィス",
-    "outdoor": "アウトドア",
-    "sporty": "スポーティ"
+    "going-out": "お出かけ",
+    "work": "仕事"
   },
   "seasons": {
     "fall": "秋",

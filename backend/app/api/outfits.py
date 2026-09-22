@@ -61,30 +61,7 @@ from app.utils.signed_urls import sign_image_url
 
 logger = logging.getLogger(__name__)
 
-VALID_OCCASIONS = {
-    "casual",
-    "office",
-    "work",
-    "formal",
-    "smart-casual",
-    "business-casual",
-    "date",
-    "party",
-    "sporty",
-    "sport",
-    "outdoor",
-    "travel",
-    "lounge",
-    "beach",
-    "interview",
-    "wedding",
-    "dinner",
-    "brunch",
-    "gym",
-    "running",
-    "hiking",
-    "weekend",
-}
+VALID_OCCASIONS = {"work", "casual", "going-out"}
 
 
 def get_user_today(user: User) -> date:

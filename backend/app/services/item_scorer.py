@@ -9,14 +9,9 @@ from app.services.weather_service import WeatherData
 from app.utils.clothing import ITEM_ROLE
 
 OCCASION_FORMALITY = {
-    "casual": ["very-casual", "casual", "smart-casual"],
     "work": ["smart-casual", "business-casual", "formal"],
-    "office": ["smart-casual", "business-casual", "formal"],
-    "formal": ["business-casual", "formal", "very-formal"],
-    "sporty": ["very-casual", "casual"],
-    "outdoor": ["very-casual", "casual"],
-    "date": ["smart-casual", "business-casual", "formal"],
-    "party": ["smart-casual", "business-casual", "formal"],
+    "casual": ["very-casual", "casual", "smart-casual"],
+    "going-out": ["smart-casual", "business-casual", "formal", "very-formal"],
 }
 
 _NORTH_SEASON = {

@@ -107,10 +107,10 @@ describe('studioReducer', () => {
   it('loads state without marking dirty', () => {
     const state = studioReducer(INITIAL_STUDIO_STATE, {
       type: 'LOAD',
-      state: { name: 'Loaded', occasion: 'formal' },
+      state: { name: 'Loaded', occasion: 'going-out' },
     });
     expect(state.name).toBe('Loaded');
-    expect(state.occasion).toBe('formal');
+    expect(state.occasion).toBe('going-out');
     expect(state.isDirty).toBe(false);
   });
 
@@ -208,7 +208,7 @@ describe('draft-storage', () => {
   });
 
   it('keeps tags in a saved draft', () => {
-    saveDraft({ items: ['a'], name: 'Office', occasion: 'office', tags: ['work'] });
+    saveDraft({ items: ['a'], name: 'Work', occasion: 'work', tags: ['work'] });
     expect(loadDraft()?.tags).toEqual(['work']);
   });
 

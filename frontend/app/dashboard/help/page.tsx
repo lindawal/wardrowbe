@@ -67,11 +67,8 @@ const TAG_ROWS: string[][] = [
 // backend/app/services/item_scorer.py, OCCASION_FORMALITY
 const OCCASION_ROWS: string[][] = [
   ['Freizeit', 'casual', 'very-casual, casual, smart-casual'],
-  ['Sportlich', 'sporty', 'very-casual, casual'],
-  ['Outdoor', 'outdoor', 'very-casual, casual'],
-  ['Büro', 'office', 'smart-casual, business-casual, formal'],
-  ['Date', 'date', 'smart-casual, business-casual, formal'],
-  ['Formell', 'formal', 'business-casual, formal, very-formal'],
+  ['Arbeit', 'work', 'smart-casual, business-casual, formal'],
+  ['Ausgehen', 'going-out', 'smart-casual, business-casual, formal, very-formal'],
 ];
 
 function Section({ id, description, children }: { id: SectionId; description?: string; children: ReactNode }) {
@@ -477,9 +474,9 @@ export default function HelpPage() {
           <Tech>
             <p>
               <C>OCCASION_FORMALITY</C>, <C>FORMALITY_ORDER</C> und <C>_formality_score</C> in{' '}
-              <C>backend/app/services/item_scorer.py</C>; die Multiplikation steht in <C>score_items</C>. Die
-              Tabelle kennt auch <C>work</C> und <C>party</C>, die die App nicht anbietet. Unbekannte Anlässe
-              behandelt sie wie casual und smart-casual. Anlassbezogene Lernwerte: <C>_get_learned_preferences</C>{' '}
+              <C>backend/app/services/item_scorer.py</C>; die Multiplikation steht in <C>score_items</C>.
+              Unbekannte Anlässe behandelt sie wie casual und smart-casual. Anlassbezogene Lernwerte:{' '}
+              <C>_get_learned_preferences</C>{' '}
               und <C>_format_preferences_for_prompt</C> in <C>recommendation_service.py</C>.
             </p>
           </Tech>

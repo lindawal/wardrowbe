@@ -108,7 +108,7 @@ async def test_create_suggestion_defaults_attributes_to_null(
 
     resp = await client.post(
         "/api/v1/outfits/suggestions",
-        json={"items": [str(shirt.id), str(jeans.id)], "occasion": "office", "palette": []},
+        json={"items": [str(shirt.id), str(jeans.id)], "occasion": "work", "palette": []},
         headers=auth_headers,
     )
     assert resp.status_code == 201, resp.text
@@ -536,7 +536,7 @@ async def test_create_suggestion_clears_cached_suggestions(
 
     resp = await client.post(
         "/api/v1/outfits/suggestions",
-        json={"items": [str(shirt.id), str(jeans.id)], "occasion": "office"},
+        json={"items": [str(shirt.id), str(jeans.id)], "occasion": "work"},
         headers=auth_headers,
     )
     assert resp.status_code == 201, resp.text

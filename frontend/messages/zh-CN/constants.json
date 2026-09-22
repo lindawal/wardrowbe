@@ -28,11 +28,8 @@
   },
   "occasions": {
     "casual": "休闲",
-    "date": "约会",
-    "formal": "正式",
-    "office": "办公",
-    "outdoor": "户外",
-    "sporty": "运动"
+    "going-out": "外出",
+    "work": "工作"
   },
   "seasons": {
     "fall": "秋季",

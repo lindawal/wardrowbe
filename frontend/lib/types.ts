@@ -260,13 +260,13 @@ export const CLOTHING_TYPES = [
   { label: 'Vest', value: 'vest' },
 ] as const;
 
+// Kept in sync by hand with: backend/app/services/item_scorer.py (OCCASION_FORMALITY),
+// backend/app/api/outfits.py and backend/app/schemas/notification.py (VALID_OCCASIONS),
+// and every frontend/messages/<locale>/constants.json's "occasions" object.
 export const OCCASIONS = [
   { label: 'Casual', value: 'casual' },
-  { label: 'Office', value: 'office' },
-  { label: 'Formal', value: 'formal' },
-  { label: 'Date', value: 'date' },
-  { label: 'Sporty', value: 'sporty' },
-  { label: 'Outdoor', value: 'outdoor' },
+  { label: 'Work', value: 'work' },
+  { label: 'Going Out', value: 'going-out' },
 ] as const;
 
 // Family types

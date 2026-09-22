@@ -53,14 +53,14 @@ class TestOccasionValidation:
     def test_normalizes_case(self):
         from app.api.outfits import SuggestRequest
 
-        req = SuggestRequest(occasion="FORMAL")
-        assert req.occasion == "formal"
+        req = SuggestRequest(occasion="WORK")
+        assert req.occasion == "work"
 
     def test_strips_whitespace(self):
         from app.api.outfits import SuggestRequest
 
-        req = SuggestRequest(occasion="  office  ")
-        assert req.occasion == "office"
+        req = SuggestRequest(occasion="  work  ")
+        assert req.occasion == "work"
 
 
 class TestEmailHtmlEscaping:
@@ -144,8 +144,8 @@ class TestScheduleOccasionValidation:
             ScheduleUpdate(occasion="invalid-occasion")
 
     def test_update_accepts_valid(self):
-        update = ScheduleUpdate(occasion="formal")
-        assert update.occasion == "formal"
+        update = ScheduleUpdate(occasion="going-out")
+        assert update.occasion == "going-out"
 
 
 class TestMattermostWebhookValidation:

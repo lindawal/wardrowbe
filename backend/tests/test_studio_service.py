@@ -197,7 +197,7 @@ async def test_clone_to_lookbook(db_session, studio_user, wardrobe_items):
     original = await service.create_from_scratch(
         user=studio_user,
         item_ids=[shirt.id, jeans.id, sneakers.id],
-        occasion="office",
+        occasion="work",
         name=None,
         scheduled_for=date.today(),
         mark_worn=False,
