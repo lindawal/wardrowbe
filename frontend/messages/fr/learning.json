@@ -27,6 +27,14 @@
   "percent": "{value} %",
   "preferredColors": "Couleurs préférées :",
   "recompute": "Recalculer",
+  "reset": {
+    "button": "Réinitialiser le profil d'apprentissage",
+    "confirm": "Réinitialiser",
+    "description": "Supprime toutes les notes, les retours « porté » et tout ce qui en a été appris. Les tenues refusées deviennent ignorées. Les tenues acceptées et le nombre de fois où tes pièces ont été portées sont conservés. Cette action est irréversible.",
+    "error": "Impossible de réinitialiser le profil d'apprentissage",
+    "success": "Profil d'apprentissage réinitialisé",
+    "title": "Réinitialiser le profil d'apprentissage ?"
+  },
   "stats": {
     "acceptanceRate": "Taux d'acceptation",
     "averageRating": "Note moyenne",

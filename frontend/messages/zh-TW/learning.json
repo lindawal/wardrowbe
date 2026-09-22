@@ -27,6 +27,14 @@
   "percent": "{value}%",
   "preferredColors": "偏好的顏色：",
   "recompute": "重新計算",
+  "reset": {
+    "button": "重設學習檔案",
+    "confirm": "重設",
+    "description": "將刪除所有評分、穿著回饋以及從中學到的一切。已拒絕的穿搭會變為已略過。已接受的穿搭和單品的穿著次數會保留。此操作無法復原。",
+    "error": "無法重設學習檔案",
+    "success": "學習檔案已重設",
+    "title": "要重設學習檔案嗎？"
+  },
   "stats": {
     "acceptanceRate": "接受率",
     "averageRating": "平均評分",

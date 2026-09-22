@@ -27,6 +27,14 @@
   "percent": "{value} %",
   "preferredColors": "Bevorzugte Farben:",
   "recompute": "Neu berechnen",
+  "reset": {
+    "button": "Lernprofil zurücksetzen",
+    "confirm": "Zurücksetzen",
+    "description": "Löscht alle Bewertungen, Getragen-Rückmeldungen und alles, was daraus gelernt wurde. Verworfene Outfits werden zu übersprungenen. Angenommene Outfits und wie oft deine Teile getragen wurden, bleiben erhalten. Das lässt sich nicht rückgängig machen.",
+    "error": "Lernprofil konnte nicht zurückgesetzt werden",
+    "success": "Lernprofil zurückgesetzt",
+    "title": "Lernprofil zurücksetzen?"
+  },
   "stats": {
     "acceptanceRate": "Annahmequote",
     "averageRating": "Durchschnittsbewertung",

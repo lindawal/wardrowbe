@@ -16,7 +16,7 @@ from decimal import Decimal
 from itertools import combinations
 from uuid import UUID
 
-from sqlalchemy import and_, func, select
+from sqlalchemy import and_, delete, func, select, update
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -521,6 +521,50 @@ class LearningService:
             select(func.count(UserFeedback.id)).join(Outfit).where(Outfit.user_id == user_id)
         )
         return result.scalar() or 0
+
+    async def reset_learning(self, user_id: UUID) -> dict[str, int]:
+        """Forget everything learned from this user's feedback. Returns row counts.
+
+        The derived tables have to go along with the feedback: item_pair_scores and
+        outfit_performances are adjusted incrementally per feedback, and
+        recompute_learning_profile never rebuilds them, so deleting only the
+        feedback would leave its effect on suggestion ranking in place.
+
+        Rejected outfits become skipped rather than deleted: they stay in the
+        history but stop counting as a negative signal and stop excluding their
+        items from today's suggestions. Accepted outfits are kept untouched,
+        because they are the user's outfit history, not a rating.
+        """
+        no_sync = {"synchronize_session": False}
+        user_outfits = select(Outfit.id).where(Outfit.user_id == user_id)
+
+        feedback = await self.db.execute(
+            delete(UserFeedback)
+            .where(UserFeedback.outfit_id.in_(user_outfits))
+            .execution_options(**no_sync)
+        )
+        rejected = await self.db.execute(
+            update(Outfit)
+            .where(Outfit.user_id == user_id, Outfit.status == OutfitStatus.rejected)
+            .values(status=OutfitStatus.skipped)
+            .execution_options(**no_sync)
+        )
+        counts = {"feedback": feedback.rowcount, "rejected": rejected.rowcount}
+
+        for key, model in (
+            ("pair_scores", ItemPairScore),
+            ("outfit_performances", OutfitPerformance),
+            ("insights", StyleInsight),
+            ("profiles", UserLearningProfile),
+        ):
+            result = await self.db.execute(
+                delete(model).where(model.user_id == user_id).execution_options(**no_sync)
+            )
+            counts[key] = result.rowcount
+
+        await self.db.commit()
+        logger.warning(f"Learning reset for user {user_id}: {counts}")
+        return counts
 
     async def recompute_learning_profile(self, user_id: UUID) -> UserLearningProfile:
         """

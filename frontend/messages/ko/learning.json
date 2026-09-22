@@ -27,6 +27,14 @@
   "percent": "{value}%",
   "preferredColors": "선호 색상:",
   "recompute": "재계산",
+  "reset": {
+    "button": "학습 프로필 초기화",
+    "confirm": "초기화",
+    "description": "모든 평가, 착용 피드백과 이를 통해 학습한 내용을 삭제합니다. 거절한 코디는 건너뜀으로 바뀝니다. 수락한 코디와 아이템 착용 횟수는 유지됩니다. 이 작업은 되돌릴 수 없습니다.",
+    "error": "학습 프로필을 초기화하지 못했습니다",
+    "success": "학습 프로필을 초기화했습니다",
+    "title": "학습 프로필을 초기화할까요?"
+  },
   "stats": {
     "acceptanceRate": "수락률",
     "averageRating": "평균 평점",

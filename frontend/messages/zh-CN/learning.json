@@ -27,6 +27,14 @@
   "percent": "{value}%",
   "preferredColors": "偏好颜色：",
   "recompute": "重新计算",
+  "reset": {
+    "button": "重置学习档案",
+    "confirm": "重置",
+    "description": "将删除所有评分、穿着反馈以及从中学到的一切。已拒绝的穿搭会变为已跳过。已接受的穿搭和单品的穿着次数会保留。此操作无法撤销。",
+    "error": "无法重置学习档案",
+    "success": "学习档案已重置",
+    "title": "要重置学习档案吗？"
+  },
   "stats": {
     "acceptanceRate": "采纳率",
     "averageRating": "平均评分",

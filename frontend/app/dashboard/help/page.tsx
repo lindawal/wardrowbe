@@ -385,12 +385,25 @@ export default function HelpPage() {
               ['Übersprungen („Anderes versuchen“)', 'keine'],
             ]}
           />
+          <H3>„Lernprofil zurücksetzen“</H3>
+          <p>
+            Der Knopf auf der Seite KI-Lernprofil löscht alle Bewertungen, Getragen-Rückmeldungen und alles
+            daraus Gelernte, auch die Paar-Wertungen, die „Neu berechnen“ nicht anfasst. Verworfene Outfits
+            werden zu übersprungenen: Sie bleiben im Verlauf, sperren aber keine Teile mehr. Erhalten bleiben
+            angenommene Outfits und wie oft deine Teile getragen wurden. Das lässt sich nicht rückgängig machen.
+          </p>
           <Tech>
             <p>
               <C>backend/app/services/learning_service.py</C>, Signal in <C>_get_outfit_signal</C>. Der Cron-Job{' '}
               <C>update_learning_profiles</C> läuft im <C>worker</C> zur Minute 30 (
               <C>backend/app/workers/worker.py</C>). Berücksichtigt werden nur Outfits mit Status{' '}
-              <C>accepted</C> oder <C>rejected</C>.
+              <C>accepted</C> oder <C>rejected</C>. Der Job rechnet nur für Nutzer neu, die kürzlich eine
+              Rückmeldung gegeben haben.
+            </p>
+            <p>
+              <C>item_pair_scores</C> und <C>outfit_performances</C> werden bei jeder Rückmeldung einzeln
+              fortgeschrieben (<C>process_feedback</C>) und von <C>recompute_learning_profile</C> nie neu
+              aufgebaut. Zurücksetzen: <C>POST /api/v1/learning/reset</C>, Logik in <C>reset_learning</C>.
             </p>
           </Tech>
         </Section>

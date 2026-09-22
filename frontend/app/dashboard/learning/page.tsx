@@ -14,6 +14,7 @@ import {
   Heart,
   Cloud,
   Calendar,
+  RotateCcw,
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -21,8 +22,20 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { toast } from 'sonner';
+import {
   useLearning,
   useRecomputeLearning,
+  useResetLearning,
   useGenerateInsights,
   useAcknowledgeInsight,
   type ItemPair,
@@ -324,10 +337,13 @@ function NoLearningData({ onRecompute, isRefreshing }: { onRecompute: () => void
 export default function LearningPage() {
   const t = useTranslations('learning');
   const { data, isLoading, isError } = useLearning();
+  const tc = useTranslations('common');
   const recompute = useRecomputeLearning();
+  const resetLearning = useResetLearning();
   const generateInsights = useGenerateInsights();
   const acknowledgeInsight = useAcknowledgeInsight();
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [resetOpen, setResetOpen] = useState(false);
 
   const handleRecompute = async () => {
     setIsRefreshing(true);
@@ -335,6 +351,15 @@ export default function LearningPage() {
       await recompute.mutateAsync();
     } finally {
       setIsRefreshing(false);
+    }
+  };
+
+  const handleReset = async () => {
+    try {
+      await resetLearning.mutateAsync();
+      toast.success(t('reset.success'));
+    } catch {
+      toast.error(t('reset.error'));
     }
   };
 
@@ -372,7 +397,7 @@ export default function LearningPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
           <p className="text-muted-foreground">
@@ -381,17 +406,47 @@ export default function LearningPage() {
               : t('subtitleEmpty')}
           </p>
         </div>
-        {profile.has_learning_data && (
+        <div className="flex gap-2">
+          {/* Shown even without a computed profile: ratings and pair scores can
+              exist before the profile's first full computation. */}
           <Button
             variant="outline"
-            onClick={handleRecompute}
-            disabled={isRefreshing}
+            onClick={() => setResetOpen(true)}
+            disabled={resetLearning.isPending}
           >
-            <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
-            {t('recompute')}
+            <RotateCcw className="h-4 w-4 mr-2" />
+            {t('reset.button')}
           </Button>
-        )}
+          {profile.has_learning_data && (
+            <Button
+              variant="outline"
+              onClick={handleRecompute}
+              disabled={isRefreshing}
+            >
+              <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
+              {t('recompute')}
+            </Button>
+          )}
+        </div>
       </div>
+
+      <AlertDialog open={resetOpen} onOpenChange={setResetOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('reset.title')}</AlertDialogTitle>
+            <AlertDialogDescription>{t('reset.description')}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{tc('cancel')}</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleReset}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {t('reset.confirm')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {!profile.has_learning_data ? (
         <NoLearningData onRecompute={handleRecompute} isRefreshing={isRefreshing} />

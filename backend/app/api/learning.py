@@ -253,6 +253,30 @@ async def get_learning_insights(
     )
 
 
+class LearningResetResponse(BaseModel):
+    feedback: int
+    rejected: int
+    pair_scores: int
+    outfit_performances: int
+    insights: int
+    profiles: int
+
+
+@router.post("/reset", response_model=LearningResetResponse)
+async def reset_learning(
+    db: Annotated[AsyncSession, Depends(get_db)],
+    current_user: Annotated[User, Depends(get_current_user)],
+) -> LearningResetResponse:
+    """
+    Forget all ratings and everything learned from them for the current user.
+
+    Irreversible. Accepted outfits and item wear counts are kept; see
+    LearningService.reset_learning for exactly what is removed.
+    """
+    counts = await LearningService(db).reset_learning(current_user.id)
+    return LearningResetResponse(**counts)
+
+
 @router.post("/recompute", response_model=LearningProfileResponse)
 async def recompute_learning_profile(
     db: Annotated[AsyncSession, Depends(get_db)],

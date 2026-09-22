@@ -135,6 +135,39 @@ export function useRecomputeLearning() {
   });
 }
 
+/** Rows removed or changed by a learning reset, per kind. */
+export interface LearningResetResult {
+  feedback: number;
+  rejected: number;
+  pair_scores: number;
+  outfit_performances: number;
+  insights: number;
+  profiles: number;
+}
+
+/**
+ * Hook to forget all ratings and everything learned from them.
+ * Irreversible; accepted outfits and item wear counts are kept.
+ */
+export function useResetLearning() {
+  const queryClient = useQueryClient();
+  const { data: session } = useSession();
+
+  return useMutation({
+    mutationFn: async () => {
+      if (session?.accessToken) {
+        setAccessToken(session.accessToken as string);
+      }
+      return api.post<LearningResetResult>('/learning/reset');
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['learning'] });
+      // Rejected outfits become skipped, so outfit lists show a changed status.
+      queryClient.invalidateQueries({ queryKey: ['outfits'] });
+    },
+  });
+}
+
 /**
  * Hook to generate new style insights.
  * Creates human-readable insights about the user's style patterns.

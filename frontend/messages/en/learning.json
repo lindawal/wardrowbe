@@ -27,6 +27,14 @@
   "percent": "{value}%",
   "preferredColors": "Preferred colors:",
   "recompute": "Recompute",
+  "reset": {
+    "button": "Reset learning profile",
+    "confirm": "Reset",
+    "description": "Deletes all ratings, worn feedback and everything learned from them. Rejected outfits become skipped. Accepted outfits and how often your items were worn are kept. This cannot be undone.",
+    "error": "Could not reset the learning profile",
+    "success": "Learning profile reset",
+    "title": "Reset learning profile?"
+  },
   "stats": {
     "acceptanceRate": "Acceptance Rate",
     "averageRating": "Average Rating",

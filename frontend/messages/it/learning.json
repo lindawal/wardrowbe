@@ -27,6 +27,14 @@
   "percent": "{value}%",
   "preferredColors": "Colori preferiti:",
   "recompute": "Ricalcola",
+  "reset": {
+    "button": "Reimposta profilo di apprendimento",
+    "confirm": "Reimposta",
+    "description": "Elimina tutte le valutazioni, i feedback sugli outfit indossati e tutto ciò che ne è stato appreso. Gli outfit rifiutati diventano saltati. Gli outfit accettati e quante volte hai indossato i tuoi capi restano invariati. L'operazione non può essere annullata.",
+    "error": "Impossibile reimpostare il profilo di apprendimento",
+    "success": "Profilo di apprendimento reimpostato",
+    "title": "Reimpostare il profilo di apprendimento?"
+  },
   "stats": {
     "acceptanceRate": "Tasso di accettazione",
     "averageRating": "Valutazione media",
