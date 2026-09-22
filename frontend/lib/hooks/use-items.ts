@@ -4,7 +4,8 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import { api, getAccessToken, setAccessToken, ApiError, NetworkError } from '@/lib/api';
-import { Item, ItemListResponse, ItemFilter, WashHistoryEntry, ItemImage, TaggingProgress } from '@/lib/types';
+import { Item, ItemListResponse, ItemFilter, ItemUpdate, TagOptions, WashHistoryEntry, ItemImage, TaggingProgress } from '@/lib/types';
+import { applyItemUpdate } from '@/lib/item-tags';
 import { chunkArray } from '@/lib/utils';
 import { enqueueFiles } from '@/lib/upload-queue';
 import { startDrain } from '@/lib/upload-manager';
@@ -135,7 +136,7 @@ export function useUpdateItem() {
   const { data: session } = useSession();
 
   return useMutation({
-    mutationFn: async ({ id, data }: { id: string; data: Partial<Item> }) => {
+    mutationFn: async ({ id, data }: { id: string; data: ItemUpdate }) => {
       if (session?.accessToken) {
         setAccessToken(session.accessToken as string);
       }
@@ -152,12 +153,12 @@ export function useUpdateItem() {
         if (!old) return old;
         return {
           ...old,
-          items: old.items.map((item) => (item.id === id ? { ...item, ...data } : item)),
+          items: old.items.map((item) => (item.id === id ? applyItemUpdate(item, data) : item)),
         };
       });
 
       if (previousItemData) {
-        queryClient.setQueryData<Item>(['item', id], { ...previousItemData, ...data });
+        queryClient.setQueryData<Item>(['item', id], applyItemUpdate(previousItemData, data));
       }
 
       return { previousListData, previousItemData };
@@ -541,6 +542,19 @@ export function useRotateImage() {
       queryClient.invalidateQueries({ queryKey: ['outfits'] });
       queryClient.invalidateQueries({ queryKey: ['calendarOutfits'] });
     },
+  });
+}
+
+export function useTagOptions() {
+  const { status } = useSession();
+  useSetTokenIfAvailable();
+
+  return useQuery({
+    queryKey: ['tag-options'],
+    queryFn: () => api.get<TagOptions>('/items/tag-options'),
+    enabled: status !== 'loading',
+    // The tagger's fixed vocabulary; it only changes with a backend deploy.
+    staleTime: Infinity,
   });
 }
 

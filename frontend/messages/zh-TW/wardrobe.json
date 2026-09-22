@@ -173,16 +173,26 @@
       "washed": "單品已標記為已洗"
     },
     "brand": "品牌",
+    "colors": "其他顏色",
+    "fit": "版型",
+    "formality": "正式程度",
+    "material": "材質",
     "name": "名稱",
+    "noValue": "未設定",
     "notes": "備註",
+    "pattern": "圖案",
     "placeholders": {
       "additionalNotes": "備註...",
       "brandName": "品牌名稱",
       "itemName": "單品名稱",
       "selectColor": "選擇顏色",
+      "subtype": "例如：飛行外套、卡其褲",
       "washIntervalDefault": "預設：{count}"
     },
     "primaryColor": "主色",
+    "season": "季節",
+    "style": "風格",
+    "subtype": "子類型",
     "titles": {
       "analysisInProgress": "分析進行中...",
       "deleteImage": "刪除圖片",

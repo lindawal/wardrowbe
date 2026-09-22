@@ -92,6 +92,31 @@ async def clear_ai_started_at(ctx: dict, item_id: str) -> None:
         pass
 
 
+# Tags stored both as a column (what suggestion scoring reads) and in the tags JSON
+# (what the item view shows).
+TAG_COLUMNS = ("colors", "pattern", "material", "style", "season", "formality")
+# Tags that exist only in the tags JSON.
+JSON_ONLY_TAGS = ("fit", "occasion", "brand", "condition", "features")
+
+
+def _merge_tags_json(ai_json: dict[str, Any], item: ClothingItem) -> dict[str, Any]:
+    """The tags JSON for an item that has just been (re-)analysed.
+
+    Built after the column rules in tag_item_image, which keep any tag already
+    set, so the JSON shows what scoring actually uses. Overwriting it with the
+    fresh AI result instead would show the AI's values for tags the columns
+    kept, and would drop a user-set fit, which has no column to survive in.
+    """
+    existing = item.tags or {}
+    merged = dict(ai_json)
+    for column in TAG_COLUMNS:
+        merged[column] = getattr(item, column)
+    for key in JSON_ONLY_TAGS:
+        if existing.get(key) not in (None, "", [], {}):
+            merged[key] = existing[key]
+    return merged
+
+
 def tags_to_item_fields(tags: ClothingTags, raw_response: str | None = None) -> dict[str, Any]:
     """Convert ClothingTags to item database fields."""
     # Build the tags JSONB object for frontend display
@@ -264,13 +289,14 @@ async def tag_item_image(ctx: dict, item_id: str, image_path: str) -> dict[str, 
             was_pending = item.tagging_status == TaggingStatus.pending
 
             for field, value in ai_fields.items():
-                # Always update AI metadata fields (including tags JSONB and description)
+                if field == "tags":
+                    continue  # rebuilt below, once the column rules have run
+                # Always update AI metadata fields
                 if field in (
                     "ai_processed",
                     "ai_confidence",
                     "status",
                     "ai_raw_response",
-                    "tags",
                     "ai_description",
                 ):
                     setattr(item, field, value)
@@ -298,6 +324,7 @@ async def tag_item_image(ctx: dict, item_id: str, image_path: str) -> dict[str, 
                     ):
                         setattr(item, field, value)
 
+            item.tags = _merge_tags_json(ai_fields["tags"], item)
             item.ai_completed_at = datetime.now(UTC)
 
             await db.commit()

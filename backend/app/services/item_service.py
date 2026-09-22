@@ -233,20 +233,18 @@ class ItemService:
 
     async def update(self, item: ClothingItem, item_data: ItemUpdate) -> ClothingItem:
         update_data = item_data.model_dump(exclude_unset=True)
-
-        if "tags" in update_data and update_data["tags"]:
-            tags = update_data["tags"]
-            if isinstance(tags, dict):
-                update_data["tags"] = {k: v for k, v in tags.items() if v is not None}
-            else:
-                update_data["tags"] = tags.model_dump(exclude_none=True)
+        # exclude_unset reaches into the nested ItemTags too, so this holds exactly
+        # the tags the caller sent; an explicit None clears that tag.
+        tag_data = update_data.pop("tags", None) or {}
 
         for field, value in update_data.items():
             setattr(item, field, value)
 
-        if "tags" in update_data:
+        if tag_data:
+            # Merged, not replaced: the item view renders this JSON, so replacing
+            # it with a partial dict would blank every tag the caller did not send.
+            item.tags = {**(item.tags or {}), **tag_data}
             attributes.flag_modified(item, "tags")
-            tag_data = update_data["tags"] or {}
             for column in (
                 "colors",
                 "primary_color",

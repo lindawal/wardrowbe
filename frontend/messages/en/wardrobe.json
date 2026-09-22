@@ -173,16 +173,26 @@
       "washed": "Item marked as washed"
     },
     "brand": "Brand",
+    "colors": "Other colors",
+    "fit": "Fit",
+    "formality": "Formality",
+    "material": "Material",
     "name": "Name",
+    "noValue": "Not set",
     "notes": "Notes",
+    "pattern": "Pattern",
     "placeholders": {
       "additionalNotes": "Additional notes...",
       "brandName": "Brand name",
       "itemName": "Item name",
       "selectColor": "Select color",
+      "subtype": "e.g. bomber, chinos",
       "washIntervalDefault": "Default: {count}"
     },
     "primaryColor": "Primary Color",
+    "season": "Season",
+    "style": "Style",
+    "subtype": "Subtype",
     "titles": {
       "analysisInProgress": "Analysis in progress...",
       "deleteImage": "Delete image",

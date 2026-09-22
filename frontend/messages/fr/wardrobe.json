@@ -173,16 +173,26 @@
       "washed": "Article marqué comme lavé"
     },
     "brand": "Marque",
+    "colors": "Autres couleurs",
+    "fit": "Coupe",
+    "formality": "Formalité",
+    "material": "Matière",
     "name": "Nom",
+    "noValue": "Non défini",
     "notes": "Notes",
+    "pattern": "Motif",
     "placeholders": {
       "additionalNotes": "Notes supplémentaires...",
       "brandName": "Nom de la marque",
       "itemName": "Nom de l'article",
       "selectColor": "Sélectionner une couleur",
+      "subtype": "ex. bomber, chino",
       "washIntervalDefault": "Par défaut : {count}"
     },
     "primaryColor": "Couleur principale",
+    "season": "Saison",
+    "style": "Style",
+    "subtype": "Sous-type",
     "titles": {
       "analysisInProgress": "Analyse en cours...",
       "deleteImage": "Supprimer l'image",

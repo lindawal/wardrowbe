@@ -173,16 +173,26 @@
       "washed": "Capo segnato come lavato"
     },
     "brand": "Marca",
+    "colors": "Altri colori",
+    "fit": "Vestibilità",
+    "formality": "Formalità",
+    "material": "Materiale",
     "name": "Nome",
+    "noValue": "Non impostato",
     "notes": "Note",
+    "pattern": "Fantasia",
     "placeholders": {
       "additionalNotes": "Note aggiuntive...",
       "brandName": "Nome marca",
       "itemName": "Nome capo",
       "selectColor": "Seleziona colore",
+      "subtype": "es. bomber, chino",
       "washIntervalDefault": "Predefinito: {count}"
     },
     "primaryColor": "Colore principale",
+    "season": "Stagione",
+    "style": "Stile",
+    "subtype": "Sottotipo",
     "titles": {
       "analysisInProgress": "Analisi in corso...",
       "deleteImage": "Elimina immagine",

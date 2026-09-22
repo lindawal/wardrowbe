@@ -40,6 +40,18 @@ class ItemTags(BaseModel):
     fit: str | None = None
 
 
+class TagOptionsResponse(BaseModel):
+    """Tag values the AI tagger can assign, offered by the item editor."""
+
+    colors: list[str]
+    patterns: list[str]
+    materials: list[str]
+    formality: list[str]
+    styles: list[str]
+    seasons: list[str]
+    fits: list[str]
+
+
 class ItemBase(BaseModel):
     type: str = Field(default="unknown", max_length=50)  # Default to unknown, AI will detect
     subtype: str | None = Field(None, max_length=50)

@@ -60,10 +60,12 @@ import {
 import { Progress } from '@/components/ui/progress';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { toast } from 'sonner';
-import { useUpdateItem, useDeleteItem, useReanalyzeItem, useRotateImage, useRemoveBackground, useRestoreOriginal, useReplaceItemImage, useLogWash, useWashHistory, useItemWearStats, useItemWearHistory, useAddItemImage, useDeleteItemImage, useSetPrimaryImage } from '@/lib/hooks/use-items';
+import { useUpdateItem, useDeleteItem, useReanalyzeItem, useRotateImage, useRemoveBackground, useRestoreOriginal, useReplaceItemImage, useLogWash, useWashHistory, useItemWearStats, useItemWearHistory, useAddItemImage, useDeleteItemImage, useSetPrimaryImage, useTagOptions } from '@/lib/hooks/use-items';
 import { Item } from '@/lib/types';
 import { useClothingTypes, useClothingColors } from '@/lib/hooks/use-translated-constants';
 import { ColorEyedropper } from '@/components/color-eyedropper';
+import { ItemTagEditor } from '@/components/item-tag-editor';
+import { type EditableTags, changedTags, editableTagsFromItem, withCurrent } from '@/lib/item-tags';
 import { GeneratePairingsDialog } from '@/components/generate-pairings-dialog';
 import { useFeatures } from '@/lib/hooks/use-features';
 import { WASH_ENABLED } from '@/lib/features';
@@ -98,6 +100,10 @@ export function ItemDetailDialog({ item, open, onOpenChange }: ItemDetailDialogP
     favorite: false,
     wash_interval: undefined as number | undefined,
   });
+  // Filled when editing starts, from the item as it is then, so a cancelled
+  // edit is not carried into the next one.
+  const [editTags, setEditTags] = useState<EditableTags | null>(null);
+  const { data: tagOptions, isError: tagOptionsFailed } = useTagOptions();
   const [showWashHistory, setShowWashHistory] = useState(false);
   const [showWearHistory, setShowWearHistory] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
@@ -152,6 +158,7 @@ export function ItemDetailDialog({ item, open, onOpenChange }: ItemDetailDialogP
           notes: editForm.notes || undefined,
           favorite: editForm.favorite,
           wash_interval: editForm.wash_interval,
+          tags: editTags ? changedTags(editableTagsFromItem(item), editTags) : undefined,
         },
       });
       setIsEditing(false);
@@ -261,8 +268,17 @@ export function ItemDetailDialog({ item, open, onOpenChange }: ItemDetailDialogP
   const colorInfo = clothingColors.find((c) => c.value === item.primary_color);
   const typeInfo = clothingTypes.find((type) => type.value === item.type);
 
-  // AI-generated tags
-  const tags = item.tags || {};
+  // Tags as suggestion scoring sees them (columns first, see editableTagsFromItem),
+  // plus the JSON-only extras such as occasion and features.
+  const tags = { ...(item.tags || {}), ...editableTagsFromItem(item) };
+  const describeColor = (value: string) => {
+    const known = clothingColors.find((c) => c.value === value);
+    return known ? { name: known.name, hex: known.hex } : { name: value };
+  };
+  // The tagger's colors once loaded, so the editor offers what the AI can assign.
+  const primaryColorChoices = tagOptions
+    ? withCurrent(tagOptions.colors, editForm.primary_color || null)
+    : clothingColors.map((c) => c.value);
   const hasAiTags = !!(tags.colors?.length || tags.pattern || tags.material ||
                    tags.style?.length || tags.season?.length || tags.formality || tags.fit ||
                    tags.occasion?.length || tags.condition || tags.features?.length);
@@ -420,7 +436,10 @@ export function ItemDetailDialog({ item, open, onOpenChange }: ItemDetailDialogP
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => setIsEditing(!isEditing)}
+                  onClick={() => {
+                    if (!isEditing) setEditTags(editableTagsFromItem(item));
+                    setIsEditing(!isEditing);
+                  }}
                   title={isEditing ? t('actions.cancelEditing') : t('actions.editItem')}
                 >
                   {isEditing ? (
@@ -601,6 +620,14 @@ export function ItemDetailDialog({ item, open, onOpenChange }: ItemDetailDialogP
                     </Select>
                   </div>
                   <div className="space-y-2">
+                    <Label>{t('subtype')}</Label>
+                    <Input
+                      value={editForm.subtype}
+                      onChange={(e) => setEditForm({ ...editForm, subtype: e.target.value })}
+                      placeholder={t('placeholders.subtype')}
+                    />
+                  </div>
+                  <div className="space-y-2">
                     <Label>{t('brand')}</Label>
                     <Input
                       value={editForm.brand}
@@ -619,17 +646,20 @@ export function ItemDetailDialog({ item, open, onOpenChange }: ItemDetailDialogP
                           <SelectValue placeholder={t('placeholders.selectColor')} />
                         </SelectTrigger>
                         <SelectContent>
-                          {clothingColors.map((c) => (
-                            <SelectItem key={c.value} value={c.value}>
-                              <div className="flex items-center gap-2">
-                                <div
-                                  className="w-3 h-3 rounded-full border"
-                                  style={{ backgroundColor: c.hex }}
-                                />
-                                {c.name}
-                              </div>
-                            </SelectItem>
-                          ))}
+                          {primaryColorChoices.map((value) => {
+                            const { name, hex } = describeColor(value);
+                            return (
+                              <SelectItem key={value} value={value}>
+                                <div className="flex items-center gap-2">
+                                  <div
+                                    className="w-3 h-3 rounded-full border"
+                                    style={{ backgroundColor: hex }}
+                                  />
+                                  {name}
+                                </div>
+                              </SelectItem>
+                            );
+                          })}
                         </SelectContent>
                       </Select>
                       <ColorEyedropper
@@ -638,6 +668,17 @@ export function ItemDetailDialog({ item, open, onOpenChange }: ItemDetailDialogP
                       />
                     </div>
                   </div>
+                  {editTags && tagOptions && (
+                    <ItemTagEditor
+                      value={editTags}
+                      onChange={setEditTags}
+                      options={tagOptions}
+                      describeColor={describeColor}
+                    />
+                  )}
+                  {editTags && !tagOptions && !tagOptionsFailed && (
+                    <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                  )}
                   <div className="space-y-2">
                     <Label>{t('notes')}</Label>
                     <Textarea

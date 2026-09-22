@@ -173,16 +173,26 @@
       "washed": "Stück als gewaschen markiert"
     },
     "brand": "Marke",
+    "colors": "Weitere Farben",
+    "fit": "Passform",
+    "formality": "Formalität",
+    "material": "Material",
     "name": "Name",
+    "noValue": "Keine Angabe",
     "notes": "Notizen",
+    "pattern": "Muster",
     "placeholders": {
       "additionalNotes": "Zusätzliche Notizen...",
       "brandName": "Markenname",
       "itemName": "Name des Stücks",
       "selectColor": "Farbe auswählen",
+      "subtype": "z. B. Bomber, Chinos",
       "washIntervalDefault": "Standard: {count}"
     },
     "primaryColor": "Hauptfarbe",
+    "season": "Saison",
+    "style": "Stil",
+    "subtype": "Untertyp",
     "titles": {
       "analysisInProgress": "Analyse läuft...",
       "deleteImage": "Bild löschen",

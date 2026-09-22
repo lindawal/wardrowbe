@@ -173,16 +173,26 @@
       "washed": "洗濯済みにしました"
     },
     "brand": "ブランド",
+    "colors": "その他の色",
+    "fit": "シルエット",
+    "formality": "フォーマル度",
+    "material": "素材",
     "name": "名前",
+    "noValue": "未設定",
     "notes": "メモ",
+    "pattern": "柄",
     "placeholders": {
       "additionalNotes": "メモ...",
       "brandName": "ブランド名",
       "itemName": "アイテム名",
       "selectColor": "色を選択",
+      "subtype": "例：ボンバー、チノ",
       "washIntervalDefault": "デフォルト：{count}"
     },
     "primaryColor": "メインカラー",
+    "season": "シーズン",
+    "style": "スタイル",
+    "subtype": "サブタイプ",
     "titles": {
       "analysisInProgress": "分析中...",
       "deleteImage": "画像を削除",

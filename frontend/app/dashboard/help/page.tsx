@@ -234,9 +234,10 @@ export default function HelpPage() {
 
           <H3>Tags von Hand ändern</H3>
           <p>
-            Korrigierst du Typ, Untertyp oder Hauptfarbe, gilt das Teil als „manuell getaggt“. Diese Korrektur
-            bleibt erhalten, auch wenn du später neu analysieren lässt. Die übrigen Tags lassen sich in der App
-            nicht ändern, siehe <a href="#tags" className="text-primary underline-offset-4 hover:underline">Tags der Bildanalyse</a>.
+            Im Bearbeiten-Dialog eines Teils kannst du alle Tags ändern, siehe{' '}
+            <a href="#tags" className="text-primary underline-offset-4 hover:underline">Tags der Bildanalyse</a>. Das Teil
+            gilt dann als „manuell getaggt“, und deine Korrekturen bleiben erhalten, auch wenn du später neu
+            analysieren lässt.
           </p>
 
           <H3>„Erneut mit KI analysieren“</H3>
@@ -252,11 +253,15 @@ export default function HelpPage() {
           <p>Bei einer neuen Analyse gilt:</p>
           <List>
             <li>
-              <strong>Immer neu:</strong> Beschreibung und die Tag-Übersicht.
+              <strong>Immer neu:</strong> die Beschreibung.
             </li>
             <li>
-              <strong>Nur wenn leer:</strong> Typ, Farben, Muster, Material, Stil, Formalität, Saison. Von dir
-              korrigierte Werte bleiben also stehen.
+              <strong>Nur wenn leer:</strong> alle Tags. Von dir gesetzte Werte bleiben also stehen, in der Anzeige
+              wie in den Vorschlägen.
+            </li>
+            <li>
+              <strong>Einen Tag neu bestimmen lassen:</strong> im Bearbeiten-Dialog auf „Keine Angabe“ setzen,
+              speichern, dann neu analysieren.
             </li>
           </List>
 
@@ -273,9 +278,11 @@ export default function HelpPage() {
             </p>
             <p>
               Gespeichert wird doppelt: als Spalten (<C>type</C>, <C>primary_color</C>, …) und als JSON in{' '}
-              <C>tags</C>. Manuelle Änderungen per <C>PATCH /items/{'{id}'}</C> setzen <C>tagged_by = manual</C>. Die
-              Überschreib-Regeln stehen in <C>tagging.py</C> direkt nach dem Aufruf von{' '}
-              <C>analyze_image</C>.
+              <C>tags</C>. Die Vorschläge rechnen mit den Spalten; die Detailansicht und der Editor zeigen deshalb
+              ebenfalls die Spalten und nehmen aus dem JSON nur die Passform, die keine Spalte hat. Manuelle
+              Änderungen per <C>PATCH /items/{'{id}'}</C> setzen <C>tagged_by = manual</C>. Die Überschreib-Regeln
+              stehen in <C>tag_item_image</C>; <C>_merge_tags_json</C> baut das JSON danach aus den Spalten auf,
+              damit beide nie auseinanderlaufen.
             </p>
             <p>
               „Erneut analysieren“ ist <C>POST /items/{'{id}'}/analyze</C>. Die Wartezeit nach einem Fehler steuert{' '}
@@ -324,22 +331,20 @@ export default function HelpPage() {
             selbst eintragen.
           </p>
 
-          <H3>Was du selbst ändern kannst</H3>
-          <List>
-            <li>
-              <strong>In der App änderbar:</strong> Name, Typ, Untertyp, Hauptfarbe, Marke, Notizen, Favorit,
-              Waschintervall.
-            </li>
-            <li>
-              <strong>Nicht änderbar:</strong> Formalität, Muster, Material, Stil, Saison, Passform und weitere
-              Farben. Auch „Erneut mit KI analysieren“ hilft hier nur bei leeren Feldern, einen vorhandenen Wert
-              überschreibt es nicht.
-            </li>
-          </List>
+          <H3>Tags selbst ändern</H3>
           <p>
-            Eine falsch erkannte Formalität wirkt sich direkt auf die Vorschläge aus, siehe{' '}
-            <a href="#anlass" className="text-primary underline-offset-4 hover:underline">Anlass</a>. Ändern lässt sie
-            sich derzeit nur direkt in der Datenbank.
+            Im Bearbeiten-Dialog eines Teils (Stift-Symbol) lassen sich Untertyp, Hauptfarbe, Formalität, Muster,
+            Material, Passform, weitere Farben, Stil und Saison ändern. Angeboten werden genau die Werte aus der
+            Tabelle oben, also dieselben, die auch die KI vergeben kann. „Keine Angabe“ leert ein Feld.
+          </p>
+          <p>
+            Das lohnt sich vor allem bei der Formalität: Eine falsch erkannte Formalität schiebt ein Teil bei manchen
+            Anlässen weit nach hinten, siehe{' '}
+            <a href="#anlass" className="text-primary underline-offset-4 hover:underline">Anlass</a>.
+          </p>
+          <p>
+            Hatte ein Teil schon einen Wert außerhalb dieser Liste, etwa eine früher gewählte Farbe Khaki, bleibt er
+            sichtbar und ausgewählt, bis du ihn änderst.
           </p>
 
           <Tech>
@@ -355,17 +360,12 @@ export default function HelpPage() {
               (<C>compute_tag_completeness</C>). Die Anzeige „sicher zu … %“ kommt dagegen aus den
               Token-Wahrscheinlichkeiten und erscheint nur, wenn das Modell sie liefert.
             </p>
-            <p>Formalität eines Teils in der Datenbank ändern, Spalte und Anzeige zugleich:</p>
-            <Pre>{`SELECT id, name, type, formality FROM clothing_items WHERE name ILIKE '%blazer%';
-
-UPDATE clothing_items
-SET formality = 'business-casual',
-    tags = jsonb_set(coalesce(tags, '{}'::jsonb), '{formality}', '"business-casual"')
-WHERE id = 'ID-DES-TEILS';`}</Pre>
             <p>
-              Nicht über <C>PATCH /api/v1/items/{'{id}'}</C> mit <C>tags</C>: Das ersetzt das ganze Tag-Feld durch
-              das Geschickte und setzt dabei Farben, Stil und Saison auf leer, wenn sie fehlen (
-              <C>ItemService.update</C> in <C>backend/app/services/item_service.py</C>).
+              Der Editor holt die Werte von <C>GET /api/v1/items/tag-options</C>, das direkt die <C>VALID_*</C>-Listen
+              ausliefert; im Frontend gibt es davon keine eigene Kopie, die veralten könnte. Gespeichert wird mit{' '}
+              <C>PATCH /api/v1/items/{'{id}'}</C> und nur den geänderten Tags. <C>ItemService.update</C> mischt sie in
+              das bestehende JSON und schreibt sie in die Spalten; <C>null</C> leert einen Tag. Editor und
+              Hilfsfunktionen: <C>frontend/components/item-tag-editor.tsx</C>, <C>frontend/lib/item-tags.ts</C>.
             </p>
           </Tech>
         </Section>
@@ -785,14 +785,14 @@ docker compose exec ollama ollama ps`}</Pre>
               Ebenso Hoodie plus Jacke.
             </li>
             <li>
-              <strong>Formalität, Muster, Material, Stil, Saison und Passform lassen sich nicht bearbeiten.</strong>{' '}
-              Die App bietet dafür kein Feld, und neu analysieren überschreibt vorhandene Werte nicht.
+              <strong>Einige Farblisten weichen noch von der KI ab.</strong> In den Einstellungen (Lieblings- und
+              Meidefarben), im Kleiderschrank-Filter und beim Hinzufügen gibt es weiter Farben wie Khaki, Petrol,
+              Anthrazit, Dunkelbraun und Olivgrün, die die KI nie vergibt. Eine solche Lieblingsfarbe passt nur auf
+              Teile, die du selbst so markiert hast. Der Bearbeiten-Dialog bietet nur die KI-Farben an.
             </li>
             <li>
-              <strong>Die Auswahllisten der App passen nicht zu den KI-Werten.</strong> Die App kennt Farben wie
-              Khaki, Petrol, Anthrazit, Dunkelbraun und Olivgrün, die die KI nie vergibt. Hellblau, Gold und Silber
-              vergibt die KI, sie fehlen aber in der App. Von den 12 KI-Stilen haben nur 3 einen deutschen Namen,
-              und „ganzjährig“ fehlt bei den Saisons.
+              <strong>Tag-Werte erscheinen englisch.</strong> Muster, Material, Stil, Saison, Formalität und
+              Passform werden in der Ansicht und im Editor so gezeigt, wie sie gespeichert sind.
             </li>
             <li>
               <strong>Den Typ Anzug</strong> kannst nur du vergeben, nicht die KI. Er hat keine Rolle und deckt

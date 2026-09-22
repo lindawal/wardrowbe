@@ -173,16 +173,26 @@
       "washed": "세탁 완료로 표시되었어요"
     },
     "brand": "브랜드",
+    "colors": "기타 색상",
+    "fit": "핏",
+    "formality": "격식",
+    "material": "소재",
     "name": "이름",
+    "noValue": "설정 안 함",
     "notes": "메모",
+    "pattern": "패턴",
     "placeholders": {
       "additionalNotes": "추가 메모...",
       "brandName": "브랜드명",
       "itemName": "아이템 이름",
       "selectColor": "색상 선택",
+      "subtype": "예: 봄버, 치노",
       "washIntervalDefault": "기본값: {count}"
     },
     "primaryColor": "메인 색상",
+    "season": "시즌",
+    "style": "스타일",
+    "subtype": "세부 유형",
     "titles": {
       "analysisInProgress": "분석 진행 중...",
       "deleteImage": "이미지 삭제",

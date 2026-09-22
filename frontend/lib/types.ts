@@ -16,6 +16,30 @@ export interface ItemTags {
   logprobs_confidence?: number;
 }
 
+/** Tag values the AI tagger can assign; GET /items/tag-options. */
+export interface TagOptions {
+  colors: string[];
+  patterns: string[];
+  materials: string[];
+  formality: string[];
+  styles: string[];
+  seasons: string[];
+  fits: string[];
+}
+
+/** Tag changes for PATCH /items/{id}: merged server-side, null clears a tag. */
+export interface ItemTagsUpdate {
+  colors?: string[];
+  pattern?: string | null;
+  material?: string | null;
+  style?: string[];
+  season?: string[];
+  formality?: string | null;
+  fit?: string | null;
+}
+
+export type ItemUpdate = Omit<Partial<Item>, 'tags'> & { tags?: ItemTagsUpdate };
+
 export interface Item {
   id: string;
   user_id: string;
@@ -37,6 +61,13 @@ export interface Item {
   tags: ItemTags;
   colors: string[];
   primary_color?: string;
+  // Tag columns: what suggestion scoring reads. The tags JSON above is the same
+  // data for display, plus fit, which has no column.
+  pattern?: string | null;
+  material?: string | null;
+  style?: string[];
+  season?: string[];
+  formality?: string | null;
   status: 'processing' | 'ready' | 'error' | 'archived';
   ai_processed: boolean;
   ai_confidence?: number;
@@ -169,6 +200,7 @@ export const CLOTHING_COLORS = [
   { name: 'Black', value: 'black', hex: '#1a1a1a' },
   { name: 'Charcoal', value: 'charcoal', hex: '#36454F' },
   { name: 'Gray', value: 'gray', hex: '#808080' },
+  { name: 'Silver', value: 'silver', hex: '#BFC1C2' },
   { name: 'White', value: 'white', hex: '#FAFAFA' },
   { name: 'Cream', value: 'cream', hex: '#F5F5DC' },
   { name: 'Beige', value: 'beige', hex: '#D4C4A8' },
@@ -180,6 +212,7 @@ export const CLOTHING_COLORS = [
   { name: 'Teal', value: 'teal', hex: '#367588' },
   { name: 'Navy', value: 'navy', hex: '#1B2A4A' },
   { name: 'Blue', value: 'blue', hex: '#4A7DB8' },
+  { name: 'Light Blue', value: 'light-blue', hex: '#9CC3E6' },
   { name: 'Brown', value: 'brown', hex: '#8B5A3C' },
   { name: 'Dark Brown', value: 'dark-brown', hex: '#5C4033' },
   { name: 'Burgundy', value: 'burgundy', hex: '#722F37' },
@@ -187,6 +220,7 @@ export const CLOTHING_COLORS = [
   { name: 'Pink', value: 'pink', hex: '#E8A0B0' },
   { name: 'Purple', value: 'purple', hex: '#6B5B7A' },
   { name: 'Yellow', value: 'yellow', hex: '#D4A84B' },
+  { name: 'Gold', value: 'gold', hex: '#C9A227' },
   { name: 'Orange', value: 'orange', hex: '#D2691E' },
 ] as const;
 

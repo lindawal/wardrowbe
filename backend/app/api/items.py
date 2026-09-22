@@ -45,9 +45,20 @@ from app.schemas.item import (
     RemoveBackgroundRequest,
     ReorderImagesRequest,
     TaggingProgressResponse,
+    TagOptionsResponse,
     WashHistoryResponse,
 )
+from app.services.ai_service import (
+    VALID_COLORS,
+    VALID_FIT,
+    VALID_FORMALITY,
+    VALID_MATERIALS,
+    VALID_PATTERNS,
+    VALID_SEASONS,
+    VALID_STYLES,
+)
 from app.services.image_service import ImageService
+from app.services.item_scorer import FORMALITY_ORDER
 from app.services.item_service import ItemService
 from app.utils.auth import get_current_user
 from app.utils.signed_urls import sign_image_url
@@ -1000,6 +1011,29 @@ async def get_item_types(
 ) -> list[dict]:
     item_service = ItemService(db)
     return await item_service.get_item_types(current_user.id)
+
+
+_SEASON_ORDER = ("spring", "summer", "fall", "winter", "all-season")
+
+
+@router.get("/tag-options", response_model=TagOptionsResponse)
+async def get_tag_options(
+    current_user: Annotated[User, Depends(get_current_user)],
+) -> TagOptionsResponse:
+    """Values the AI tagger can assign, for the item editor.
+
+    Served from the same sets the tagger validates against, so the editor can
+    neither offer a value the tagger would never produce nor miss one it can.
+    """
+    return TagOptionsResponse(
+        colors=sorted(VALID_COLORS),
+        patterns=sorted(VALID_PATTERNS),
+        materials=sorted(VALID_MATERIALS),
+        formality=sorted(VALID_FORMALITY, key=FORMALITY_ORDER.index),
+        styles=sorted(VALID_STYLES),
+        seasons=sorted(VALID_SEASONS, key=_SEASON_ORDER.index),
+        fits=sorted(VALID_FIT),
+    )
 
 
 @router.get("/colors")
