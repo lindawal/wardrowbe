@@ -9,7 +9,9 @@ const SCAN_DIRS = ['app', 'components', 'lib'];
 
 // components/ui holds unmodified shadcn primitives; their strings are structural, not product copy.
 const SKIP_DIRS = new Set(['node_modules', '.next', 'components/ui']);
-const SKIP_FILES = new Set(['app/layout.tsx', 'app/providers.tsx']);
+// The help page is German-only by the instance owner's decision: it documents this
+// deployment for its developer, not product copy meant for translation.
+const SKIP_FILES = new Set(['app/layout.tsx', 'app/providers.tsx', 'app/dashboard/help/page.tsx']);
 
 const TEXT_ATTRS = new Set(['placeholder', 'title', 'aria-label', 'alt', 'label', 'aria-description']);
 const TOAST_METHODS = new Set(['success', 'error', 'info', 'warning', 'message', 'loading']);

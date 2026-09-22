@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { X, Home, Shirt, Sparkles, Layers, LayoutGrid, BookMarked, History, BarChart3, Brain, Settings, Users, Bell, HeartHandshake } from 'lucide-react';
+import { X, Home, Shirt, Sparkles, Layers, LayoutGrid, BookMarked, History, BarChart3, Brain, Settings, HelpCircle, Users, Bell, HeartHandshake } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { FAMILY_ENABLED } from '@/lib/features';
 import { useTranslations } from 'next-intl';
@@ -34,6 +34,8 @@ export function MobileSidebar({ open, onClose }: MobileSidebarProps) {
     ...(FAMILY_ENABLED ? [{ name: t('family'), href: '/dashboard/family', icon: Users }] : []),
     { name: t('notifications'), href: '/dashboard/notifications', icon: Bell },
     { name: t('settings'), href: '/dashboard/settings', icon: Settings },
+    // Untranslated on purpose: the help page it links to is German-only.
+    { name: 'Hilfe', href: '/dashboard/help', icon: HelpCircle },
   ];
 
   // Close on escape key

@@ -13,6 +13,7 @@ import {
   BarChart3,
   Brain,
   Settings,
+  HelpCircle,
   Users,
   Bell,
   HeartHandshake,
@@ -42,6 +43,8 @@ export function Sidebar() {
     ...(FAMILY_ENABLED ? [{ name: t('family'), href: '/dashboard/family', icon: Users }] : []),
     { name: t('notifications'), href: '/dashboard/notifications', icon: Bell },
     { name: t('settings'), href: '/dashboard/settings', icon: Settings },
+    // Untranslated on purpose: the help page it links to is German-only.
+    { name: 'Hilfe', href: '/dashboard/help', icon: HelpCircle },
   ];
 
   return (
