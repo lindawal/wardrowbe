@@ -20,7 +20,7 @@ class TestTagParsing:
         service = AIService()
         response = """
         {
-            "type": "shirt",
+            "type": "sweater",
             "primary_color": "blue",
             "colors": ["blue", "white"],
             "pattern": "striped",
@@ -30,7 +30,7 @@ class TestTagParsing:
         }
         """
         tags = service._parse_tags_from_response(response)
-        assert tags.type == "shirt"
+        assert tags.type == "sweater"
         assert tags.primary_color == "blue"
         assert tags.colors == ["blue", "white"]
         assert tags.pattern == "striped"
@@ -76,7 +76,7 @@ class TestTagParsing:
         service = AIService()
         response = """
         {
-            "type": "shirt",
+            "type": "sweater",
             "primary_color": "chartreuse",
             "colors": ["blue", "invalid_color", "black"]
         }
@@ -93,7 +93,7 @@ class TestTagParsing:
         service = AIService()
         response = """
         {
-            "type": "shirt",
+            "type": "sweater",
             "primary_color": "grey"
         }
         """
@@ -113,7 +113,7 @@ class TestTagParsing:
         service = AIService()
         response = """
         {
-            "type": "shirt",
+            "type": "sweater",
             "confidence": 1.5
         }
         """
@@ -126,7 +126,7 @@ class TestTagParsing:
         service = AIService()
         response = """
         {
-            "type": "blazer",
+            "type": "jacket",
             "formality": "business-casual"
         }
         """
@@ -138,7 +138,7 @@ class TestTagParsing:
         service = AIService()
         response = """
         {
-            "type": "shirt",
+            "type": "sweater",
             "formality": "ultra-super-formal"
         }
         """
@@ -275,7 +275,7 @@ class TestLogprobsRejection:
     description call succeeded silently, giving no indication of the failure).
     """
 
-    _TAGS_CONTENT = '{"type": "shirt", "primary_color": "blue", "colors": ["blue"]}'
+    _TAGS_CONTENT = '{"type": "sweater", "primary_color": "blue", "colors": ["blue"]}'
 
     @staticmethod
     def _logprobs_rejected_response() -> httpx.Response:

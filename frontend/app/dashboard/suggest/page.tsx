@@ -946,7 +946,6 @@ function SuggestContent() {
           <div className="flex gap-1.5 overflow-x-auto py-1 scrollbar-none">
             {[
               { label: t('baseItem.all'), value: undefined },
-              { label: 'Shirt', value: 'shirt' },
               { label: 'T-Shirt', value: 't-shirt' },
               { label: 'Pants', value: 'pants' },
               { label: 'Jeans', value: 'jeans' },

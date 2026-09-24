@@ -27,7 +27,7 @@ describe('canonicalItemOrder', () => {
   });
 
   it('puts full_body before base_top', () => {
-    const items = [makeItem('1', 'shirt'), makeItem('2', 'dress')];
+    const items = [makeItem('1', 't-shirt'), makeItem('2', 'dress')];
     const sorted = canonicalItemOrder(items);
     expect(sorted[0].type).toBe('dress');
   });
@@ -43,14 +43,14 @@ describe('canonicalItemOrder', () => {
   });
 
   it('puts unknown types at the end', () => {
-    const items = [makeItem('1', 'unknown-thing'), makeItem('2', 'shirt')];
+    const items = [makeItem('1', 'unknown-thing'), makeItem('2', 't-shirt')];
     const sorted = canonicalItemOrder(items);
-    expect(sorted[0].type).toBe('shirt');
+    expect(sorted[0].type).toBe('t-shirt');
     expect(sorted[1].type).toBe('unknown-thing');
   });
 
   it('ITEM_ROLE covers core wardrobe types', () => {
-    const coreTypes = ['shirt', 't-shirt', 'pants', 'jeans', 'dress', 'shoes', 'sneakers', 'jacket'];
+    const coreTypes = ['t-shirt', 'pants', 'jeans', 'dress', 'shoes', 'sneakers', 'jacket'];
     for (const t of coreTypes) {
       expect(ITEM_ROLE[t]).toBeDefined();
     }
@@ -143,7 +143,7 @@ describe('studioReducer', () => {
 
 describe('mergeAiAssist', () => {
   it('adds AI items that fill empty roles', () => {
-    const canvas = [makeItem('1', 'shirt')];
+    const canvas = [makeItem('1', 't-shirt')];
     const aiItems = [makeItem('2', 'jeans'), makeItem('3', 'sneakers')];
     const { merged, skipped } = mergeAiAssist(canvas, aiItems);
     expect(merged).toHaveLength(3);
@@ -151,7 +151,7 @@ describe('mergeAiAssist', () => {
   });
 
   it('skips AI items that conflict with existing roles', () => {
-    const canvas = [makeItem('1', 'shirt')];
+    const canvas = [makeItem('1', 'sweater')];
     const aiItems = [makeItem('2', 't-shirt'), makeItem('3', 'jeans')];
     const { merged, skipped } = mergeAiAssist(canvas, aiItems);
     expect(merged).toHaveLength(2);
@@ -161,8 +161,8 @@ describe('mergeAiAssist', () => {
   });
 
   it('skips items already on canvas', () => {
-    const canvas = [makeItem('1', 'shirt')];
-    const aiItems = [makeItem('1', 'shirt')];
+    const canvas = [makeItem('1', 't-shirt')];
+    const aiItems = [makeItem('1', 't-shirt')];
     const { merged } = mergeAiAssist(canvas, aiItems);
     expect(merged).toHaveLength(1);
   });
@@ -177,9 +177,9 @@ describe('mergeAiAssist', () => {
 
   it('returns canonical order', () => {
     const canvas = [makeItem('1', 'sneakers')];
-    const aiItems = [makeItem('2', 'shirt'), makeItem('3', 'jeans')];
+    const aiItems = [makeItem('2', 't-shirt'), makeItem('3', 'jeans')];
     const { merged } = mergeAiAssist(canvas, aiItems);
-    expect(merged[0].type).toBe('shirt');
+    expect(merged[0].type).toBe('t-shirt');
     expect(merged[1].type).toBe('jeans');
     expect(merged[2].type).toBe('sneakers');
   });

@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 // i18n scan (see scripts/i18n-scan.mjs). Keep it in sync with the code it describes:
 // every file path, default and threshold below was checked against the source.
 
-const STAND = '22.09.2026';
+const STAND = '24.09.2026';
 
 const SECTIONS = [
   { id: 'ueberblick', title: 'Überblick und Aufbau' },
@@ -32,7 +32,7 @@ const TAG_ROWS: string[][] = [
   [
     'Typ',
     'ja',
-    'shirt (Hemd), t-shirt, top, blouse (Bluse), polo, tank-top, sweater (Pullover), hoodie, cardigan (Strickjacke), vest (Weste), jacket (Jacke), blazer, coat (Mantel), pants (Hose), jeans, shorts, skirt (Rock), dress (Kleid), jumpsuit, shoes (Schuhe), sneakers, boots (Stiefel), sandals (Sandalen), socks (Socken), tie (Krawatte), hat (Hut), scarf (Schal), belt (Gürtel), bag (Tasche), accessories',
+    't-shirt, tank-top (Tanktop), blouse (Bluse), sweater (Pullover), blouson, vest (Weste), jacket (Jacke), coat (Mantel), pants (Hose), jeans, shorts, skirt (Rock), dress (Kleid), overall, shoes (Schuhe), sneakers, boots (Stiefel), sandals (Sandalen), socks (Socken), tights, hat (Hut), scarf (Schal), belt (Gürtel)',
   ],
   ['Untertyp', 'nein', 'frei, ohne feste Liste. Beispiele: bomber, chinos, chelsea, turtleneck, maxi'],
   [
@@ -599,22 +599,21 @@ export default function HelpPage() {
           <Table
             head={['Rolle', 'Typen']}
             rows={[
-              ['Oberteil', 'shirt, t-shirt, blouse, polo, tank-top, top, sweater'],
-              ['Zwischenschicht', 'cardigan, vest'],
-              ['Jacke', 'jacket, blazer, coat, hoodie'],
+              ['Oberteil', 't-shirt, tank-top, blouse, sweater'],
+              ['Zwischenschicht', 'blouson, vest'],
+              ['Jacke', 'jacket, coat'],
               ['Unterteil', 'pants, jeans, shorts, skirt'],
-              ['Ganzkörper', 'dress, jumpsuit'],
+              ['Ganzkörper', 'dress, overall'],
               ['Schuhe', 'shoes, sneakers, boots, sandals'],
               ['Socken', 'socks'],
-              ['Krawatte', 'tie'],
-              ['Accessoire', 'hat, scarf, belt, bag, accessories'],
+              ['Accessoire', 'hat, scarf, belt, tights'],
             ]}
           />
           <H3>Bereinigen</H3>
           <List>
             <li>Zweites Teil einer Rolle (etwa zwei Paar Schuhe) → wird entfernt.</li>
             <li>
-              Ein Kleid oder Jumpsuit → <strong>alle</strong> Oberteile und Unterteile werden entfernt, egal an
+              Ein Kleid oder Overall → <strong>alle</strong> Oberteile und Unterteile werden entfernt, egal an
               welcher Stelle das Kleid gewählt wurde.
             </li>
           </List>
@@ -628,7 +627,7 @@ export default function HelpPage() {
             ]}
           />
           <p>
-            Hoodie + Jeans + Sneakers bleibt so, wie es ist: Der Hoodie zählt als Jacke, deckt aber „oben“ ab.
+            Blouson + Jeans + Sneakers bleibt so, wie es ist: Der Blouson zählt als Zwischenschicht, deckt aber „oben“ ab.
           </p>
           <Tech>
             <p>
@@ -779,7 +778,7 @@ docker compose exec ollama ollama ps`}</Pre>
             </li>
             <li>
               <strong>T-Shirt unter Pullover geht nicht.</strong> Beide sind „Oberteil“, eins wird entfernt.
-              Ebenso Hoodie plus Jacke.
+              Ebenso Jacke plus Mantel.
             </li>
             <li>
               <strong>Einige Farblisten weichen noch von der KI ab.</strong> In den Einstellungen (Lieblings- und
@@ -790,11 +789,6 @@ docker compose exec ollama ollama ps`}</Pre>
             <li>
               <strong>Tag-Werte erscheinen englisch.</strong> Muster, Material, Stil, Saison, Formalität und
               Passform werden in der Ansicht und im Editor so gezeigt, wie sie gespeichert sind.
-            </li>
-            <li>
-              <strong>Den Typ Anzug</strong> kannst nur du vergeben, nicht die KI. Er hat keine Rolle und deckt
-              deshalb keinen Körperbereich ab: Ein Outfit mit Anzug bekommt trotzdem ein Oberteil und ein Unterteil
-              ergänzt.
             </li>
             <li>
               <strong>Kombinationen werden nicht ergänzt.</strong> Die Kandidaten sind dort nicht nach Eignung

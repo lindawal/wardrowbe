@@ -15,7 +15,7 @@ def _ids(n):
 def test_removes_duplicate_bottom():
     pants_id, shorts_id, shirt_id, shoes_id = _ids(4)
     item_type_map = {
-        shirt_id: "shirt",
+        shirt_id: "t-shirt",
         pants_id: "pants",
         shorts_id: "shorts",
         shoes_id: "sneakers",
@@ -27,28 +27,28 @@ def test_removes_duplicate_bottom():
 
 
 def test_removes_duplicate_base_top():
-    tshirt_id, polo_id, pants_id = _ids(3)
+    tshirt_id, sweater_id, pants_id = _ids(3)
     item_type_map = {
         tshirt_id: "t-shirt",
-        polo_id: "polo",
+        sweater_id: "sweater",
         pants_id: "jeans",
     }
-    result = deduplicate_by_body_slot([tshirt_id, polo_id, pants_id], item_type_map)
+    result = deduplicate_by_body_slot([tshirt_id, sweater_id, pants_id], item_type_map)
     assert tshirt_id in result
-    assert polo_id not in result
+    assert sweater_id not in result
     assert pants_id in result
 
 
 def test_allows_layering_base_top_plus_mid_layer():
-    tshirt_id, cardigan_id, pants_id = _ids(3)
+    tshirt_id, blouson_id, pants_id = _ids(3)
     item_type_map = {
         tshirt_id: "t-shirt",
-        cardigan_id: "cardigan",
+        blouson_id: "blouson",
         pants_id: "jeans",
     }
-    result = deduplicate_by_body_slot([tshirt_id, cardigan_id, pants_id], item_type_map)
+    result = deduplicate_by_body_slot([tshirt_id, blouson_id, pants_id], item_type_map)
     assert tshirt_id in result
-    assert cardigan_id in result
+    assert blouson_id in result
     assert pants_id in result
     assert len(result) == 3
 
@@ -56,7 +56,7 @@ def test_allows_layering_base_top_plus_mid_layer():
 def test_allows_layering_base_top_plus_outer_layer():
     shirt_id, jacket_id, pants_id = _ids(3)
     item_type_map = {
-        shirt_id: "shirt",
+        shirt_id: "t-shirt",
         jacket_id: "jacket",
         pants_id: "pants",
     }
@@ -75,7 +75,7 @@ def test_full_body_removes_separate_top_and_bottom():
     dress_id, shirt_id, pants_id, shoes_id = _ids(4)
     item_type_map = {
         dress_id: "dress",
-        shirt_id: "shirt",
+        shirt_id: "t-shirt",
         pants_id: "pants",
         shoes_id: "shoes",
     }
@@ -90,7 +90,7 @@ def test_preserves_unknown_types():
     unknown_id, shirt_id, pants_id = _ids(3)
     item_type_map = {
         unknown_id: "something-new",
-        shirt_id: "shirt",
+        shirt_id: "t-shirt",
         pants_id: "pants",
     }
     result = deduplicate_by_body_slot([unknown_id, shirt_id, pants_id], item_type_map)
@@ -102,7 +102,7 @@ def test_preserves_unknown_types():
 def test_no_duplicates_passes_through():
     shirt_id, pants_id, shoes_id, jacket_id = _ids(4)
     item_type_map = {
-        shirt_id: "shirt",
+        shirt_id: "t-shirt",
         pants_id: "pants",
         shoes_id: "sneakers",
         jacket_id: "jacket",
@@ -114,7 +114,7 @@ def test_no_duplicates_passes_through():
 
 def test_socks_get_own_slot():
     socks_id, shoes_id, shirt_id = _ids(3)
-    item_type_map = {socks_id: "socks", shoes_id: "sneakers", shirt_id: "shirt"}
+    item_type_map = {socks_id: "socks", shoes_id: "sneakers", shirt_id: "t-shirt"}
     result = deduplicate_by_body_slot([socks_id, shoes_id, shirt_id], item_type_map)
     assert socks_id in result
     assert shoes_id in result
@@ -127,7 +127,7 @@ def test_multiple_accessories_allowed():
         hat_id: "hat",
         scarf_id: "scarf",
         belt_id: "belt",
-        shirt_id: "shirt",
+        shirt_id: "t-shirt",
     }
     result = deduplicate_by_body_slot([hat_id, scarf_id, belt_id, shirt_id], item_type_map)
     assert len(result) == 4
@@ -135,23 +135,18 @@ def test_multiple_accessories_allowed():
 
 def test_item_role_covers_all_clothing_analysis_types():
     expected_types = {
-        "shirt",
         "t-shirt",
-        "top",
         "pants",
         "jeans",
         "shorts",
         "dress",
-        "jumpsuit",
+        "overall",
         "skirt",
         "jacket",
         "coat",
         "sweater",
-        "hoodie",
-        "blazer",
         "vest",
-        "cardigan",
-        "polo",
+        "blouson",
         "blouse",
         "tank-top",
         "shoes",
@@ -159,7 +154,6 @@ def test_item_role_covers_all_clothing_analysis_types():
         "boots",
         "sandals",
         "socks",
-        "tie",
     }
     for t in expected_types:
         assert t in ITEM_ROLE, f"Missing type '{t}' in ITEM_ROLE"
@@ -180,7 +174,7 @@ def test_canonical_item_order_sorts_by_role():
 
 def test_canonical_order_preserves_position_within_same_role():
     hat1, hat2, shirt_id = _ids(3)
-    item_type_map = {hat1: "hat", hat2: "scarf", shirt_id: "shirt"}
+    item_type_map = {hat1: "hat", hat2: "scarf", shirt_id: "t-shirt"}
     result = canonical_item_order([hat1, hat2, shirt_id], item_type_map)
     assert result[0] == shirt_id
     hat_indices = [i for i, x in enumerate(result) if x in (hat1, hat2)]
@@ -213,7 +207,7 @@ def test_mandatory_item_overrides_earlier_duplicate():
     ai_shirt_id, mandatory_shirt_id, pants_id = _ids(3)
     item_type_map = {
         ai_shirt_id: "t-shirt",
-        mandatory_shirt_id: "polo",
+        mandatory_shirt_id: "sweater",
         pants_id: "jeans",
     }
     result = deduplicate_by_body_slot(
@@ -247,7 +241,7 @@ def test_mandatory_full_body_drops_non_mandatory_separates():
     mandatory_dress_id, shirt_id, pants_id, shoes_id = _ids(4)
     item_type_map = {
         mandatory_dress_id: "dress",
-        shirt_id: "shirt",
+        shirt_id: "t-shirt",
         pants_id: "jeans",
         shoes_id: "boots",
     }
@@ -264,7 +258,7 @@ def test_mandatory_full_body_drops_non_mandatory_separates():
 
 def test_two_mandatory_items_in_one_role_do_not_both_survive():
     shirt_a, shirt_b, pants_id = _ids(3)
-    item_type_map = {shirt_a: "shirt", shirt_b: "polo", pants_id: "jeans"}
+    item_type_map = {shirt_a: "t-shirt", shirt_b: "sweater", pants_id: "jeans"}
     result = deduplicate_by_body_slot(
         [shirt_a, shirt_b, pants_id],
         item_type_map,
@@ -286,7 +280,7 @@ def test_mandatory_full_body_and_mandatory_separates_do_not_coexist():
 
 def test_mandatory_item_absent_from_candidates_does_not_empty_its_role():
     absent_shirt, shirt_id, pants_id = _ids(3)
-    item_type_map = {shirt_id: "shirt", pants_id: "jeans"}
+    item_type_map = {shirt_id: "t-shirt", pants_id: "jeans"}
     result = deduplicate_by_body_slot(
         [shirt_id, pants_id],
         item_type_map,
@@ -304,10 +298,10 @@ def test_missing_upper_when_only_bottom_and_shoes():
     assert _regions("pants", "sneakers") == ["upper"]
 
 
-def test_hoodie_alone_counts_as_upper():
-    # hoodie is an outer_layer, but is worn on its own often enough that
-    # adding a shirt under it would be a wrong correction.
-    assert _regions("hoodie", "jeans", "sneakers") == []
+def test_jacket_alone_counts_as_upper():
+    # jacket is an outer_layer, but is worn on its own often enough that
+    # adding a base top under it would be a wrong correction.
+    assert _regions("jacket", "jeans", "sneakers") == []
 
 
 def test_dress_covers_upper_and_lower():
@@ -315,12 +309,12 @@ def test_dress_covers_upper_and_lower():
 
 
 def test_missing_lower():
-    assert _regions("shirt", "sneakers") == ["lower"]
+    assert _regions("t-shirt", "sneakers") == ["lower"]
 
 
 def test_missing_feet():
-    assert _regions("shirt", "jeans") == ["feet"]
+    assert _regions("t-shirt", "jeans") == ["feet"]
 
 
 def test_accessories_cover_nothing():
-    assert _regions("bag", "belt") == ["upper", "lower", "feet"]
+    assert _regions("hat", "belt") == ["upper", "lower", "feet"]

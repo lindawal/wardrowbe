@@ -29,7 +29,7 @@ Proportion and silhouette:
 - If user body measurements are provided, consider proportions: taller frames carry volume better, broader builds benefit from structured pieces, and item sizes should be compatible with the user's measurements
 
 Layering (when weather calls for it):
-- Think in layers: base (shirt/tee), mid (sweater/cardigan/light jacket), outer (coat/heavy jacket)
+- Think in layers: base (tee), mid (sweater/blouson/light jacket), outer (coat/heavy jacket)
 - Each layer should be visible and contribute to the look, not just warmth
 - Layered outfits should work when the outer layer is removed too
 

@@ -188,7 +188,7 @@ class LearningService:
             item_type = item.type.lower() if item.type else "unknown"
 
             # Categorize by type
-            if item_type in ["shirt", "blouse", "t-shirt", "sweater", "top"]:
+            if item_type in ["blouse", "t-shirt", "sweater"]:
                 item_composition["top"] = item_type
             elif item_type in ["pants", "jeans", "skirt", "shorts"]:
                 item_composition["bottom"] = item_type

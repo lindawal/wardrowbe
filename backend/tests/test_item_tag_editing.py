@@ -24,7 +24,7 @@ async def _tagged_item(db_session: AsyncSession, user_id) -> ClothingItem:
     """An item as the AI tagger leaves it: columns and the tags JSON agree."""
     item = ClothingItem(
         user_id=user_id,
-        type="blazer",
+        type="jacket",
         image_path="test/tag-edit.jpg",
         status=ItemStatus.ready,
         primary_color="navy",
@@ -145,7 +145,7 @@ async def _reanalyse(db_session: AsyncSession, monkeypatch, item: ClothingItem, 
 
 
 FRESH_AI = ClothingTags(
-    type="blazer",
+    type="jacket",
     primary_color="black",
     colors=["black"],
     pattern="solid",

@@ -1,7 +1,7 @@
 // Long garments are photographed upright, so they get the tall tile. Lower value wins.
 const LONG_ITEM_PRIORITY: Record<string, number> = {
   dress: 0,
-  jumpsuit: 0,
+  overall: 0,
   pants: 1,
   jeans: 1,
 };

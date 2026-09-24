@@ -24,7 +24,7 @@ def _item(**kwargs) -> ClothingItem:
     defaults = {
         "id": uuid4(),
         "user_id": uuid4(),
-        "type": "shirt",
+        "type": "t-shirt",
         "subtype": None,
         "image_path": "test.jpg",
         "primary_color": None,
@@ -95,11 +95,11 @@ class TestWeatherScore:
         assert _weather_score(item, _weather(temp=5), None) == 0.05
 
     def test_hot_cotton_scores_high(self):
-        item = _item(type="shirt", material="cotton")
+        item = _item(type="t-shirt", material="cotton")
         assert _weather_score(item, _weather(temp=30), None) == 1.0
 
     def test_moderate_all_pass(self):
-        item = _item(type="shirt")
+        item = _item(type="t-shirt")
         assert _weather_score(item, _weather(temp=18), None) == 1.0
 
     def test_cold_threshold_sensitivity(self):
@@ -114,7 +114,7 @@ class TestWeatherScore:
         assert _weather_score(item, _weather(temp=18, precipitation=60), None) == 1.0
 
     def test_cold_wool_scores_high(self):
-        item = _item(type="shirt", material="wool")
+        item = _item(type="t-shirt", material="wool")
         assert _weather_score(item, _weather(temp=5), None) == 1.0
 
     def test_hot_sweater_scores_low(self):
@@ -122,7 +122,7 @@ class TestWeatherScore:
         assert _weather_score(item, _weather(temp=30), None) == 0.05
 
     def test_cold_regular_shirt(self):
-        item = _item(type="shirt")
+        item = _item(type="t-shirt")
         assert _weather_score(item, _weather(temp=5), None) == 0.7
 
 
@@ -170,7 +170,7 @@ class TestWeatherScoreRange:
 
     def test_adaptable_shirt_outranks_both_extremes(self):
         weather = _weather(temp=12, window_min=5, window_max=30)
-        shirt = _weather_score(_item(type="shirt", material="cotton"), weather, None)
+        shirt = _weather_score(_item(type="t-shirt", material="cotton"), weather, None)
         sweater = _weather_score(_item(type="sweater", material="wool"), weather, None)
         shorts = _weather_score(_item(type="shorts"), weather, None)
         assert shirt == pytest.approx(0.85)
@@ -185,7 +185,7 @@ class TestWeatherScoreRange:
         assert boosted == pytest.approx(min(1.0, no_rain + 0.1))
 
     def test_threshold_preferences_feed_both_bucket_evaluations(self):
-        item = _item(type="shirt")
+        item = _item(type="t-shirt")
         prefs = _prefs(temperature_sensitivity="high")
         weather = _weather(temp=17, window_min=13, window_max=21)
         assert _weather_score(item, weather, prefs) == pytest.approx(0.75)
@@ -248,25 +248,19 @@ class TestWeatherScoreRealItemTypes:
         item = _item(type="jacket")
         assert _weather_score(item, _weather(temp=18, precipitation=60), None) == 1.0
 
-    def test_cardigan_and_vest_get_removable_floor_but_no_rain_boost(self):
+    def test_blouson_and_vest_get_removable_floor_but_no_rain_boost(self):
         swing = _weather(temp=12, window_min=5, window_max=30)
         rain = _weather(temp=30, precipitation=60)
-        for item_type in ("cardigan", "vest"):
+        for item_type in ("blouson", "vest"):
             assert _weather_score(_item(type=item_type), swing, None) == pytest.approx(0.80)
             assert _weather_score(_item(type=item_type), rain, None) == pytest.approx(0.05)
 
-    def test_rain_boost_fires_for_coat_and_hoodie(self):
-        for item_type in ("coat", "hoodie"):
+    def test_rain_boost_fires_for_coat_and_outerwear(self):
+        for item_type in ("coat", "outerwear"):
             item = _item(type=item_type)
             assert _weather_score(item, _weather(temp=30, precipitation=60), None) == pytest.approx(
                 0.15
             )
-
-    def test_blazer_gets_no_rain_boost(self):
-        item = _item(type="blazer")
-        assert _weather_score(item, _weather(temp=30, precipitation=60), None) == pytest.approx(
-            0.05
-        )
 
     def test_legacy_outerwear_type_still_honored(self):
         item = _item(type="outerwear")
@@ -465,7 +459,7 @@ class TestScoreItems:
         assert len(result) <= 70
 
     def test_prioritizes_mandatory_items_into_top_n(self):
-        items = [_item(type="shirt") for _ in range(100)]
+        items = [_item(type="t-shirt") for _ in range(100)]
         mandatory_item = _item(type="shorts")
         items.append(mandatory_item)
 
@@ -517,7 +511,7 @@ class TestScoreItems:
         assert all(s.score < 0.1 for s in result)
 
     def test_big_swing_day_shirt_outranks_sweater(self):
-        shirt = _item(type="shirt", material="cotton")
+        shirt = _item(type="t-shirt", material="cotton")
         sweater = _item(type="sweater", material="wool")
         filler = [_item() for _ in range(MIN_ITEMS_FOR_SCORING - 2)]
         result = score_items(
@@ -536,7 +530,7 @@ class TestScoreItems:
         assert shirt_pos < sweater_pos
 
     def test_without_range_data_sweater_still_beats_shirt(self):
-        shirt = _item(type="shirt", material="cotton")
+        shirt = _item(type="t-shirt", material="cotton")
         sweater = _item(type="sweater", material="wool")
         filler = [_item() for _ in range(MIN_ITEMS_FOR_SCORING - 2)]
         result = score_items(
@@ -556,7 +550,7 @@ class TestScoreItems:
 
     def test_ensures_footwear_represented_in_top_n(self):
         # 75 shirts (scoring high) + 3 footwear (scoring lower)
-        shirts = [_item(type="shirt") for _ in range(75)]
+        shirts = [_item(type="t-shirt") for _ in range(75)]
         shoes = [_item(type="sneakers") for _ in range(3)]
         all_items = shirts + shoes
         result = score_items(
@@ -598,7 +592,7 @@ class TestSeasonScoreThresholds:
 
 class TestRoleDiversity:
     def _wardrobe(self, footwear_type="sneakers"):
-        shirts = [_item(type="shirt") for _ in range(75)]
+        shirts = [_item(type="t-shirt") for _ in range(75)]
         bottoms = [_item(type="jeans") for _ in range(3)]
         shoes = [_item(type=footwear_type) for _ in range(3)]
         return shirts, bottoms, shoes

@@ -341,7 +341,7 @@ async def get_analytics(
             tops = sum(
                 t.count
                 for t in type_distribution
-                if t.type in ["shirt", "blouse", "t-shirt", "top"]
+                if t.type in ["blouse", "t-shirt"]
             )
             bottoms = sum(
                 t.count
