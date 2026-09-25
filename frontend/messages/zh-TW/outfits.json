@@ -1,4 +1,17 @@
 {
+  "actions": {
+    "accept": "接受",
+    "acceptError": "接受穿搭失敗",
+    "accepted": "穿搭已接受",
+    "rate": "評分",
+    "reject": "拒絕",
+    "rejectError": "拒絕穿搭失敗",
+    "rejected": "穿搭已拒絕",
+    "skip": "試試其他",
+    "skipError": "跳過失敗",
+    "skipped": "已跳過",
+    "updateRating": "修改評分"
+  },
   "bulkActions": {
     "deleteError": "刪除穿搭失敗",
     "deletePartialFailed": "刪除 {count, plural, one {# 套穿搭} other {# 套穿搭}} 失敗",
@@ -96,6 +109,7 @@
     "all": "還沒有穿搭。快來建立你的第一套造型！",
     "myLooks": "還沒有造型冊範本。",
     "pairings": "還沒有搭配。",
+    "pending": "沒有待處理的穿搭。",
     "replacements": "還沒有替換穿搭。",
     "worn": "還沒有穿著記錄。"
   },
@@ -104,6 +118,7 @@
     "all": "全部",
     "lookbook": "造型冊",
     "pairings": "搭配",
+    "pending": "待處理",
     "replacements": "替換",
     "worn": "已穿過"
   },

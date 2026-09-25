@@ -1,4 +1,17 @@
 {
+  "actions": {
+    "accept": "Accetta",
+    "acceptError": "Accettazione outfit fallita",
+    "accepted": "Outfit accettato",
+    "rate": "Valuta",
+    "reject": "Rifiuta",
+    "rejectError": "Rifiuto dell'outfit fallito",
+    "rejected": "Outfit rifiutato",
+    "skip": "Prova un altro",
+    "skipError": "Impossibile saltare l'outfit",
+    "skipped": "Saltato",
+    "updateRating": "Modifica valutazione"
+  },
   "bulkActions": {
     "deleteError": "Eliminazione outfit fallita",
     "deletePartialFailed": "Impossibile eliminare {count, plural, one {# outfit} other {# outfit}}",
@@ -96,6 +109,7 @@
     "all": "Nessun outfit ancora. Crea il tuo primo look!",
     "myLooks": "Nessun modello lookbook ancora.",
     "pairings": "Nessun abbinamento ancora.",
+    "pending": "Nessun outfit in attesa.",
     "replacements": "Nessun outfit di sostituzione ancora.",
     "worn": "Nessun outfit indossato ancora."
   },
@@ -104,6 +118,7 @@
     "all": "Tutti",
     "lookbook": "Lookbook",
     "pairings": "Abbinamenti",
+    "pending": "In attesa",
     "replacements": "Sostituzioni",
     "worn": "Indossati"
   },

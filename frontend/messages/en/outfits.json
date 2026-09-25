@@ -1,4 +1,17 @@
 {
+  "actions": {
+    "accept": "Accept",
+    "acceptError": "Failed to accept outfit",
+    "accepted": "Outfit accepted",
+    "rate": "Rate",
+    "reject": "Reject",
+    "rejectError": "Failed to reject outfit",
+    "rejected": "Outfit rejected",
+    "skip": "Try Another",
+    "skipError": "Failed to skip outfit",
+    "skipped": "Skipped",
+    "updateRating": "Update rating"
+  },
   "bulkActions": {
     "deleteError": "Failed to delete outfits",
     "deletePartialFailed": "Failed to delete {count, plural, one {# outfit} other {# outfits}}",
@@ -96,6 +109,7 @@
     "all": "No outfits yet. Create your first look!",
     "myLooks": "No lookbook templates yet.",
     "pairings": "No pairings yet.",
+    "pending": "No pending outfits.",
     "replacements": "No replacement outfits yet.",
     "worn": "No worn outfits yet."
   },
@@ -104,6 +118,7 @@
     "all": "All",
     "lookbook": "Lookbook",
     "pairings": "Pairings",
+    "pending": "Pending",
     "replacements": "Replacements",
     "worn": "Worn"
   },

@@ -76,6 +76,7 @@ function outfitsByDate(outfits: Outfit[]): Map<string, Outfit[]> {
 
 type FilterChip =
   | 'all'
+  | 'pending'
   | 'my-looks'
   | 'worn'
   | 'pairings'
@@ -86,6 +87,7 @@ type ViewMode = 'list' | 'calendar';
 
 const CHIP_ORDER: FilterChip[] = [
   'all',
+  'pending',
   'my-looks',
   'worn',
   'pairings',
@@ -95,6 +97,7 @@ const CHIP_ORDER: FilterChip[] = [
 
 const CHIP_KEYS: Record<FilterChip, string> = {
   all: 'filters.all',
+  pending: 'filters.pending',
   'my-looks': 'filters.lookbook',
   worn: 'filters.worn',
   pairings: 'filters.pairings',
@@ -104,6 +107,7 @@ const CHIP_KEYS: Record<FilterChip, string> = {
 
 const EMPTY_KEYS: Record<FilterChip, string> = {
   all: 'empty.all',
+  pending: 'empty.pending',
   'my-looks': 'empty.myLooks',
   worn: 'empty.worn',
   pairings: 'empty.pairings',
@@ -115,6 +119,10 @@ function chipToFilters(chip: FilterChip, search: string): OutfitFilters {
   const filters: OutfitFilters = {};
   if (search) filters.search = search;
   switch (chip) {
+    case 'pending':
+      // Still awaiting a decision, whether or not it has been sent/viewed yet.
+      filters.status = 'pending,sent,viewed';
+      return filters;
     case 'my-looks':
       filters.is_lookbook = true;
       return filters;

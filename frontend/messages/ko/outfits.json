@@ -1,4 +1,17 @@
 {
+  "actions": {
+    "accept": "수락",
+    "acceptError": "코디 수락 실패",
+    "accepted": "코디를 수락했어요",
+    "rate": "평가",
+    "reject": "거절",
+    "rejectError": "코디 거절 실패",
+    "rejected": "코디를 거절했어요",
+    "skip": "다른 코디",
+    "skipError": "건너뛰기 실패",
+    "skipped": "건너뛰었어요",
+    "updateRating": "평가 수정"
+  },
   "bulkActions": {
     "deleteError": "코디 삭제 실패",
     "deletePartialFailed": "{count, plural, other {코디 #개 삭제 실패}}",
@@ -96,6 +109,7 @@
     "all": "아직 코디가 없어요. 첫 룩을 만들어 보세요!",
     "myLooks": "아직 룩북 템플릿이 없어요.",
     "pairings": "아직 페어링이 없어요.",
+    "pending": "대기 중인 코디가 없어요.",
     "replacements": "아직 대체 코디가 없어요.",
     "worn": "아직 착용한 코디가 없어요."
   },
@@ -104,6 +118,7 @@
     "all": "전체",
     "lookbook": "룩북",
     "pairings": "페어링",
+    "pending": "대기 중",
     "replacements": "대체",
     "worn": "착용함"
   },

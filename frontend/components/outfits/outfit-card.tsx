@@ -10,14 +10,19 @@ import {
   Layers,
   RefreshCw,
   Shirt,
+  Shuffle,
   Sparkles,
+  ThumbsDown,
+  ThumbsUp,
 } from 'lucide-react';
+import { toast } from 'sonner';
 
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
-import type { Outfit } from '@/lib/hooks/use-outfits';
+import { useAcceptOutfit, useRejectOutfit, useSkipOutfit, type Outfit } from '@/lib/hooks/use-outfits';
 import { formatTag } from '@/lib/lookbook/tags';
 import { buildMosaicLayout } from '@/lib/outfits/mosaic-layout';
 import { useTranslations } from 'next-intl';
@@ -125,6 +130,7 @@ export function OutfitCard({
   showTags,
 }: OutfitCardProps) {
   const t = useTranslations('outfits.cards');
+  const ta = useTranslations('outfits.actions');
   const clothingTypes = useClothingTypes();
   const itemDisplayName = useItemDisplayName();
   const badge = getSourceBadge(outfit, t);
@@ -132,9 +138,48 @@ export function OutfitCard({
   const tags = showTags ? outfit.tags ?? [] : [];
   // The 400px thumbnail of a portrait photo looks soft at card size, so prefer the medium image.
   const photoSrc = outfit.is_photo_look ? outfit.photo_medium_url || outfit.photo_url : null;
+  // Still awaiting a decision: offer quick review actions right on the card.
+  const isPendingReview =
+    outfit.status === 'pending' || outfit.status === 'sent' || outfit.status === 'viewed';
+  const acceptOutfit = useAcceptOutfit();
+  const rejectOutfit = useRejectOutfit();
+  const skipOutfit = useSkipOutfit();
 
   const handleCheckboxClick = (e: React.MouseEvent) => {
     e.stopPropagation();
+  };
+
+  const handleAccept = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      await acceptOutfit.mutateAsync(outfit.id);
+      toast.success(ta('accepted'));
+    } catch {
+      toast.error(ta('acceptError'));
+    }
+  };
+
+  const handleReject = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      await rejectOutfit.mutateAsync(outfit.id);
+      toast.success(ta('rejected'));
+    } catch {
+      toast.error(ta('rejectError'));
+    }
+  };
+
+  const handleSkip = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      await skipOutfit.mutateAsync(outfit.id);
+      toast.success(ta('skipped'));
+    } catch {
+      toast.error(ta('skipError'));
+    }
   };
 
   const handleCardClick = selectMode
@@ -243,6 +288,45 @@ export function OutfitCard({
             </Badge>
             <span>{getMetaLabel(outfit, t)}</span>
           </div>
+          {isPendingReview && !selectMode && (
+            <div className="flex gap-1.5 pt-1">
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                className="flex-1 h-7 px-0"
+                onClick={handleReject}
+                disabled={rejectOutfit.isPending}
+                aria-label={ta('reject')}
+                title={ta('reject')}
+              >
+                <ThumbsDown className="h-3.5 w-3.5" />
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                className="flex-1 h-7 px-0"
+                onClick={handleSkip}
+                disabled={skipOutfit.isPending}
+                aria-label={ta('skip')}
+                title={ta('skip')}
+              >
+                <Shuffle className="h-3.5 w-3.5" />
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                className="flex-1 h-7 px-0"
+                onClick={handleAccept}
+                disabled={acceptOutfit.isPending}
+                aria-label={ta('accept')}
+                title={ta('accept')}
+              >
+                <ThumbsUp className="h-3.5 w-3.5" />
+              </Button>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>

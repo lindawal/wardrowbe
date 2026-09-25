@@ -12,7 +12,10 @@ import {
   ChevronLeft,
   Loader2,
   Pencil,
+  Shuffle,
   Star,
+  ThumbsDown,
+  ThumbsUp,
   Trash2,
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -24,8 +27,16 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { LineageCard } from '@/components/shared/lineage-card';
 import { CloneToLookbookDialog } from '@/components/shared/clone-to-lookbook-dialog';
+import { FeedbackDialog } from '@/components/feedback-dialog';
 import { LookbookAttributesCard } from '@/components/lookbook/lookbook-attributes-card';
-import { useDeleteOutfit, useOutfit, useOutfits } from '@/lib/hooks/use-outfits';
+import {
+  useAcceptOutfit,
+  useDeleteOutfit,
+  useOutfit,
+  useOutfits,
+  useRejectOutfit,
+  useSkipOutfit,
+} from '@/lib/hooks/use-outfits';
 import { useWearToday } from '@/lib/hooks/use-studio';
 import { getErrorMessage } from '@/lib/api';
 import { localUrisToLightboxImages } from '@/lib/lightbox-adapters';
@@ -35,6 +46,7 @@ import { useClothingTypes, useItemDisplayName } from '@/lib/hooks/use-translated
 export default function OutfitDetailPage() {
   const t = useTranslations('outfits');
   const tc = useTranslations('common');
+  const ta = useTranslations('outfits.actions');
   const clothingTypes = useClothingTypes();
   const itemDisplayName = useItemDisplayName();
   const router = useRouter();
@@ -48,14 +60,22 @@ export default function OutfitDetailPage() {
   const { data: outfit, isLoading } = useOutfit(outfitId);
   const deleteMutation = useDeleteOutfit();
   const wearTodayMutation = useWearToday(outfitId ?? '');
+  const acceptOutfit = useAcceptOutfit();
+  const rejectOutfit = useRejectOutfit();
+  const skipOutfit = useSkipOutfit();
 
   const [cloneDialogOpen, setCloneDialogOpen] = useState(false);
+  const [feedbackDialogOpen, setFeedbackDialogOpen] = useState(false);
 
   const isTemplate =
     outfit !== undefined && outfit !== null && outfit.scheduled_for === null;
   const isWorn = !!outfit?.feedback?.worn_at;
   // Photo looks have no items, so wearing, editing in the studio and wear history don't apply.
   const isPhotoLook = !!outfit?.is_photo_look;
+  // Still awaiting a decision: show the review actions (accept/reject/try another).
+  const isPendingReview =
+    !!outfit && (outfit.status === 'pending' || outfit.status === 'sent' || outfit.status === 'viewed');
+  const isAccepted = outfit?.status === 'accepted';
 
   const { data: wearInstancesData } = useOutfits(
     isTemplate && !isPhotoLook && outfitId ? { cloned_from_outfit_id: outfitId } : {},
@@ -79,6 +99,33 @@ export default function OutfitDetailPage() {
       router.push(`/dashboard/outfits/${result.id}`);
     } catch (error) {
       toast.error(getErrorMessage(error, t('detail.wearTodayError')));
+    }
+  };
+
+  const handleAccept = async () => {
+    try {
+      await acceptOutfit.mutateAsync(outfit.id);
+      toast.success(ta('accepted'));
+    } catch {
+      toast.error(ta('acceptError'));
+    }
+  };
+
+  const handleReject = async () => {
+    try {
+      await rejectOutfit.mutateAsync(outfit.id);
+      toast.success(ta('rejected'));
+    } catch {
+      toast.error(ta('rejectError'));
+    }
+  };
+
+  const handleSkip = async () => {
+    try {
+      await skipOutfit.mutateAsync(outfit.id);
+      toast.success(ta('skipped'));
+    } catch {
+      toast.error(ta('skipError'));
     }
   };
 
@@ -226,6 +273,45 @@ export default function OutfitDetailPage() {
       )}
 
       <div className="flex flex-wrap gap-2">
+        {isPendingReview && (
+          <>
+            <Button onClick={handleAccept} disabled={acceptOutfit.isPending}>
+              {acceptOutfit.isPending ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <ThumbsUp className="h-4 w-4 mr-2" />
+              )}
+              {ta('accept')}
+            </Button>
+            <Button variant="outline" onClick={handleSkip} disabled={skipOutfit.isPending}>
+              {skipOutfit.isPending ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <Shuffle className="h-4 w-4 mr-2" />
+              )}
+              {ta('skip')}
+            </Button>
+            <Button
+              variant="outline"
+              className="text-destructive hover:text-destructive"
+              onClick={handleReject}
+              disabled={rejectOutfit.isPending}
+            >
+              {rejectOutfit.isPending ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <ThumbsDown className="h-4 w-4 mr-2" />
+              )}
+              {ta('reject')}
+            </Button>
+          </>
+        )}
+        {isAccepted && outfit.feedback?.actually_worn !== false && (
+          <Button variant="outline" onClick={() => setFeedbackDialogOpen(true)}>
+            <Star className="h-4 w-4 mr-2" />
+            {outfit.feedback?.rating ? ta('updateRating') : ta('rate')}
+          </Button>
+        )}
         {isTemplate && !isPhotoLook && (
           <Button onClick={handleWearToday} disabled={wearTodayMutation.isPending}>
             {wearTodayMutation.isPending ? (
@@ -316,6 +402,12 @@ export default function OutfitDetailPage() {
           onSuccess={(newId) => router.push(`/dashboard/outfits/${newId}`)}
         />
       )}
+
+      <FeedbackDialog
+        outfit={outfit}
+        open={feedbackDialogOpen}
+        onClose={() => setFeedbackDialogOpen(false)}
+      />
     </div>
   );
 }

@@ -1,4 +1,17 @@
 {
+  "actions": {
+    "accept": "承認",
+    "acceptError": "コーデの承認に失敗しました",
+    "accepted": "コーディネートを承認しました",
+    "rate": "評価",
+    "reject": "却下",
+    "rejectError": "コーデの却下に失敗しました",
+    "rejected": "コーデを却下しました",
+    "skip": "別のコーデ",
+    "skipError": "スキップに失敗しました",
+    "skipped": "スキップしました",
+    "updateRating": "評価を更新"
+  },
   "bulkActions": {
     "deleteError": "コーデの削除に失敗しました",
     "deletePartialFailed": "{count, plural, one {# 件のコーデ} other {# 件のコーデ}}の削除に失敗しました",
@@ -96,6 +109,7 @@
     "all": "コーデはまだありません。最初の一着を作りましょう！",
     "myLooks": "ルックブックのテンプレートはまだありません。",
     "pairings": "ペアリングはまだありません。",
+    "pending": "保留中のコーデはありません。",
     "replacements": "差し替えコーデはまだありません。",
     "worn": "着用したコーデはまだありません。"
   },
@@ -104,6 +118,7 @@
     "all": "すべて",
     "lookbook": "ルックブック",
     "pairings": "ペアリング",
+    "pending": "保留中",
     "replacements": "差し替え",
     "worn": "着用済み"
   },

@@ -1,4 +1,17 @@
 {
+  "actions": {
+    "accept": "Accepter",
+    "acceptError": "Échec de l'acceptation de la tenue",
+    "accepted": "Tenue acceptée",
+    "rate": "Noter",
+    "reject": "Rejeter",
+    "rejectError": "Échec du rejet de la tenue",
+    "rejected": "Tenue rejetée",
+    "skip": "Essayer une autre",
+    "skipError": "Impossible d'ignorer la tenue",
+    "skipped": "Ignorée",
+    "updateRating": "Modifier la note"
+  },
   "bulkActions": {
     "deleteError": "Échec de la suppression des tenues",
     "deletePartialFailed": "{count, plural, one {Échec de la suppression de # tenue} other {Échec de la suppression de # tenues}}",
@@ -96,6 +109,7 @@
     "all": "Pas encore de tenues. Créez votre premier look !",
     "myLooks": "Pas encore de modèles dans le lookbook.",
     "pairings": "Pas encore d'associations.",
+    "pending": "Aucune tenue en attente.",
     "replacements": "Pas encore de tenues de remplacement.",
     "worn": "Pas encore de tenues portées."
   },
@@ -104,6 +118,7 @@
     "all": "Toutes",
     "lookbook": "Lookbook",
     "pairings": "Associations",
+    "pending": "En attente",
     "replacements": "Remplacements",
     "worn": "Portées"
   },

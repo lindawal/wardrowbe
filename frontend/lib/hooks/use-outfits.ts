@@ -286,6 +286,21 @@ export function useRejectOutfit() {
   });
 }
 
+export function useSkipOutfit() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (outfitId: string) => api.post<Outfit>(`/outfits/${outfitId}/skip`),
+    onSuccess: (_, outfitId) => {
+      queryClient.invalidateQueries({ queryKey: ['outfits'] });
+      queryClient.invalidateQueries({ queryKey: ['outfit', outfitId] });
+      queryClient.invalidateQueries({ queryKey: ['calendarOutfits'] });
+      queryClient.invalidateQueries({ queryKey: ['pendingOutfits'] });
+      queryClient.invalidateQueries({ queryKey: ['analytics'] });
+    },
+  });
+}
+
 export function useSubmitFeedback() {
   const queryClient = useQueryClient();
 
