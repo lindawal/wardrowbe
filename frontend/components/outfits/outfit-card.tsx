@@ -21,6 +21,7 @@ import type { Outfit } from '@/lib/hooks/use-outfits';
 import { formatTag } from '@/lib/lookbook/tags';
 import { buildMosaicLayout } from '@/lib/outfits/mosaic-layout';
 import { useTranslations } from 'next-intl';
+import { useClothingTypes, useItemDisplayName } from '@/lib/hooks/use-translated-constants';
 
 const MAX_VISIBLE_TAGS = 3;
 
@@ -124,6 +125,8 @@ export function OutfitCard({
   showTags,
 }: OutfitCardProps) {
   const t = useTranslations('outfits.cards');
+  const clothingTypes = useClothingTypes();
+  const itemDisplayName = useItemDisplayName();
   const badge = getSourceBadge(outfit, t);
   const mosaic = buildMosaicLayout(outfit.items);
   const tags = showTags ? outfit.tags ?? [] : [];
@@ -180,7 +183,7 @@ export function OutfitCard({
                   {item.thumbnail_url || item.image_url ? (
                     <Image
                       src={(item.thumbnail_url || item.image_url)!}
-                      alt={item.name || item.type}
+                      alt={itemDisplayName(item)}
                       fill
                       className="object-cover"
                       sizes="(max-width: 768px) 50vw, 25vw"
@@ -189,7 +192,7 @@ export function OutfitCard({
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
                       <span className="text-[10px] text-muted-foreground">
-                        {item.type}
+                        {clothingTypes.find((ct) => ct.value === item.type)?.label ?? item.type}
                       </span>
                     </div>
                   )}

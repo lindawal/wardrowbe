@@ -10,6 +10,7 @@ import { useItems } from '@/lib/hooks/use-items';
 import { cn } from '@/lib/utils';
 import type { Item } from '@/lib/types';
 import { useTranslations } from 'next-intl';
+import { useClothingTypes, useItemDisplayName } from '@/lib/hooks/use-translated-constants';
 
 const PAGE_SIZE = 24;
 
@@ -31,6 +32,8 @@ export function ItemPicker({
   heightClass = 'h-[360px]',
 }: ItemPickerProps) {
   const t = useTranslations('outfits.itemPicker');
+  const clothingTypes = useClothingTypes();
+  const itemDisplayName = useItemDisplayName();
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [page, setPage] = useState(1);
@@ -133,7 +136,7 @@ export function ItemPicker({
                 {item.thumbnail_url || item.image_url ? (
                   <Image
                     src={(item.thumbnail_url || item.image_url)!}
-                    alt={item.name || item.type}
+                    alt={itemDisplayName(item)}
                     fill
                     className="object-cover"
                     sizes="(max-width: 640px) 33vw, 20vw"
@@ -142,7 +145,7 @@ export function ItemPicker({
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-muted">
                     <span className="text-xs text-muted-foreground">
-                      {item.type}
+                      {clothingTypes.find((ct) => ct.value === item.type)?.label ?? item.type}
                     </span>
                   </div>
                 )}
@@ -155,7 +158,7 @@ export function ItemPicker({
                 )}
                 <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-1.5">
                   <span className="text-[10px] sm:text-xs text-white font-medium truncate block">
-                    {item.name ?? item.type}
+                    {itemDisplayName(item)}
                   </span>
                 </div>
               </button>

@@ -17,6 +17,7 @@ import { useAnalytics } from '@/lib/hooks/use-analytics';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
+import { useClothingTypes, useItemDisplayName } from '@/lib/hooks/use-translated-constants';
 
 function StatCard({
   title,
@@ -140,6 +141,9 @@ function ColorBar({ color, percentage }: { color: string; percentage: number }) 
 
 function ItemCard({ item }: { item: { id: string; name: string | null; type: string; thumbnail_url: string | null; wear_count: number } }) {
   const t = useTranslations('analytics');
+  const clothingTypes = useClothingTypes();
+  const itemDisplayName = useItemDisplayName();
+  const typeLabel = clothingTypes.find((ct) => ct.value === item.type)?.label ?? item.type;
   return (
     <Link
       href={`/dashboard/wardrobe?item=${item.id}`}
@@ -149,7 +153,7 @@ function ItemCard({ item }: { item: { id: string; name: string | null; type: str
         {item.thumbnail_url ? (
           <Image
             src={item.thumbnail_url}
-            alt={item.name || item.type}
+            alt={itemDisplayName(item)}
             fill
             className="object-cover"
             sizes="48px"
@@ -161,8 +165,8 @@ function ItemCard({ item }: { item: { id: string; name: string | null; type: str
         )}
       </div>
       <div className="flex-1 min-w-0">
-        <p className="font-medium truncate">{item.name || item.type}</p>
-        <p className="text-sm text-muted-foreground capitalize">{item.type}</p>
+        <p className="font-medium truncate">{itemDisplayName(item)}</p>
+        <p className="text-sm text-muted-foreground">{typeLabel}</p>
       </div>
       <Badge variant="secondary">{t('wearCount', { count: item.wear_count })}</Badge>
     </Link>
@@ -200,6 +204,7 @@ function AcceptanceTrendChart({ data }: { data: { period: string; rate: number; 
 
 export default function AnalyticsPage() {
   const t = useTranslations('analytics');
+  const clothingTypes = useClothingTypes();
   const { data, isLoading, isError } = useAnalytics(60);
 
   if (isLoading) {
@@ -321,7 +326,7 @@ export default function AnalyticsPage() {
               <div className="space-y-3">
                 {type_distribution.map((type) => (
                   <div key={type.type} className="flex items-center justify-between">
-                    <span className="capitalize">{type.type}</span>
+                    <span>{clothingTypes.find((ct) => ct.value === type.type)?.label ?? type.type}</span>
                     <div className="flex items-center gap-2">
                       <Progress value={type.percentage} className="w-24 h-2" />
                       <span className="text-sm text-muted-foreground w-12 text-right">

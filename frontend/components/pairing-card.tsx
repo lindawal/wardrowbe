@@ -9,6 +9,7 @@ import { useDeletePairing } from '@/lib/hooks/use-pairings';
 import { Pairing } from '@/lib/types';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
+import { useClothingTypes, useItemDisplayName } from '@/lib/hooks/use-translated-constants';
 
 function StarRating({ rating }: { rating: number }) {
   return (
@@ -33,6 +34,8 @@ interface PairingCardProps {
 
 export function PairingCard({ pairing, onFeedback, onPreview }: PairingCardProps) {
   const t = useTranslations('pairings.card');
+  const clothingTypes = useClothingTypes();
+  const itemDisplayName = useItemDisplayName();
   const deletePairing = useDeletePairing();
 
   const handleDelete = async () => {
@@ -89,20 +92,20 @@ export function PairingCard({ pairing, onFeedback, onPreview }: PairingCardProps
                 {pairing.source_item.thumbnail_url ? (
                   <Image
                     src={pairing.source_item.thumbnail_url}
-                    alt={pairing.source_item.name || pairing.source_item.type}
+                    alt={itemDisplayName(pairing.source_item)}
                     fill
                     className="object-cover"
                     sizes="48px"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-xs text-muted-foreground">
-                    {pairing.source_item.type}
+                    {clothingTypes.find((ct) => ct.value === pairing.source_item!.type)?.label ?? pairing.source_item!.type}
                   </div>
                 )}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium truncate">
-                  {pairing.source_item.name || pairing.source_item.type}
+                  {itemDisplayName(pairing.source_item)}
                 </p>
                 {pairing.source_item.primary_color && (
                   <p className="text-xs text-muted-foreground capitalize">
@@ -128,14 +131,14 @@ export function PairingCard({ pairing, onFeedback, onPreview }: PairingCardProps
               {item.thumbnail_url ? (
                 <Image
                   src={item.thumbnail_url}
-                  alt={item.name || item.type}
+                  alt={itemDisplayName(item)}
                   fill
                   className="object-cover"
                   sizes="56px"
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-xs text-muted-foreground">
-                  {item.type}
+                  {clothingTypes.find((ct) => ct.value === item.type)?.label ?? item.type}
                 </div>
               )}
             </div>

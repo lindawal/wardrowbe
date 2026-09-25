@@ -19,14 +19,14 @@ class TestPreferencesEndpoints:
             "/api/v1/users/me/preferences",
             json={
                 "color_favorites": ["black", "navy", "white"],
-                "default_occasion": "smart-casual",
+                "default_occasion": "work",
             },
             headers=auth_headers,
         )
         assert response.status_code == 200
         data = response.json()
         assert "black" in data["color_favorites"]
-        assert data["default_occasion"] == "smart-casual"
+        assert data["default_occasion"] == "work"
 
     @pytest.mark.asyncio
     async def test_update_preferences(

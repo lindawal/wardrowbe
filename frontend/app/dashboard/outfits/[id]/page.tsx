@@ -30,10 +30,13 @@ import { useWearToday } from '@/lib/hooks/use-studio';
 import { getErrorMessage } from '@/lib/api';
 import { localUrisToLightboxImages } from '@/lib/lightbox-adapters';
 import { useLightbox } from '@/lib/lightbox-context';
+import { useClothingTypes, useItemDisplayName } from '@/lib/hooks/use-translated-constants';
 
 export default function OutfitDetailPage() {
   const t = useTranslations('outfits');
   const tc = useTranslations('common');
+  const clothingTypes = useClothingTypes();
+  const itemDisplayName = useItemDisplayName();
   const router = useRouter();
   const params = useParams<{ id: string }>();
   const searchParams = useSearchParams();
@@ -199,7 +202,7 @@ export default function OutfitDetailPage() {
                     {item.thumbnail_url || item.image_url ? (
                       <Image
                         src={(item.thumbnail_url || item.image_url)!}
-                        alt={item.name || item.type}
+                        alt={itemDisplayName(item)}
                         fill
                         className="object-cover transition-transform group-hover:scale-105"
                         sizes="(max-width: 640px) 33vw, 20vw"
@@ -207,13 +210,13 @@ export default function OutfitDetailPage() {
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
                         <span className="text-xs text-muted-foreground">
-                          {item.type}
+                          {clothingTypes.find((ct) => ct.value === item.type)?.label ?? item.type}
                         </span>
                       </div>
                     )}
                   </div>
                   <p className="text-xs text-muted-foreground mt-1 truncate">
-                    {item.name || item.type}
+                    {itemDisplayName(item)}
                   </p>
                 </Link>
               ))}

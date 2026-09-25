@@ -62,7 +62,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { toast } from 'sonner';
 import { useUpdateItem, useDeleteItem, useReanalyzeItem, useRotateImage, useRemoveBackground, useRestoreOriginal, useReplaceItemImage, useLogWash, useWashHistory, useItemWearStats, useItemWearHistory, useAddItemImage, useDeleteItemImage, useSetPrimaryImage, useTagOptions } from '@/lib/hooks/use-items';
 import { Item } from '@/lib/types';
-import { useClothingTypes, useClothingColors } from '@/lib/hooks/use-translated-constants';
+import { useClothingTypes, useClothingColors, useItemDisplayName } from '@/lib/hooks/use-translated-constants';
 import { ColorEyedropper } from '@/components/color-eyedropper';
 import { ItemTagEditor } from '@/components/item-tag-editor';
 import { type EditableTags, changedTags, editableTagsFromItem, withCurrent } from '@/lib/item-tags';
@@ -86,6 +86,7 @@ export function ItemDetailDialog({ item, open, onOpenChange }: ItemDetailDialogP
   const router = useRouter();
   const clothingTypes = useClothingTypes();
   const clothingColors = useClothingColors();
+  const itemDisplayName = useItemDisplayName();
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showPairingsDialog, setShowPairingsDialog] = useState(false);
@@ -478,7 +479,7 @@ export function ItemDetailDialog({ item, open, onOpenChange }: ItemDetailDialogP
                       <Image
                         key={`${currentImage.id}-${imageKey}`}
                         src={currentImage.url}
-                        alt={item.name || item.type}
+                        alt={itemDisplayName(item)}
                         fill
                         className="object-cover"
                         sizes="(max-width: 640px) 100vw, 50vw"
@@ -907,12 +908,12 @@ export function ItemDetailDialog({ item, open, onOpenChange }: ItemDetailDialogP
                                       <div
                                         key={oi.id}
                                         className="w-5 h-5 rounded-full bg-muted border-2 border-background overflow-hidden"
-                                        title={oi.name || oi.type}
+                                        title={itemDisplayName(oi)}
                                       >
                                         {oi.thumbnail_url && (
                                           <Image
                                             src={oi.thumbnail_url}
-                                            alt={oi.name || oi.type}
+                                            alt={itemDisplayName(oi)}
                                             width={20}
                                             height={20}
                                             className="object-cover w-full h-full"
@@ -1048,7 +1049,7 @@ export function ItemDetailDialog({ item, open, onOpenChange }: ItemDetailDialogP
           <AlertDialogHeader>
             <AlertDialogTitle>{t('actions.deleteConfirm')}</AlertDialogTitle>
             <AlertDialogDescription>
-              {t('actions.deleteDescription', { name: item.name || item.type })}
+              {t('actions.deleteDescription', { name: itemDisplayName(item) })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

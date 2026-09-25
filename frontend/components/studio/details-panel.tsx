@@ -16,6 +16,7 @@ import { mergeAiAssist } from '@/lib/studio/ai-assist-merge';
 import type { StudioItem } from '@/lib/studio/editor-state';
 import { useLookbookTags, type Outfit, type OutfitItem } from '@/lib/hooks/use-outfits';
 import { useTranslations } from 'next-intl';
+import { useItemDisplayName } from '@/lib/hooks/use-translated-constants';
 
 interface DetailsPanelProps {
   items: StudioItem[];
@@ -80,6 +81,7 @@ export function DetailsPanel({
   onAiMerge,
 }: DetailsPanelProps) {
   const t = useTranslations('outfits.details');
+  const itemDisplayName = useItemDisplayName();
   const [aiLoading, setAiLoading] = useState(false);
   const { data: tagCounts } = useLookbookTags();
   const warnings = computeWarnings(items, t);
@@ -104,7 +106,7 @@ export function DetailsPanel({
       if (skipped.length > 0) {
         for (const { item, reason } of skipped) {
           toast.info(
-            t('skippedItem', { name: item.name || item.type, reason })
+            t('skippedItem', { name: itemDisplayName(item), reason })
           );
         }
       } else if (merged.length > items.length) {

@@ -23,6 +23,7 @@ import { useFamily } from '@/lib/hooks/use-family';
 import { useFamilyOutfits, type Outfit, type OutfitSource } from '@/lib/hooks/use-outfits';
 import { FamilyRatingForm, FamilyRatingsDisplay } from '@/components/family-ratings';
 import { OutfitPreviewDialog } from '@/components/outfit-preview-dialog';
+import { useClothingTypes, useItemDisplayName } from '@/lib/hooks/use-translated-constants';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
@@ -89,6 +90,8 @@ function FeedOutfitCard({
 }) {
   const t = useTranslations('family');
   const tc = useTranslations('common');
+  const clothingTypes = useClothingTypes();
+  const itemDisplayName = useItemDisplayName();
   const [showRatingForm, setShowRatingForm] = useState(false);
   const myRating = outfit.family_ratings?.find((r) => r.user_id === currentMemberId);
 
@@ -126,14 +129,14 @@ function FeedOutfitCard({
               {item.thumbnail_url ? (
                 <Image
                   src={item.thumbnail_url}
-                  alt={item.name || item.type}
+                  alt={itemDisplayName(item)}
                   fill
                   className="object-cover"
                   sizes="80px"
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-xs text-muted-foreground">
-                  {item.type}
+                  {clothingTypes.find((ct) => ct.value === item.type)?.label ?? item.type}
                 </div>
               )}
             </div>

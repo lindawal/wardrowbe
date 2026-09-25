@@ -28,6 +28,7 @@ import {
   Users,
 } from 'lucide-react';
 import Link from 'next/link';
+import { useItemDisplayName } from '@/lib/hooks/use-translated-constants';
 import Image from 'next/image';
 import { useAnalytics } from '@/lib/hooks/use-analytics';
 import { useWeather } from '@/lib/hooks/use-weather';
@@ -124,6 +125,7 @@ function PendingOutfitsCard() {
   const rejectOutfit = useRejectOutfit();
   const t = useTranslations('dashboard');
   const tc = useTranslations('common');
+  const itemDisplayName = useItemDisplayName();
 
   const handleAccept = async (id: string) => {
     try {
@@ -208,7 +210,7 @@ function PendingOutfitsCard() {
                   {item.thumbnail_url ? (
                     <Image
                       src={item.thumbnail_url}
-                      alt={item.name || item.type}
+                      alt={itemDisplayName(item)}
                       fill
                       className="object-cover"
                       sizes="40px"

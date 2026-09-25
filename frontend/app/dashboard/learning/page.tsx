@@ -21,6 +21,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
+import { useItemDisplayName } from '@/lib/hooks/use-translated-constants';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -181,6 +182,7 @@ function ColorPreferenceBar({ colorScore }: { colorScore: LearnedColorScore }) {
 
 function ItemPairCard({ pair }: { pair: ItemPair }) {
   const t = useTranslations('learning');
+  const itemDisplayName = useItemDisplayName();
   const successRate = pair.times_paired > 0
     ? Math.round((pair.times_accepted / pair.times_paired) * 100)
     : 0;
@@ -196,7 +198,7 @@ function ItemPairCard({ pair }: { pair: ItemPair }) {
           {pair.item1.thumbnail_url ? (
             <Image
               src={pair.item1.thumbnail_url}
-              alt={pair.item1.name || pair.item1.type}
+              alt={itemDisplayName(pair.item1)}
               fill
               className="object-cover"
               sizes="48px"
@@ -219,7 +221,7 @@ function ItemPairCard({ pair }: { pair: ItemPair }) {
           {pair.item2.thumbnail_url ? (
             <Image
               src={pair.item2.thumbnail_url}
-              alt={pair.item2.name || pair.item2.type}
+              alt={itemDisplayName(pair.item2)}
               fill
               className="object-cover"
               sizes="48px"

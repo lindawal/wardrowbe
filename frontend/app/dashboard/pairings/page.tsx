@@ -19,6 +19,7 @@ import { PairingCard } from '@/components/pairing-card';
 import { FeedbackDialog } from '@/components/feedback-dialog';
 import { OutfitPreviewDialog } from '@/components/outfit-preview-dialog';
 import { Pairing } from '@/lib/types';
+import { useClothingTypes } from '@/lib/hooks/use-translated-constants';
 import { Outfit } from '@/lib/hooks/use-outfits';
 
 function EmptyPairings({ t }: { t: (key: string) => string }) {
@@ -77,6 +78,7 @@ export default function PairingsPage() {
 
   const { data, isLoading, isError } = usePairings(page, 20, sourceType);
   const { data: itemTypes } = useItemTypes();
+  const clothingTypes = useClothingTypes();
 
   const handleSourceTypeChange = (value: string) => {
     setSourceType(value === 'all' ? undefined : value);
@@ -116,7 +118,10 @@ export default function PairingsPage() {
             <SelectItem value="all">{t('allItemTypes')}</SelectItem>
             {itemTypes?.map((type) => (
               <SelectItem key={type.type} value={type.type}>
-                {t('itemTypeOption', { type: type.type, count: type.count })}
+                {t('itemTypeOption', {
+                  type: clothingTypes.find((ct) => ct.value === type.type)?.label ?? type.type,
+                  count: type.count,
+                })}
               </SelectItem>
             ))}
           </SelectContent>

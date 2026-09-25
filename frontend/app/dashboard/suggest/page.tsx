@@ -54,7 +54,7 @@ import { ItemPicker } from '@/components/shared/item-picker';
 import { useItem } from '@/lib/hooks/use-items';
 import { api, ApiError, setAccessToken } from '@/lib/api';
 import { Item, Outfit, SuggestRequest } from '@/lib/types';
-import { useOccasions } from '@/lib/hooks/use-translated-constants';
+import { useOccasions, useClothingTypes, useItemDisplayName } from '@/lib/hooks/use-translated-constants';
 import { useWeather, Weather } from '@/lib/hooks/use-weather';
 import { usePreferences } from '@/lib/hooks/use-preferences';
 import { cn } from '@/lib/utils';
@@ -329,6 +329,8 @@ function OutfitCard({
   showActions?: boolean;
   badgeLabel?: string;
 }) {
+  const itemDisplayName = useItemDisplayName();
+
   return (
     <Card className="overflow-hidden flex flex-col h-full">
       <div className="bg-gradient-to-r from-primary/10 to-primary/5 p-4 border-b">
@@ -379,7 +381,7 @@ function OutfitCard({
                   {item.thumbnail_url ? (
                     <Image
                       src={item.thumbnail_url}
-                      alt={item.name || item.type}
+                      alt={itemDisplayName(item)}
                       fill
                       className="object-cover group-hover:scale-105 transition-transform"
                       sizes="(max-width: 640px) 50vw, 33vw"
@@ -392,7 +394,7 @@ function OutfitCard({
                 </div>
                 <div className="p-2">
                   <p className="text-xs sm:text-sm font-medium truncate">
-                    {item.name || item.type}
+                    {itemDisplayName(item)}
                   </p>
                   {item.layer_type && (
                     <Badge variant="secondary" className="text-[10px] capitalize mt-0.5">
@@ -626,6 +628,8 @@ function SuggestContent() {
   const [weatherOverride, setWeatherOverride] = useState<WeatherOverride | null>(null);
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
   const [isItemPickerOpen, setIsItemPickerOpen] = useState(false);
+  const clothingTypes = useClothingTypes();
+  const itemDisplayName = useItemDisplayName();
   const [filterType, setFilterType] = useState<string | undefined>(undefined);
   const [isGenerating, setIsGenerating] = useState(false);
   const [outfits, setOutfits] = useState<Outfit[]>([]);
@@ -824,7 +828,7 @@ function SuggestContent() {
                         {selectedItem.thumbnail_url || selectedItem.image_url ? (
                           <Image
                             src={(selectedItem.thumbnail_url || selectedItem.image_url)!}
-                            alt={selectedItem.name || selectedItem.type}
+                            alt={itemDisplayName(selectedItem)}
                             fill
                             className="object-cover"
                             sizes="56px"
@@ -840,12 +844,12 @@ function SuggestContent() {
                           <Badge variant="default" className="text-[10px] px-1.5 py-0">
                             {t('baseItem.mustInclude')}
                           </Badge>
-                          <Badge variant="secondary" className="text-[10px] capitalize px-1.5 py-0">
-                            {selectedItem.type}
+                          <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+                            {clothingTypes.find((ct) => ct.value === selectedItem.type)?.label ?? selectedItem.type}
                           </Badge>
                         </div>
                         <p className="text-sm font-medium truncate">
-                          {selectedItem.name || selectedItem.type}
+                          {itemDisplayName(selectedItem)}
                         </p>
                         {selectedItem.primary_color && (
                           <p className="text-xs text-muted-foreground capitalize truncate">

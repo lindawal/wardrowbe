@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import {
   CLOTHING_TYPES,
@@ -19,6 +19,21 @@ export function useClothingTypes() {
     ...ct,
     label: t(ct.value),
   })), [t]);
+}
+
+// Falls back to the raw stored value for a type that predates the current
+// vocabulary (removed or renamed clothing type) and so has no translation.
+export function useItemDisplayName() {
+  const clothingTypes = useClothingTypes();
+
+  return useCallback(
+    (item: { name?: string | null; type: string }) => {
+      if (item.name) return item.name;
+      const typeInfo = clothingTypes.find((ct) => ct.value === item.type);
+      return typeInfo ? typeInfo.label : item.type;
+    },
+    [clothingTypes]
+  );
 }
 
 export function useClothingColors() {

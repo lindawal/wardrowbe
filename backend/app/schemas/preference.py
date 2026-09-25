@@ -1,4 +1,8 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
+
+
+# Kept in sync by hand with backend/app/api/outfits.py and backend/app/schemas/notification.py.
+VALID_OCCASIONS = {"work", "casual", "going-out"}
 
 
 class AIEndpoint(BaseModel):
@@ -31,6 +35,16 @@ class PreferenceBase(BaseModel):
     default_occasion: str = Field(
         default="casual", description="Default occasion for recommendations"
     )
+
+    @field_validator("default_occasion")
+    @classmethod
+    def validate_default_occasion(cls, v: str) -> str:
+        v = v.strip().lower()
+        if v not in VALID_OCCASIONS:
+            raise ValueError(
+                f"Invalid occasion '{v}'. Must be one of: {', '.join(sorted(VALID_OCCASIONS))}"
+            )
+        return v
 
     # Temperature/comfort
     temperature_unit: str = Field(
@@ -82,6 +96,18 @@ class PreferenceUpdate(BaseModel):
     color_avoid: list[str] | None = None
     style_profile: StyleProfile | None = None
     default_occasion: str | None = None
+
+    @field_validator("default_occasion")
+    @classmethod
+    def validate_default_occasion(cls, v: str | None) -> str | None:
+        if v is None:
+            return None
+        v = v.strip().lower()
+        if v not in VALID_OCCASIONS:
+            raise ValueError(
+                f"Invalid occasion '{v}'. Must be one of: {', '.join(sorted(VALID_OCCASIONS))}"
+            )
+        return v
     temperature_unit: str | None = Field(default=None, pattern="^(celsius|fahrenheit)$")
     temperature_sensitivity: str | None = Field(default=None, pattern="^(low|normal|high)$")
     cold_threshold: int | None = Field(default=None, ge=-20, le=30)

@@ -17,6 +17,7 @@ import { FamilyRatingForm, FamilyRatingsDisplay } from '@/components/family-rati
 import { toast } from 'sonner';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
+import { useClothingTypes, useItemDisplayName } from '@/lib/hooks/use-translated-constants';
 
 interface OutfitPreviewDialogProps {
   outfit: Outfit;
@@ -29,6 +30,8 @@ export function OutfitPreviewDialog({ outfit, open, onClose, isOwner = true }: O
   const t = useTranslations('suggest.outfitPreview');
   const ts = useTranslations('suggest');
   const tc = useTranslations('common');
+  const clothingTypes = useClothingTypes();
+  const itemDisplayName = useItemDisplayName();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [imageKey, setImageKey] = useState(0); // Force image reload after rotation
   const [showRatingForm, setShowRatingForm] = useState(false);
@@ -100,7 +103,7 @@ export function OutfitPreviewDialog({ outfit, open, onClose, isOwner = true }: O
                   <Image
                     key={`${currentItem.id}-${imageKey}`}
                     src={currentItem.image_url}
-                    alt={currentItem.name || currentItem.type}
+                    alt={itemDisplayName(currentItem)}
                     fill
                     className="object-contain"
                     sizes="(max-width: 512px) 100vw, 512px"
@@ -141,8 +144,8 @@ export function OutfitPreviewDialog({ outfit, open, onClose, isOwner = true }: O
           <div className="p-4 space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 flex-wrap">
-                <Badge variant="secondary" className="capitalize">
-                  {currentItem.type}
+                <Badge variant="secondary">
+                  {clothingTypes.find((ct) => ct.value === currentItem.type)?.label ?? currentItem.type}
                 </Badge>
                 {currentItem.subtype && (
                   <Badge variant="outline" className="capitalize">
@@ -223,7 +226,7 @@ export function OutfitPreviewDialog({ outfit, open, onClose, isOwner = true }: O
                     {item.thumbnail_url ? (
                       <Image
                         src={item.thumbnail_url}
-                        alt={item.name || item.type}
+                        alt={itemDisplayName(item)}
                         fill
                         className="object-cover"
                         sizes="56px"

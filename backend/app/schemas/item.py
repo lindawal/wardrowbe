@@ -3,7 +3,7 @@ from decimal import Decimal
 from typing import Any
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field, computed_field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, computed_field, field_validator, model_validator
 
 from app.utils.signed_urls import sign_image_url
 
@@ -235,10 +235,26 @@ class ItemFilter(BaseModel):
     sort_order: str = "desc"
 
 
+# Kept in sync by hand with backend/app/api/outfits.py and backend/app/schemas/notification.py.
+VALID_OCCASIONS = {"work", "casual", "going-out"}
+
+
 class LogWearRequest(BaseModel):
     worn_at: date | None = None  # If None, use user's timezone to determine today
     occasion: str | None = None
     notes: str | None = None
+
+    @field_validator("occasion")
+    @classmethod
+    def validate_occasion(cls, v: str | None) -> str | None:
+        if v is None:
+            return None
+        v = v.strip().lower()
+        if v not in VALID_OCCASIONS:
+            raise ValueError(
+                f"Invalid occasion '{v}'. Must be one of: {', '.join(sorted(VALID_OCCASIONS))}"
+            )
+        return v
 
 
 class ArchiveRequest(BaseModel):

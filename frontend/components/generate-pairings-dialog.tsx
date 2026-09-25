@@ -19,6 +19,7 @@ import { Item, Pairing } from '@/lib/types';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { useClothingTypes, useItemDisplayName } from '@/lib/hooks/use-translated-constants';
 
 interface GeneratePairingsDialogProps {
   item: Item | null;
@@ -39,6 +40,8 @@ export function GeneratePairingsDialog({
   const router = useRouter();
   const t = useTranslations('pairings.generate');
   const tc = useTranslations('common');
+  const clothingTypes = useClothingTypes();
+  const itemDisplayName = useItemDisplayName();
 
   const handleGenerate = async () => {
     if (!item) return;
@@ -101,17 +104,17 @@ export function GeneratePairingsDialog({
               <div className="w-16 h-16 rounded-lg bg-muted overflow-hidden relative border-2 border-primary/30">
                 <Image
                   src={imageUrl}
-                  alt={item.name || item.type}
+                  alt={itemDisplayName(item)}
                   fill
                   className="object-cover"
                   sizes="64px"
                 />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-medium truncate">{item.name || item.type}</p>
+                <p className="font-medium truncate">{itemDisplayName(item)}</p>
                 {item.primary_color && (
                   <p className="text-sm text-muted-foreground capitalize">
-                    {item.primary_color} {item.type}
+                    {item.primary_color} {clothingTypes.find((ct) => ct.value === item.type)?.label ?? item.type}
                   </p>
                 )}
               </div>
@@ -166,7 +169,7 @@ export function GeneratePairingsDialog({
                       {pairingItem.thumbnail_url ? (
                         <Image
                           src={pairingItem.thumbnail_url}
-                          alt={pairingItem.type}
+                          alt={itemDisplayName(pairingItem)}
                           fill
                           className="object-cover"
                           sizes="32px"
