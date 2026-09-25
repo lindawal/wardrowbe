@@ -21,7 +21,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
-import { useItemDisplayName } from '@/lib/hooks/use-translated-constants';
+import { useItemDisplayName, useItemStyleLabel, useClothingColors } from '@/lib/hooks/use-translated-constants';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -140,16 +140,19 @@ const colorMap: Record<string, string> = {
   pink: 'bg-pink-500',
   brown: 'bg-amber-700',
   beige: 'bg-amber-200',
-  cream: 'bg-amber-100',
   khaki: 'bg-yellow-700',
   olive: 'bg-lime-700',
+  'dark-green': 'bg-green-800',
   teal: 'bg-teal-500',
   burgundy: 'bg-red-900',
   maroon: 'bg-red-800',
 };
 
 function ColorPreferenceBar({ colorScore }: { colorScore: LearnedColorScore }) {
+  const clothingColors = useClothingColors();
   const bgColor = colorMap[colorScore.color.toLowerCase()] || 'bg-muted';
+  const colorLabel = clothingColors.find((c) => c.value === colorScore.color.toLowerCase())?.name
+    ?? colorScore.color;
   const score = colorScore.score;
   const percentage = Math.abs(score) * 100;
   const isPositive = score >= 0;
@@ -159,7 +162,7 @@ function ColorPreferenceBar({ colorScore }: { colorScore: LearnedColorScore }) {
       <div className={`w-4 h-4 rounded ${bgColor}`} />
       <div className="flex-1">
         <div className="flex justify-between text-sm mb-1">
-          <span className="capitalize">{colorScore.color}</span>
+          <span>{colorLabel}</span>
           <span className="text-muted-foreground flex items-center gap-1">
             {isPositive ? (
               <ThumbsUp className="h-3 w-3 text-green-500" />
@@ -344,6 +347,7 @@ export default function LearningPage() {
   const resetLearning = useResetLearning();
   const generateInsights = useGenerateInsights();
   const acknowledgeInsight = useAcknowledgeInsight();
+  const itemStyleLabel = useItemStyleLabel();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [resetOpen, setResetOpen] = useState(false);
 
@@ -563,7 +567,7 @@ export default function LearningPage() {
                       const percentage = Math.abs(styleScore.score) * 100;
                       return (
                         <div key={styleScore.style} className="flex items-center justify-between">
-                          <span className="capitalize">{styleScore.style}</span>
+                          <span>{itemStyleLabel(styleScore.style)}</span>
                           <div className="flex items-center gap-2">
                             <Progress
                               value={percentage}

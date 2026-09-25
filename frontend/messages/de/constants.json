@@ -7,8 +7,8 @@
     "brown": "Braun",
     "burgundy": "Burgunderrot",
     "charcoal": "Anthrazit",
-    "cream": "Creme",
     "dark-brown": "Dunkelbraun",
+    "dark-green": "Dunkelgrün",
     "gold": "Gold",
     "gray": "Grau",
     "green": "Grün",
@@ -21,15 +21,59 @@
     "purple": "Lila",
     "red": "Rot",
     "silver": "Silber",
-    "tan": "Hellbraun",
     "teal": "Petrol",
     "white": "Weiß",
     "yellow": "Gelb"
+  },
+  "fits": {
+    "cropped": "Cropped",
+    "oversized": "Oversized",
+    "regular": "Regular",
+    "relaxed": "Relaxed",
+    "slim": "Slim"
+  },
+  "formality": {
+    "casual": "Leger",
+    "formal": "Formell",
+    "smart-casual": "Smart Casual"
+  },
+  "itemStyles": {
+    "athletic": "Sportlich",
+    "bohemian": "Boho",
+    "casual": "Casual",
+    "elegant": "Elegant",
+    "minimalist": "Minimalistisch",
+    "rugged": "Rustikal",
+    "streetwear": "Streetwear",
+    "vintage": "Vintage"
+  },
+  "materials": {
+    "canvas": "Canvas",
+    "cotton": "Baumwolle",
+    "denim": "Denim",
+    "fleece": "Fleece",
+    "knit": "Strick",
+    "leather": "Leder",
+    "polyester": "Polyester",
+    "silk": "Seide",
+    "suede": "Wildleder",
+    "velvet": "Samt",
+    "wool": "Wolle"
   },
   "occasions": {
     "casual": "Freizeit",
     "going-out": "Ausgehen",
     "work": "Arbeit"
+  },
+  "patterns": {
+    "animal-print": "Animal-Print",
+    "checkered": "Kariert",
+    "floral": "Geblümt",
+    "geometric": "Geometrisch",
+    "polka-dot": "Gepunktet",
+    "print": "Print",
+    "solid": "Einfarbig",
+    "striped": "Gestreift"
   },
   "seasons": {
     "fall": "Herbst",

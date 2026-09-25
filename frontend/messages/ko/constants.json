@@ -7,8 +7,8 @@
     "brown": "브라운",
     "burgundy": "버건디",
     "charcoal": "차콜",
-    "cream": "크림",
     "dark-brown": "다크 브라운",
+    "dark-green": "다크 그린",
     "gold": "골드",
     "gray": "그레이",
     "green": "그린",
@@ -21,15 +21,59 @@
     "purple": "퍼플",
     "red": "레드",
     "silver": "실버",
-    "tan": "탄",
     "teal": "틸",
     "white": "화이트",
     "yellow": "옐로"
+  },
+  "fits": {
+    "cropped": "크롭",
+    "oversized": "오버사이즈",
+    "regular": "레귤러",
+    "relaxed": "릴렉스",
+    "slim": "슬림"
+  },
+  "formality": {
+    "casual": "캐주얼",
+    "formal": "포멀",
+    "smart-casual": "스마트 캐주얼"
+  },
+  "itemStyles": {
+    "athletic": "애슬레틱",
+    "bohemian": "보헤미안",
+    "casual": "캐주얼",
+    "elegant": "엘레강트",
+    "minimalist": "미니멀",
+    "rugged": "러기드",
+    "streetwear": "스트리트웨어",
+    "vintage": "빈티지"
+  },
+  "materials": {
+    "canvas": "캔버스",
+    "cotton": "면",
+    "denim": "데님",
+    "fleece": "플리스",
+    "knit": "니트",
+    "leather": "가죽",
+    "polyester": "폴리에스터",
+    "silk": "실크",
+    "suede": "스웨이드",
+    "velvet": "벨벳",
+    "wool": "울"
   },
   "occasions": {
     "casual": "캐주얼",
     "going-out": "외출",
     "work": "업무"
+  },
+  "patterns": {
+    "animal-print": "애니멀 프린트",
+    "checkered": "체크",
+    "floral": "플로럴",
+    "geometric": "기하학무늬",
+    "polka-dot": "물방울무늬",
+    "print": "프린트",
+    "solid": "무지",
+    "striped": "스트라이프"
   },
   "seasons": {
     "fall": "가을",

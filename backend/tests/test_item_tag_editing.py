@@ -13,7 +13,7 @@ AI_TAGS = {
     "colors": ["navy", "white"],
     "pattern": "striped",
     "material": "wool",
-    "style": ["classic"],
+    "style": ["elegant"],
     "season": ["fall", "winter"],
     "formality": "casual",
     "fit": "slim",
@@ -50,7 +50,7 @@ class TestTagEditing:
 
         response = await client.patch(
             f"/api/v1/items/{item.id}",
-            json={"tags": {"formality": "business-casual"}},
+            json={"tags": {"formality": "formal"}},
             headers=auth_headers,
         )
 
@@ -58,8 +58,8 @@ class TestTagEditing:
         data = response.json()
         # The detail view reads the tags JSON; scoring reads the columns. Both must
         # carry the edit, and neither may lose the tags that were not sent.
-        assert data["tags"] == {**AI_TAGS, "formality": "business-casual"}
-        assert data["formality"] == "business-casual"
+        assert data["tags"] == {**AI_TAGS, "formality": "formal"}
+        assert data["formality"] == "formal"
         assert data["colors"] == AI_TAGS["colors"]
         assert data["style"] == AI_TAGS["style"]
         assert data["season"] == AI_TAGS["season"]
@@ -93,15 +93,15 @@ class TestTagEditing:
 
         response = await client.patch(
             f"/api/v1/items/{item.id}",
-            json={"tags": {"season": ["all-season"], "style": ["elegant", "modern"]}},
+            json={"tags": {"season": ["summer"], "style": ["elegant", "athletic"]}},
             headers=auth_headers,
         )
 
         assert response.status_code == 200, response.json()
         data = response.json()
-        assert data["season"] == ["all-season"]
-        assert data["tags"]["season"] == ["all-season"]
-        assert data["style"] == ["elegant", "modern"]
+        assert data["season"] == ["summer"]
+        assert data["tags"]["season"] == ["summer"]
+        assert data["style"] == ["elegant", "athletic"]
         assert data["tags"]["colors"] == AI_TAGS["colors"]
 
     @pytest.mark.asyncio
@@ -112,7 +112,7 @@ class TestTagEditing:
 
         response = await client.patch(
             f"/api/v1/items/{item.id}",
-            json={"tags": {"pattern": "plaid"}},
+            json={"tags": {"pattern": "checkered"}},
             headers=auth_headers,
         )
 
@@ -149,8 +149,8 @@ FRESH_AI = ClothingTags(
     primary_color="black",
     colors=["black"],
     pattern="solid",
-    material="linen",
-    style=["modern"],
+    material="cotton",
+    style=["athletic"],
     season=["summer"],
     formality="formal",
     fit="oversized",
@@ -190,8 +190,8 @@ class TestReanalysisKeepsEdits:
 
         refreshed = await _reanalyse(db_session, monkeypatch, item, FRESH_AI)
 
-        assert refreshed.material == "linen"
-        assert refreshed.tags["material"] == "linen"
+        assert refreshed.material == "cotton"
+        assert refreshed.tags["material"] == "cotton"
         assert refreshed.tags["fit"] == "oversized"
 
     @pytest.mark.asyncio
@@ -230,11 +230,5 @@ class TestTagOptions:
         assert set(data["styles"]) == ai_service.VALID_STYLES
         assert set(data["fits"]) == ai_service.VALID_FIT
         # Ordered by meaning, not alphabetically, so the editor reads naturally.
-        assert data["formality"] == [
-            "very-casual",
-            "casual",
-            "smart-casual",
-            "business-casual",
-            "formal",
-        ]
-        assert data["seasons"] == ["spring", "summer", "fall", "winter", "all-season"]
+        assert data["formality"] == ["casual", "smart-casual", "formal"]
+        assert data["seasons"] == ["spring", "summer", "fall", "winter"]

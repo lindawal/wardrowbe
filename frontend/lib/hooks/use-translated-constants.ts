@@ -89,3 +89,39 @@ export function useWeatherTags() {
     label: t(value),
   })), [t]);
 }
+
+// Simple value -> translated label lookups for item-tagging vocabularies that
+// come from the backend's dynamic TagOptions (see backend VALID_FORMALITY /
+// VALID_MATERIALS / VALID_PATTERNS / VALID_FIT / VALID_STYLES / VALID_SEASONS)
+// rather than a hardcoded frontend array. t.has() falls back to the raw stored
+// value so an item tagged before a vocabulary change still displays instead of
+// disappearing.
+export function useFormalityLabel() {
+  const t = useTranslations('constants.formality');
+  return useCallback((value: string) => (t.has(value) ? t(value) : value), [t]);
+}
+
+export function useMaterialLabel() {
+  const t = useTranslations('constants.materials');
+  return useCallback((value: string) => (t.has(value) ? t(value) : value), [t]);
+}
+
+export function usePatternLabel() {
+  const t = useTranslations('constants.patterns');
+  return useCallback((value: string) => (t.has(value) ? t(value) : value), [t]);
+}
+
+export function useFitLabel() {
+  const t = useTranslations('constants.fits');
+  return useCallback((value: string) => (t.has(value) ? t(value) : value), [t]);
+}
+
+export function useItemStyleLabel() {
+  const t = useTranslations('constants.itemStyles');
+  return useCallback((value: string) => (t.has(value) ? t(value) : value), [t]);
+}
+
+export function useSeasonLabel() {
+  const t = useTranslations('constants.seasons');
+  return useCallback((value: string) => (t.has(value) ? t(value) : value), [t]);
+}

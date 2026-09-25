@@ -7,8 +7,8 @@
     "brown": "Marrone",
     "burgundy": "Borgogna",
     "charcoal": "Carbone",
-    "cream": "Crema",
     "dark-brown": "Marrone scuro",
+    "dark-green": "Verde scuro",
     "gold": "Oro",
     "gray": "Grigio",
     "green": "Verde",
@@ -21,15 +21,59 @@
     "purple": "Viola",
     "red": "Rosso",
     "silver": "Argento",
-    "tan": "Marrone chiaro",
     "teal": "Verde acqua",
     "white": "Bianco",
     "yellow": "Giallo"
+  },
+  "fits": {
+    "cropped": "Corto",
+    "oversized": "Oversize",
+    "regular": "Regular",
+    "relaxed": "Comodo",
+    "slim": "Slim"
+  },
+  "formality": {
+    "casual": "Casual",
+    "formal": "Formale",
+    "smart-casual": "Smart Casual"
+  },
+  "itemStyles": {
+    "athletic": "Sportivo",
+    "bohemian": "Bohémien",
+    "casual": "Casual",
+    "elegant": "Elegante",
+    "minimalist": "Minimalista",
+    "rugged": "Rustico",
+    "streetwear": "Streetwear",
+    "vintage": "Vintage"
+  },
+  "materials": {
+    "canvas": "Tela",
+    "cotton": "Cotone",
+    "denim": "Denim",
+    "fleece": "Pile",
+    "knit": "Maglia",
+    "leather": "Pelle",
+    "polyester": "Poliestere",
+    "silk": "Seta",
+    "suede": "Camoscio",
+    "velvet": "Velluto",
+    "wool": "Lana"
   },
   "occasions": {
     "casual": "Casual",
     "going-out": "Uscita",
     "work": "Lavoro"
+  },
+  "patterns": {
+    "animal-print": "Animalier",
+    "checkered": "A quadri",
+    "floral": "Floreale",
+    "geometric": "Geometrico",
+    "polka-dot": "A pois",
+    "print": "Stampa",
+    "solid": "Tinta unita",
+    "striped": "A righe"
   },
   "seasons": {
     "fall": "Autunno",

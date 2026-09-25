@@ -127,11 +127,11 @@ class TestTagParsing:
         response = """
         {
             "type": "jacket",
-            "formality": "business-casual"
+            "formality": "smart-casual"
         }
         """
         tags = service._parse_tags_from_response(response)
-        assert tags.formality == "business-casual"
+        assert tags.formality == "smart-casual"
 
     def test_parse_invalid_formality(self):
         """Test that invalid formality is None."""

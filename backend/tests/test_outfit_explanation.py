@@ -325,7 +325,10 @@ class TestRecommendationRegionFill:
 
     @pytest.mark.asyncio
     async def test_complete_outfit_is_left_alone(self, db_session, test_user):
-        shirt = _item(test_user.id, "shirt")
+        # A distinct upper-body type from the spare t-shirt below, so the fill
+        # logic has something other than "t-shirt" to recognize as covering
+        # the upper region.
+        shirt = _item(test_user.id, "blouse")
         jeans = _item(test_user.id, "jeans")
         sneakers = _item(test_user.id, "sneakers")
         spare = _item(test_user.id, "t-shirt")

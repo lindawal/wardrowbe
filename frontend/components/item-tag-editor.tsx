@@ -7,6 +7,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { cn } from '@/lib/utils';
 import type { TagOptions } from '@/lib/types';
 import { type EditableTags, withCurrent } from '@/lib/item-tags';
+import {
+  useFormalityLabel,
+  useMaterialLabel,
+  usePatternLabel,
+  useFitLabel,
+  useItemStyleLabel,
+  useSeasonLabel,
+} from '@/lib/hooks/use-translated-constants';
 
 // Radix Select cannot hold an empty-string value, so "no value" needs a stand-in.
 const NONE = '__none__';
@@ -28,8 +36,14 @@ interface ItemTagEditorProps {
  */
 export function ItemTagEditor({ value, onChange, options, describeColor }: ItemTagEditorProps) {
   const t = useTranslations('wardrobe.itemDetail');
+  const formalityLabel = useFormalityLabel();
+  const materialLabel = useMaterialLabel();
+  const patternLabel = usePatternLabel();
+  const fitLabel = useFitLabel();
+  const itemStyleLabel = useItemStyleLabel();
+  const seasonLabel = useSeasonLabel();
 
-  const single = (key: SingleKey, label: string, choices: string[]) => (
+  const single = (key: SingleKey, label: string, choices: string[], describe?: (v: string) => string) => (
     <div className="space-y-2">
       <Label>{label}</Label>
       <Select
@@ -43,7 +57,7 @@ export function ItemTagEditor({ value, onChange, options, describeColor }: ItemT
           <SelectItem value={NONE}>{t('noValue')}</SelectItem>
           {withCurrent(choices, value[key]).map((choice) => (
             <SelectItem key={choice} value={choice}>
-              {choice}
+              {describe ? describe(choice) : choice}
             </SelectItem>
           ))}
         </SelectContent>
@@ -96,14 +110,14 @@ export function ItemTagEditor({ value, onChange, options, describeColor }: ItemT
   return (
     <div className="space-y-3">
       <div className="grid grid-cols-2 gap-3">
-        {single('formality', t('formality'), options.formality)}
-        {single('pattern', t('pattern'), options.patterns)}
-        {single('material', t('material'), options.materials)}
-        {single('fit', t('fit'), options.fits)}
+        {single('formality', t('formality'), options.formality, formalityLabel)}
+        {single('pattern', t('pattern'), options.patterns, patternLabel)}
+        {single('material', t('material'), options.materials, materialLabel)}
+        {single('fit', t('fit'), options.fits, fitLabel)}
       </div>
       {list('colors', t('colors'), options.colors, colorChip)}
-      {list('style', t('style'), options.styles)}
-      {list('season', t('season'), options.seasons)}
+      {list('style', t('style'), options.styles, itemStyleLabel)}
+      {list('season', t('season'), options.seasons, seasonLabel)}
     </div>
   );
 }

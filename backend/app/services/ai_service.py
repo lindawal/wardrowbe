@@ -87,27 +87,24 @@ VALID_COLORS = {
     "burgundy",
     "pink",
     "green",
+    "dark-green",
     "olive",
     "yellow",
     "orange",
     "purple",
     "brown",
-    "tan",
     "beige",
-    "cream",
     "gold",
     "silver",
 }
 VALID_PATTERNS = {
     "solid",
     "striped",
-    "plaid",
     "checkered",
     "floral",
-    "graphic",
+    "print",
     "geometric",
     "polka-dot",
-    "camouflage",
     "animal-print",
 }
 VALID_MATERIALS = {
@@ -117,31 +114,25 @@ VALID_MATERIALS = {
     "wool",
     "polyester",
     "silk",
-    "linen",
     "knit",
     "fleece",
     "suede",
     "velvet",
-    "nylon",
     "canvas",
 }
-VALID_FORMALITY = {"very-casual", "casual", "smart-casual", "business-casual", "formal"}
-VALID_FIT = {"slim", "regular", "relaxed", "oversized", "tailored", "cropped"}
+VALID_FORMALITY = {"casual", "smart-casual", "formal"}
+VALID_FIT = {"slim", "regular", "relaxed", "oversized", "cropped"}
 VALID_STYLES = {
     "casual",
-    "classic",
-    "sporty",
     "minimalist",
     "bohemian",
-    "preppy",
     "streetwear",
     "elegant",
     "athletic",
     "vintage",
-    "modern",
     "rugged",
 }
-VALID_SEASONS = {"spring", "summer", "fall", "winter", "all-season"}
+VALID_SEASONS = {"spring", "summer", "fall", "winter"}
 
 
 def compute_tag_completeness(tags: "ClothingTags") -> float:
@@ -389,25 +380,24 @@ class AIService:
             "light gray": "gray",
             "dark grey": "gray",
             "dark gray": "gray",
-            "off-white": "cream",
-            "ivory": "cream",
+            "off-white": "white",
+            "ivory": "white",
             "wine": "burgundy",
             "maroon": "burgundy",
-            "forest green": "green",
+            "forest green": "dark-green",
+            "hunter green": "dark-green",
             "dark blue": "navy",
             "royal blue": "blue",
             "sky blue": "light-blue",
             "baby blue": "light-blue",
-            "camel": "tan",
-            "khaki": "tan",
+            "camel": "beige",
+            "khaki": "beige",
             "rust": "orange",
             "coral": "pink",
             "rose": "pink",
             "mauve": "purple",
             "lavender": "purple",
             "mustard": "yellow",
-            "gold": "yellow",
-            "silver": "gray",
             "charcoal": "gray",
         }
 

@@ -540,7 +540,7 @@ async def test_create_suggestion_clears_cached_suggestions(
         headers=auth_headers,
     )
     assert resp.status_code == 201, resp.text
-    assert cleared == [(test_user.id, "office")]
+    assert cleared == [(test_user.id, "work")]
 
 
 @pytest.mark.asyncio

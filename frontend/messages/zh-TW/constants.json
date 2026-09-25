@@ -7,8 +7,8 @@
     "brown": "棕色",
     "burgundy": "酒紅",
     "charcoal": "炭灰",
-    "cream": "奶油色",
     "dark-brown": "深棕",
+    "dark-green": "深綠",
     "gold": "金色",
     "gray": "灰色",
     "green": "綠色",
@@ -21,15 +21,59 @@
     "purple": "紫色",
     "red": "紅色",
     "silver": "銀色",
-    "tan": "褐色",
     "teal": "藍綠",
     "white": "白色",
     "yellow": "黃色"
+  },
+  "fits": {
+    "cropped": "短版",
+    "oversized": "寬大",
+    "regular": "常規",
+    "relaxed": "寬鬆",
+    "slim": "修身"
+  },
+  "formality": {
+    "casual": "休閒",
+    "formal": "正式",
+    "smart-casual": "商務休閒"
+  },
+  "itemStyles": {
+    "athletic": "運動",
+    "bohemian": "波希米亞",
+    "casual": "休閒",
+    "elegant": "優雅",
+    "minimalist": "極簡",
+    "rugged": "粗獷",
+    "streetwear": "街頭風",
+    "vintage": "復古"
+  },
+  "materials": {
+    "canvas": "帆布",
+    "cotton": "棉",
+    "denim": "牛仔布",
+    "fleece": "刷毛",
+    "knit": "針織",
+    "leather": "皮革",
+    "polyester": "聚酯纖維",
+    "silk": "真絲",
+    "suede": "麂皮",
+    "velvet": "天鵝絨",
+    "wool": "羊毛"
   },
   "occasions": {
     "casual": "休閒",
     "going-out": "外出",
     "work": "工作"
+  },
+  "patterns": {
+    "animal-print": "動物紋",
+    "checkered": "格紋",
+    "floral": "花卉",
+    "geometric": "幾何圖案",
+    "polka-dot": "圓點",
+    "print": "印花",
+    "solid": "純色",
+    "striped": "條紋"
   },
   "seasons": {
     "fall": "秋季",

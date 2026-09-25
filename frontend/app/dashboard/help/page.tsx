@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 // i18n scan (see scripts/i18n-scan.mjs). Keep it in sync with the code it describes:
 // every file path, default and threshold below was checked against the source.
 
-const STAND = '24.09.2026';
+const STAND = '25.09.2026';
 
 const SECTIONS = [
   { id: 'ueberblick', title: 'Überblick und Aufbau' },
@@ -38,37 +38,37 @@ const TAG_ROWS: string[][] = [
   [
     'Hauptfarbe, weitere Farben',
     'Hauptfarbe ja',
-    'black, white, gray, navy, blue, light-blue, red, burgundy, pink, green, olive, yellow, orange, purple, brown, tan, beige, cream, gold, silver',
+    'black, white, gray, navy, blue, light-blue, red, burgundy, pink, green, dark-green, olive, yellow, orange, purple, brown, beige, gold, silver',
   ],
   [
     'Muster',
     'ja',
-    'solid (uni), striped (gestreift), plaid (kariert), checkered (kariert, Schachbrett), floral (geblümt), graphic (Print), geometric, polka-dot (gepunktet), camouflage, animal-print',
+    'solid (uni), striped (gestreift), checkered (kariert, Schachbrett), floral (geblümt), print, geometric, polka-dot (gepunktet), animal-print',
   ],
   [
     'Material',
     'nein',
-    'cotton (Baumwolle), denim, leather (Leder), wool (Wolle), polyester, silk (Seide), linen (Leinen), knit (Strick), fleece, suede (Wildleder), velvet (Samt), nylon, canvas',
+    'cotton (Baumwolle), denim, leather (Leder), wool (Wolle), polyester, silk (Seide), knit (Strick), fleece, suede (Wildleder), velvet (Samt), canvas',
   ],
   [
     'Formalität',
     'ja',
-    'very-casual (sehr leger), casual (leger), smart-casual, business-casual, formal (formell)',
+    'casual (leger), smart-casual, formal (formell)',
   ],
   [
     'Stil (1 bis 2)',
     'nein',
-    'casual, classic, sporty, minimalist, bohemian, preppy, streetwear, elegant, athletic, vintage, modern, rugged',
+    'casual, minimalist, bohemian, streetwear, elegant, athletic, vintage, rugged',
   ],
-  ['Saison (mehrere)', 'nein', 'spring (Frühling), summer (Sommer), fall (Herbst), winter, all-season (ganzjährig)'],
-  ['Passform', 'nein', 'slim, regular, relaxed, oversized, tailored, cropped'],
+  ['Saison (mehrere)', 'nein', 'spring (Frühling), summer (Sommer), fall (Herbst), winter'],
+  ['Passform', 'nein', 'slim, regular, relaxed, oversized, cropped'],
 ];
 
 // backend/app/services/item_scorer.py, OCCASION_FORMALITY
 const OCCASION_ROWS: string[][] = [
-  ['Freizeit', 'casual', 'very-casual, casual, smart-casual'],
-  ['Arbeit', 'work', 'smart-casual, business-casual, formal'],
-  ['Ausgehen', 'going-out', 'smart-casual, business-casual, formal, very-formal'],
+  ['Freizeit', 'casual', 'casual, smart-casual'],
+  ['Arbeit', 'work', 'smart-casual, formal'],
+  ['Ausgehen', 'going-out', 'smart-casual, formal'],
 ];
 
 function Section({ id, description, children }: { id: SectionId; description?: string; children: ReactNode }) {
@@ -308,13 +308,13 @@ export default function HelpPage() {
             head={['KI nennt', 'gespeichert als']}
             rows={[
               ['grey, light grey, dark grey, charcoal', 'gray'],
-              ['off-white, ivory', 'cream'],
+              ['off-white, ivory', 'white'],
               ['wine, maroon', 'burgundy'],
-              ['forest green', 'green'],
+              ['forest green, hunter green', 'dark-green'],
               ['dark blue', 'navy'],
               ['royal blue', 'blue'],
               ['sky blue, baby blue', 'light-blue'],
-              ['camel, khaki', 'tan'],
+              ['camel, khaki', 'beige'],
               ['rust', 'orange'],
               ['coral, rose', 'pink'],
               ['mauve, lavender', 'purple'],
@@ -405,6 +405,48 @@ export default function HelpPage() {
             Das Ganze läuft, während der Browser auf die Antwort wartet. Dauert es länger als 5 Minuten, meldet
             die Seite einen Fehler, obwohl der Server im Hintergrund weiterrechnet.
           </p>
+
+          <H3>Material und Wetter</H3>
+          <p>
+            Beim Bewerten fließt die aktuelle Temperatur mit ein, nicht nur die Jahreszeit. Standardmäßig gilt es
+            unter 10 °C als kalt und über 25 °C als heiß; bei hoher Kälteempfindlichkeit (Einstellungen)
+            verschiebt sich das um 5 °C in Richtung wärmer, bei niedriger um 5 °C in Richtung kälter.
+          </p>
+          <List>
+            <li>
+              <strong>Kälte:</strong> volle Punktzahl für Material Wolle, Fleece oder Strick, für Jacke, Mantel,
+              Blouson, Weste, Pullover, oder wenn das Teil die Saison winter trägt.
+            </li>
+            <li>
+              <strong>Hitze:</strong> volle Punktzahl für Material Baumwolle oder Seide, oder wenn das Teil die
+              Saison summer trägt. Jacke, Mantel, Blouson und Weste fallen bei Hitze nicht ganz durch, weil man sie
+              ausziehen kann – außer sie sind aus Wolle oder Fleece, ein Mantel, oder ein schwerer Untertyp wie
+              Puffer oder Parka. Solche „schweren“ Teile behalten nur einen Sockelwert von 0,6.
+            </li>
+            <li>
+              <strong>Regen:</strong> Jacke, Mantel und Oberbekleidung bekommen einen Bonus, wenn die
+              Regenwahrscheinlichkeit über 50 % liegt.
+            </li>
+          </List>
+          <p>
+            Die Saison-Tags eines Teils wirken nur, wenn nicht alle vier gesetzt sind. Fehlt die Saison ganz oder
+            sind alle vier gesetzt, zählt das Teil immer als passend – deshalb gibt es „ganzjährig“ (all-season)
+            nicht mehr als eigenen Wert: Es hätte exakt dasselbe bewirkt wie gar keine Saison zu setzen. Ist nur
+            ein Teil der Saisons gesetzt, gibt es für die aktuelle Saison volle Punktzahl, für eine benachbarte
+            Saison 0,6 und für die gegenüberliegende 0,2 – außer die Temperatur ist eindeutig heiß mit summer oder
+            kalt mit winter im Tag, dann gewinnt die Temperatur.
+          </p>
+          <Tech>
+            <p>
+              <C>_temp_bucket_score</C>, <C>_season_score</C>, <C>SEASON_ADJACENCY</C>,{' '}
+              <C>HEAVY_LAYER_TYPES</C>/<C>_MATERIALS</C>/<C>_SUBTYPES</C>,{' '}
+              <C>REMOVABLE_LAYER_TYPES</C>/<C>_HOT_FLOOR</C> in <C>backend/app/services/item_scorer.py</C>.
+              Schwellen: <C>DEFAULT_COLD_THRESHOLD</C> (10), <C>DEFAULT_HOT_THRESHOLD</C> (25),{' '}
+              <C>SENSITIVITY_SHIFT</C> (5), je in <C>preferences.cold_threshold</C>/<C>hot_threshold</C>{' '}
+              überschreibbar.
+            </p>
+          </Tech>
+
           <Tech>
             <p>
               Kandidaten: <C>get_candidate_items</C>. Ist <C>WASH_TRACKING_ENABLED</C> an, fallen auch Teile raus,
@@ -441,15 +483,16 @@ export default function HelpPage() {
             rows={[
               ['passt zum Anlass', '1,0'],
               ['eine Stufe daneben', '0,5'],
-              ['weiter daneben', '0,15'],
             ]}
           />
           <p>
-            Die Stufen in Reihenfolge: very-casual, casual, smart-casual, business-casual, formal, very-formal. Der
-            Faktor wird mit den übrigen Bewertungen <strong>multipliziert</strong>: Wetter, Jahreszeit, wann zuletzt
-            getragen, deine Vorlieben, wie oft getragen. Ein legeres T-Shirt beim Anlass Formell liegt zwei Stufen
-            neben business-casual und behält nur 15 % seines Werts. Die KI könnte es trotzdem wählen, es steht aber
-            ganz unten in ihrer Liste.
+            Die Stufen in Reihenfolge: casual, smart-casual, formal. Jeder Anlass lässt zwei benachbarte Stufen zu
+            (siehe Tabelle oben), darum liegt ein Teil nie weiter als eine Stufe von einer passenden entfernt – die
+            frühere dritte Stufe „weiter daneben“ (0,15) kann mit nur noch drei Formalitäten nicht mehr vorkommen.
+            Der Faktor wird mit den übrigen Bewertungen <strong>multipliziert</strong>: Wetter, Jahreszeit, wann
+            zuletzt getragen, deine Vorlieben, wie oft getragen. Ein legeres T-Shirt beim Anlass Formell liegt eine
+            Stufe neben smart-casual und behält nur 50 % seines Werts. Die KI könnte es trotzdem wählen, es steht
+            aber weiter unten in ihrer Liste.
           </p>
           <p>
             <strong>Teile ohne Formalität zählen als leger.</strong> Bei Freizeit schadet das nicht, bei Büro oder

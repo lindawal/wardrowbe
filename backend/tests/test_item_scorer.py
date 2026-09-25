@@ -273,12 +273,12 @@ class TestFormalityScore:
         assert _formality_score(item, "casual") == 1.0
 
     def test_one_off(self):
-        item = _item(formality="business-casual")
+        item = _item(formality="formal")
         assert _formality_score(item, "casual") == 0.5
 
-    def test_two_off(self):
-        item = _item(formality="formal")
-        assert _formality_score(item, "casual") == 0.15
+    # There is no "two levels off" case left to test: formality is now a 3-step
+    # scale (casual, smart-casual, formal) and every occasion allows 2 of the 3
+    # levels, so an item can only ever be exactly right or one step off.
 
     def test_unknown_occasion_defaults(self):
         item = _item(formality="casual")

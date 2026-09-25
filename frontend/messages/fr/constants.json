@@ -7,8 +7,8 @@
     "brown": "Marron",
     "burgundy": "Bordeaux",
     "charcoal": "Anthracite",
-    "cream": "Crème",
     "dark-brown": "Marron foncé",
+    "dark-green": "Vert foncé",
     "gold": "Doré",
     "gray": "Gris",
     "green": "Vert",
@@ -21,15 +21,59 @@
     "purple": "Violet",
     "red": "Rouge",
     "silver": "Argenté",
-    "tan": "Fauve",
     "teal": "Bleu canard",
     "white": "Blanc",
     "yellow": "Jaune"
+  },
+  "fits": {
+    "cropped": "Court",
+    "oversized": "Oversize",
+    "regular": "Regular",
+    "relaxed": "Ample",
+    "slim": "Slim"
+  },
+  "formality": {
+    "casual": "Décontracté",
+    "formal": "Habillé",
+    "smart-casual": "Smart Casual"
+  },
+  "itemStyles": {
+    "athletic": "Sportif",
+    "bohemian": "Bohème",
+    "casual": "Décontracté",
+    "elegant": "Élégant",
+    "minimalist": "Minimaliste",
+    "rugged": "Robuste",
+    "streetwear": "Streetwear",
+    "vintage": "Vintage"
+  },
+  "materials": {
+    "canvas": "Toile",
+    "cotton": "Coton",
+    "denim": "Denim",
+    "fleece": "Polaire",
+    "knit": "Tricot",
+    "leather": "Cuir",
+    "polyester": "Polyester",
+    "silk": "Soie",
+    "suede": "Daim",
+    "velvet": "Velours",
+    "wool": "Laine"
   },
   "occasions": {
     "casual": "Décontracté",
     "going-out": "Sortie",
     "work": "Travail"
+  },
+  "patterns": {
+    "animal-print": "Imprimé animal",
+    "checkered": "À carreaux",
+    "floral": "Fleuri",
+    "geometric": "Géométrique",
+    "polka-dot": "À pois",
+    "print": "Imprimé",
+    "solid": "Uni",
+    "striped": "Rayé"
   },
   "seasons": {
     "fall": "Automne",

@@ -7,8 +7,8 @@
     "brown": "Brown",
     "burgundy": "Burgundy",
     "charcoal": "Charcoal",
-    "cream": "Cream",
     "dark-brown": "Dark Brown",
+    "dark-green": "Dark Green",
     "gold": "Gold",
     "gray": "Gray",
     "green": "Green",
@@ -21,15 +21,59 @@
     "purple": "Purple",
     "red": "Red",
     "silver": "Silver",
-    "tan": "Tan",
     "teal": "Teal",
     "white": "White",
     "yellow": "Yellow"
+  },
+  "fits": {
+    "cropped": "Cropped",
+    "oversized": "Oversized",
+    "regular": "Regular",
+    "relaxed": "Relaxed",
+    "slim": "Slim"
+  },
+  "formality": {
+    "casual": "Casual",
+    "formal": "Formal",
+    "smart-casual": "Smart Casual"
+  },
+  "itemStyles": {
+    "athletic": "Athletic",
+    "bohemian": "Bohemian",
+    "casual": "Casual",
+    "elegant": "Elegant",
+    "minimalist": "Minimalist",
+    "rugged": "Rugged",
+    "streetwear": "Streetwear",
+    "vintage": "Vintage"
+  },
+  "materials": {
+    "canvas": "Canvas",
+    "cotton": "Cotton",
+    "denim": "Denim",
+    "fleece": "Fleece",
+    "knit": "Knit",
+    "leather": "Leather",
+    "polyester": "Polyester",
+    "silk": "Silk",
+    "suede": "Suede",
+    "velvet": "Velvet",
+    "wool": "Wool"
   },
   "occasions": {
     "casual": "Casual",
     "going-out": "Going Out",
     "work": "Work"
+  },
+  "patterns": {
+    "animal-print": "Animal Print",
+    "checkered": "Checkered",
+    "floral": "Floral",
+    "geometric": "Geometric",
+    "polka-dot": "Polka Dot",
+    "print": "Print",
+    "solid": "Solid",
+    "striped": "Striped"
   },
   "seasons": {
     "fall": "Fall",

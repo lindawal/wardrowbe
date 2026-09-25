@@ -7,8 +7,8 @@
     "brown": "ブラウン",
     "burgundy": "バーガンディ",
     "charcoal": "チャコール",
-    "cream": "クリーム",
     "dark-brown": "ダークブラウン",
+    "dark-green": "ダークグリーン",
     "gold": "ゴールド",
     "gray": "グレー",
     "green": "緑",
@@ -21,15 +21,59 @@
     "purple": "パープル",
     "red": "赤",
     "silver": "シルバー",
-    "tan": "タン",
     "teal": "ティール",
     "white": "白",
     "yellow": "イエロー"
+  },
+  "fits": {
+    "cropped": "クロップド",
+    "oversized": "オーバーサイズ",
+    "regular": "レギュラー",
+    "relaxed": "リラックス",
+    "slim": "スリム"
+  },
+  "formality": {
+    "casual": "カジュアル",
+    "formal": "フォーマル",
+    "smart-casual": "スマートカジュアル"
+  },
+  "itemStyles": {
+    "athletic": "アスレチック",
+    "bohemian": "ボヘミアン",
+    "casual": "カジュアル",
+    "elegant": "エレガント",
+    "minimalist": "ミニマリスト",
+    "rugged": "ラギッド",
+    "streetwear": "ストリートウェア",
+    "vintage": "ヴィンテージ"
+  },
+  "materials": {
+    "canvas": "キャンバス",
+    "cotton": "コットン",
+    "denim": "デニム",
+    "fleece": "フリース",
+    "knit": "ニット",
+    "leather": "レザー",
+    "polyester": "ポリエステル",
+    "silk": "シルク",
+    "suede": "スエード",
+    "velvet": "ベルベット",
+    "wool": "ウール"
   },
   "occasions": {
     "casual": "カジュアル",
     "going-out": "お出かけ",
     "work": "仕事"
+  },
+  "patterns": {
+    "animal-print": "アニマル柄",
+    "checkered": "チェック",
+    "floral": "花柄",
+    "geometric": "幾何学模様",
+    "polka-dot": "水玉",
+    "print": "プリント",
+    "solid": "無地",
+    "striped": "ストライプ"
   },
   "seasons": {
     "fall": "秋",

@@ -17,7 +17,7 @@ import { useAnalytics } from '@/lib/hooks/use-analytics';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { useClothingTypes, useItemDisplayName } from '@/lib/hooks/use-translated-constants';
+import { useClothingTypes, useItemDisplayName, useClothingColors } from '@/lib/hooks/use-translated-constants';
 
 function StatCard({
   title,
@@ -98,6 +98,7 @@ function LoadingSkeleton() {
 
 function ColorBar({ color, percentage }: { color: string; percentage: number }) {
   const t = useTranslations('analytics');
+  const clothingColors = useClothingColors();
   const colorMap: Record<string, string> = {
     black: 'bg-gray-900',
     white: 'bg-gray-100 border',
@@ -107,13 +108,13 @@ function ColorBar({ color, percentage }: { color: string; percentage: number }) 
     blue: 'bg-blue-500',
     red: 'bg-red-500',
     green: 'bg-green-500',
+    'dark-green': 'bg-green-800',
     yellow: 'bg-yellow-400',
     orange: 'bg-orange-500',
     purple: 'bg-purple-500',
     pink: 'bg-pink-500',
     brown: 'bg-amber-700',
     beige: 'bg-amber-200',
-    cream: 'bg-amber-100',
     khaki: 'bg-yellow-700',
     olive: 'bg-lime-700',
     teal: 'bg-teal-500',
@@ -124,13 +125,14 @@ function ColorBar({ color, percentage }: { color: string; percentage: number }) 
   };
 
   const bgColor = colorMap[color.toLowerCase()] || 'bg-muted';
+  const colorLabel = clothingColors.find((c) => c.value === color.toLowerCase())?.name ?? color;
 
   return (
     <div className="flex items-center gap-3">
       <div className={`w-4 h-4 rounded ${bgColor}`} />
       <div className="flex-1">
         <div className="flex justify-between text-sm mb-1">
-          <span className="capitalize">{color}</span>
+          <span>{colorLabel}</span>
           <span className="text-muted-foreground">{t('percent', { value: percentage.toFixed(1) })}</span>
         </div>
         <Progress value={percentage} className="h-2" />

@@ -135,7 +135,7 @@ class TestIncrementalEMA:
 
         outfit = _make_outfit_with_feedback(
             user_id,
-            [{"primary_color": "green", "style": ["sporty"]}],
+            [{"primary_color": "green", "style": ["athletic"]}],
             accepted=True,
             rating=5,
         )
@@ -144,7 +144,7 @@ class TestIncrementalEMA:
 
         await db_session.refresh(profile)
         assert profile.learned_color_scores["green"] != 0.2
-        assert "sporty" in profile.learned_style_scores
+        assert "athletic" in profile.learned_style_scores
 
     @pytest.mark.asyncio
     async def test_process_feedback_uses_incremental(self, db_session, test_user_for_learning):
@@ -157,7 +157,7 @@ class TestIncrementalEMA:
             type="shirt",
             image_path="test.jpg",
             primary_color="navy",
-            style=["classic"],
+            style=["elegant"],
         )
         db_session.add(item)
 

@@ -62,7 +62,17 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { toast } from 'sonner';
 import { useUpdateItem, useDeleteItem, useReanalyzeItem, useRotateImage, useRemoveBackground, useRestoreOriginal, useReplaceItemImage, useLogWash, useWashHistory, useItemWearStats, useItemWearHistory, useAddItemImage, useDeleteItemImage, useSetPrimaryImage, useTagOptions } from '@/lib/hooks/use-items';
 import { Item } from '@/lib/types';
-import { useClothingTypes, useClothingColors, useItemDisplayName } from '@/lib/hooks/use-translated-constants';
+import {
+  useClothingTypes,
+  useClothingColors,
+  useItemDisplayName,
+  useFormalityLabel,
+  useMaterialLabel,
+  usePatternLabel,
+  useFitLabel,
+  useItemStyleLabel,
+  useSeasonLabel,
+} from '@/lib/hooks/use-translated-constants';
 import { ColorEyedropper } from '@/components/color-eyedropper';
 import { ItemTagEditor } from '@/components/item-tag-editor';
 import { type EditableTags, changedTags, editableTagsFromItem, withCurrent } from '@/lib/item-tags';
@@ -87,6 +97,12 @@ export function ItemDetailDialog({ item, open, onOpenChange }: ItemDetailDialogP
   const clothingTypes = useClothingTypes();
   const clothingColors = useClothingColors();
   const itemDisplayName = useItemDisplayName();
+  const formalityLabel = useFormalityLabel();
+  const materialLabel = useMaterialLabel();
+  const patternLabel = usePatternLabel();
+  const fitLabel = useFitLabel();
+  const itemStyleLabel = useItemStyleLabel();
+  const seasonLabel = useSeasonLabel();
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showPairingsDialog, setShowPairingsDialog] = useState(false);
@@ -956,37 +972,37 @@ export function ItemDetailDialog({ item, open, onOpenChange }: ItemDetailDialogP
                       {hasAiTags && <div className="flex flex-wrap gap-1.5">
                         {tags.colors?.map((color) => (
                           <Badge key={color} variant="outline" className="text-xs">
-                            {color}
+                            {describeColor(color).name}
                           </Badge>
                         ))}
                         {tags.pattern && (
                           <Badge variant="outline" className="text-xs">
-                            {tags.pattern}
+                            {patternLabel(tags.pattern)}
                           </Badge>
                         )}
                         {tags.material && (
                           <Badge variant="outline" className="text-xs">
-                            {tags.material}
+                            {materialLabel(tags.material)}
                           </Badge>
                         )}
                         {tags.style?.map((s) => (
                           <Badge key={s} variant="outline" className="text-xs">
-                            {s}
+                            {itemStyleLabel(s)}
                           </Badge>
                         ))}
                         {tags.season?.map((s) => (
                           <Badge key={s} variant="outline" className="text-xs">
-                            {s}
+                            {seasonLabel(s)}
                           </Badge>
                         ))}
                         {tags.formality && (
                           <Badge variant="outline" className="text-xs">
-                            {tags.formality}
+                            {formalityLabel(tags.formality)}
                           </Badge>
                         )}
                         {tags.fit && (
                           <Badge variant="outline" className="text-xs">
-                            {tags.fit ? t('view.fitBadge', { fit: tags.fit }) : null}
+                            {tags.fit ? t('view.fitBadge', { fit: fitLabel(tags.fit) }) : null}
                           </Badge>
                         )}
                         {tags.occasion?.map((o: string) => (

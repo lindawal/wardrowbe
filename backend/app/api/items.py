@@ -1013,7 +1013,7 @@ async def get_item_types(
     return await item_service.get_item_types(current_user.id)
 
 
-_SEASON_ORDER = ("spring", "summer", "fall", "winter", "all-season")
+_SEASON_ORDER = ("spring", "summer", "fall", "winter")
 
 
 @router.get("/tag-options", response_model=TagOptionsResponse)

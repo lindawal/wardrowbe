@@ -9,9 +9,9 @@ from app.services.weather_service import WeatherData
 from app.utils.clothing import ITEM_ROLE
 
 OCCASION_FORMALITY = {
-    "work": ["smart-casual", "business-casual", "formal"],
-    "casual": ["very-casual", "casual", "smart-casual"],
-    "going-out": ["smart-casual", "business-casual", "formal", "very-formal"],
+    "work": ["smart-casual", "formal"],
+    "casual": ["casual", "smart-casual"],
+    "going-out": ["smart-casual", "formal"],
 }
 
 _NORTH_SEASON = {
@@ -52,12 +52,9 @@ def get_season(month: int, latitude: float | None = None) -> str:
 
 
 FORMALITY_ORDER = [
-    "very-casual",
     "casual",
     "smart-casual",
-    "business-casual",
     "formal",
-    "very-formal",
 ]
 
 SEASON_ADJACENCY = {
@@ -86,7 +83,7 @@ REMOVABLE_LAYER_TYPES = {"jacket", "coat", "blouson", "vest", "outerwear"}
 RAIN_LAYER_TYPES = {"jacket", "coat", "outerwear"}
 WARM_LAYER_TYPES = REMOVABLE_LAYER_TYPES | {"sweater"}
 HEAVY_LAYER_TYPES = {"coat"}
-HEAVY_LAYER_MATERIALS = {"wool", "fleece", "down", "shearling"}
+HEAVY_LAYER_MATERIALS = {"wool", "fleece"}
 HEAVY_LAYER_SUBTYPES = {
     "puffer",
     "parka",
@@ -130,7 +127,7 @@ def _temp_bucket_score(
         else:
             return 0.7
     elif temp > hot_threshold:
-        if material in ("cotton", "linen", "silk") or "summer" in seasons:
+        if material in ("cotton", "silk") or "summer" in seasons:
             return 1.0
         elif item_type in WARM_LAYER_TYPES or item_type == "boots":
             return 0.05
@@ -238,6 +235,9 @@ def _season_score(
     preferences: UserPreference | None = None,
 ) -> float:
     seasons = item.season or []
+    # "all-season" was removed from VALID_SEASONS (identical in effect to leaving
+    # season empty, see the "not seasons" branch below), so no new item can get
+    # it -- this check only still matters for items tagged before that change.
     if not seasons or "all-season" in seasons or current_season in seasons:
         return 1.0
 

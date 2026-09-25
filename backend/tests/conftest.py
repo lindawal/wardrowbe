@@ -174,6 +174,6 @@ def sample_tags() -> dict[str, Any]:
         "material": "cotton",
         "style": ["casual", "smart-casual"],
         "formality": "smart-casual",
-        "season": ["spring", "fall", "all-season"],
+        "season": ["spring", "fall"],
         "confidence": 0.85,
     }
