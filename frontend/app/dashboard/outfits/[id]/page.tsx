@@ -29,6 +29,7 @@ import { LineageCard } from '@/components/shared/lineage-card';
 import { CloneToLookbookDialog } from '@/components/shared/clone-to-lookbook-dialog';
 import { FeedbackDialog } from '@/components/feedback-dialog';
 import { LookbookAttributesCard } from '@/components/lookbook/lookbook-attributes-card';
+import { WornPhotoCard } from '@/components/outfits/worn-photo-card';
 import {
   useAcceptOutfit,
   useDeleteOutfit,
@@ -271,6 +272,8 @@ export default function OutfitDetailPage() {
           </CardContent>
         </Card>
       )}
+
+      {!isPhotoLook && <WornPhotoCard outfit={outfit} />}
 
       <div className="flex flex-wrap gap-2">
         {isPendingReview && (

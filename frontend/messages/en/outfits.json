@@ -78,9 +78,21 @@
     "stylingTip": "Tip:",
     "undated": "Undated",
     "viewPhoto": "View photo full screen",
+    "viewWornPhoto": "View worn photo full screen",
     "wearToday": "Wear today",
     "wearTodayError": "Failed to wear today",
-    "wornCount": "Worn {count, plural, one {# time} other {# times}}"
+    "wornCount": "Worn {count, plural, one {# time} other {# times}}",
+    "wornPhoto": "Worn photo",
+    "wornPhotoAdd": "Add a photo of yourself wearing this",
+    "wornPhotoDeleteConfirm": "Remove this worn photo?",
+    "wornPhotoDeleteError": "Failed to remove worn photo",
+    "wornPhotoInvalid": "Please choose a JPG, PNG, WebP or HEIC image",
+    "wornPhotoRemove": "Remove",
+    "wornPhotoRemoved": "Worn photo removed",
+    "wornPhotoReplace": "Replace",
+    "wornPhotoTooLarge": "The photo is larger than {maxMb} MB",
+    "wornPhotoUploadError": "Failed to upload worn photo",
+    "wornPhotoUploaded": "Worn photo added"
   },
   "details": {
     "addedItems": "Added {count, plural, one {# item} other {# items}} from AI",

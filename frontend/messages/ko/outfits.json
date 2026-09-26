@@ -78,9 +78,21 @@
     "stylingTip": "팁:",
     "undated": "날짜 없음",
     "viewPhoto": "사진 전체 화면으로 보기",
+    "viewWornPhoto": "착용 사진 전체 화면으로 보기",
     "wearToday": "오늘 입기",
     "wearTodayError": "오늘 입기 기록 실패",
-    "wornCount": "{count, plural, other {#회 착용}}"
+    "wornCount": "{count, plural, other {#회 착용}}",
+    "wornPhoto": "착용 사진",
+    "wornPhotoAdd": "이 룩을 입은 사진을 추가하세요",
+    "wornPhotoDeleteConfirm": "이 착용 사진을 삭제하시겠어요?",
+    "wornPhotoDeleteError": "착용 사진 삭제 실패",
+    "wornPhotoInvalid": "JPG, PNG, WebP 또는 HEIC 이미지를 선택해 주세요",
+    "wornPhotoRemove": "삭제",
+    "wornPhotoRemoved": "착용 사진이 삭제되었어요",
+    "wornPhotoReplace": "교체",
+    "wornPhotoTooLarge": "사진이 {maxMb}MB보다 커요",
+    "wornPhotoUploadError": "착용 사진 업로드 실패",
+    "wornPhotoUploaded": "착용 사진이 추가되었어요"
   },
   "details": {
     "addedItems": "AI가 {count, plural, other {아이템 #개}}를 추가했어요",

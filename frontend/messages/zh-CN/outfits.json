@@ -78,9 +78,21 @@
     "stylingTip": "小贴士：",
     "undated": "未设日期",
     "viewPhoto": "全屏查看照片",
+    "viewWornPhoto": "全屏查看穿着照片",
     "wearToday": "今天穿",
     "wearTodayError": "记录今天穿着失败",
-    "wornCount": "已穿着 {count, plural, one {# 次} other {# 次}}"
+    "wornCount": "已穿着 {count, plural, one {# 次} other {# 次}}",
+    "wornPhoto": "穿着照片",
+    "wornPhotoAdd": "添加一张你穿着这套搭配的照片",
+    "wornPhotoDeleteConfirm": "删除这张穿着照片？",
+    "wornPhotoDeleteError": "删除穿着照片失败",
+    "wornPhotoInvalid": "请选择 JPG、PNG、WebP 或 HEIC 格式的图片",
+    "wornPhotoRemove": "删除",
+    "wornPhotoRemoved": "穿着照片已删除",
+    "wornPhotoReplace": "替换",
+    "wornPhotoTooLarge": "照片超过 {maxMb} MB",
+    "wornPhotoUploadError": "上传穿着照片失败",
+    "wornPhotoUploaded": "穿着照片已添加"
   },
   "details": {
     "addedItems": "已从 AI 添加 {count, plural, one {# 件单品} other {# 件单品}}",

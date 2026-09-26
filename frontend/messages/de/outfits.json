@@ -78,9 +78,21 @@
     "stylingTip": "Tipp:",
     "undated": "Ohne Datum",
     "viewPhoto": "Foto im Vollbild ansehen",
+    "viewWornPhoto": "Tragefoto im Vollbild ansehen",
     "wearToday": "Heute tragen",
     "wearTodayError": "Konnte nicht als heute getragen markiert werden",
-    "wornCount": "{count, plural, one {# Mal getragen} other {# Mal getragen}}"
+    "wornCount": "{count, plural, one {# Mal getragen} other {# Mal getragen}}",
+    "wornPhoto": "Tragefoto",
+    "wornPhotoAdd": "Foto hinzufügen, wie du den Look trägst",
+    "wornPhotoDeleteConfirm": "Dieses Tragefoto entfernen?",
+    "wornPhotoDeleteError": "Tragefoto konnte nicht entfernt werden",
+    "wornPhotoInvalid": "Bitte wähle ein JPG-, PNG-, WebP- oder HEIC-Bild",
+    "wornPhotoRemove": "Entfernen",
+    "wornPhotoRemoved": "Tragefoto entfernt",
+    "wornPhotoReplace": "Ersetzen",
+    "wornPhotoTooLarge": "Das Foto ist größer als {maxMb} MB",
+    "wornPhotoUploadError": "Tragefoto konnte nicht hochgeladen werden",
+    "wornPhotoUploaded": "Tragefoto hinzugefügt"
   },
   "details": {
     "addedItems": "{count, plural, one {# Stück} other {# Stücke}} von der KI hinzugefügt",

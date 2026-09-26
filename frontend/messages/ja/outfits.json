@@ -78,9 +78,21 @@
     "stylingTip": "ヒント：",
     "undated": "日付なし",
     "viewPhoto": "写真を全画面で表示",
+    "viewWornPhoto": "着用写真を全画面で表示",
     "wearToday": "今日着る",
     "wearTodayError": "着用の記録に失敗しました",
-    "wornCount": "{count, plural, one {# 回着用} other {# 回着用}}"
+    "wornCount": "{count, plural, one {# 回着用} other {# 回着用}}",
+    "wornPhoto": "着用写真",
+    "wornPhotoAdd": "この着こなしを着ている写真を追加",
+    "wornPhotoDeleteConfirm": "この着用写真を削除しますか？",
+    "wornPhotoDeleteError": "着用写真の削除に失敗しました",
+    "wornPhotoInvalid": "JPG、PNG、WebP、HEICの画像を選んでください",
+    "wornPhotoRemove": "削除",
+    "wornPhotoRemoved": "着用写真を削除しました",
+    "wornPhotoReplace": "置き換える",
+    "wornPhotoTooLarge": "写真が{maxMb}MBを超えています",
+    "wornPhotoUploadError": "着用写真のアップロードに失敗しました",
+    "wornPhotoUploaded": "着用写真を追加しました"
   },
   "details": {
     "addedItems": "AIが{count, plural, one {# 件のアイテム} other {# 件のアイテム}}を追加しました",

@@ -76,6 +76,11 @@ export interface Outfit {
   photo_url: string | null;
   photo_medium_url: string | null;
   photo_thumbnail_url: string | null;
+  // Optional photo of an item-based outfit actually being worn; independent of the
+  // photo look fields above.
+  worn_photo_url: string | null;
+  worn_photo_medium_url: string | null;
+  worn_photo_thumbnail_url: string | null;
   items: OutfitItem[];
   feedback: FeedbackSummary | null;
   family_ratings: FamilyRating[] | null;
@@ -241,6 +246,38 @@ export function useCreatePhotoLook() {
       queryClient.invalidateQueries({ queryKey: ['outfits'] });
       queryClient.invalidateQueries({ queryKey: ['analytics'] });
       invalidateLookbookQueries(queryClient);
+    },
+  });
+}
+
+export function useUploadWornPhoto() {
+  const queryClient = useQueryClient();
+  const { data: session } = useSession();
+
+  return useMutation({
+    mutationFn: ({ outfitId, photo }: { outfitId: string; photo: File }) => {
+      if (session?.accessToken) {
+        setAccessToken(session.accessToken as string);
+      }
+      const data = new FormData();
+      data.append('image', photo);
+      return api.postForm<Outfit>(`/outfits/${outfitId}/worn-photo`, data);
+    },
+    onSuccess: (updated, { outfitId }) => {
+      queryClient.setQueryData(['outfit', outfitId], updated);
+      queryClient.invalidateQueries({ queryKey: ['outfits'] });
+    },
+  });
+}
+
+export function useDeleteWornPhoto() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (outfitId: string) => api.delete<Outfit>(`/outfits/${outfitId}/worn-photo`),
+    onSuccess: (updated, outfitId) => {
+      queryClient.setQueryData(['outfit', outfitId], updated);
+      queryClient.invalidateQueries({ queryKey: ['outfits'] });
     },
   });
 }

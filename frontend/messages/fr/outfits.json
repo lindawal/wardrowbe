@@ -78,9 +78,21 @@
     "stylingTip": "Conseil :",
     "undated": "Non daté",
     "viewPhoto": "Voir la photo en plein écran",
+    "viewWornPhoto": "Voir la photo portée en plein écran",
     "wearToday": "Porter aujourd'hui",
     "wearTodayError": "Échec du marquage comme portée aujourd’hui",
-    "wornCount": "Portée {count, plural, one {# fois} other {# fois}}"
+    "wornCount": "Portée {count, plural, one {# fois} other {# fois}}",
+    "wornPhoto": "Photo portée",
+    "wornPhotoAdd": "Ajouter une photo de vous portant ce look",
+    "wornPhotoDeleteConfirm": "Supprimer cette photo portée ?",
+    "wornPhotoDeleteError": "Échec de la suppression de la photo portée",
+    "wornPhotoInvalid": "Veuillez choisir une image JPG, PNG, WebP ou HEIC",
+    "wornPhotoRemove": "Supprimer",
+    "wornPhotoRemoved": "Photo portée supprimée",
+    "wornPhotoReplace": "Remplacer",
+    "wornPhotoTooLarge": "La photo dépasse {maxMb} Mo",
+    "wornPhotoUploadError": "Échec de l'import de la photo portée",
+    "wornPhotoUploaded": "Photo portée ajoutée"
   },
   "details": {
     "addedItems": "{count, plural, one {# article ajouté} other {# articles ajoutés}} par l’IA",

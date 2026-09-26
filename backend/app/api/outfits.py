@@ -38,6 +38,7 @@ from app.services.outfit_photo_service import (
     PhotoTooLargeError,
     delete_photo_files,
     photo_paths,
+    worn_photo_paths,
 )
 from app.services.outfit_service import OutfitListFilters, OutfitService
 from app.services.recommendation_service import (
@@ -196,6 +197,11 @@ class OutfitResponse(BaseModel):
     photo_url: str | None = None
     photo_medium_url: str | None = None
     photo_thumbnail_url: str | None = None
+    # Signed URLs for an optional "worn" photo on a regular, item-based outfit --
+    # independent of the photo look fields above.
+    worn_photo_url: str | None = None
+    worn_photo_medium_url: str | None = None
+    worn_photo_thumbnail_url: str | None = None
     items: list[OutfitItemResponse]
     feedback: FeedbackSummary | None = None
     family_ratings: list[FamilyRatingResponse] | None = None
@@ -446,6 +452,13 @@ def outfit_to_response(
         else None,
         photo_thumbnail_url=sign_image_url(outfit.photo_thumbnail_path)
         if outfit.photo_thumbnail_path
+        else None,
+        worn_photo_url=sign_image_url(outfit.worn_photo_path) if outfit.worn_photo_path else None,
+        worn_photo_medium_url=sign_image_url(outfit.worn_photo_medium_path)
+        if outfit.worn_photo_medium_path
+        else None,
+        worn_photo_thumbnail_url=sign_image_url(outfit.worn_photo_thumbnail_path)
+        if outfit.worn_photo_thumbnail_path
         else None,
         items=items,
         feedback=feedback_summary,
@@ -980,7 +993,7 @@ async def delete_outfit(
             detail={"message": "Outfit not found", "error_code": "OUTFIT_NOT_FOUND"},
         )
 
-    files = photo_paths(outfit)
+    files = photo_paths(outfit) + worn_photo_paths(outfit)
     await db.delete(outfit)
     await db.commit()
     # Photo files go only once the row is gone for good.
@@ -1476,6 +1489,77 @@ async def create_photo_look(
                 "message": "Invalid image file. Supported formats: JPEG, PNG, WebP, HEIC",
             },
         ) from None
+
+    return outfit_to_response(outfit)
+
+
+@router.post("/{outfit_id}/worn-photo", response_model=OutfitResponse)
+async def upload_worn_photo(
+    outfit_id: UUID,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    current_user: Annotated[User, Depends(get_current_user)],
+    image: UploadFile = File(...),
+) -> OutfitResponse:
+    _check_studio_kill_switch()
+    await rate_limit_by_user(
+        str(current_user.id), "worn_photo_upload", max_requests=20, window_seconds=60
+    )
+
+    query = select(Outfit).where(and_(Outfit.id == outfit_id, Outfit.user_id == current_user.id))
+    result = await db.execute(query)
+    outfit = result.scalar_one_or_none()
+    if not outfit:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail={"message": "Outfit not found", "error_code": "OUTFIT_NOT_FOUND"},
+        )
+
+    service = OutfitPhotoService(db)
+    try:
+        outfit = await service.set_worn_photo(
+            user=current_user,
+            outfit=outfit,
+            image_data=await image.read(),
+            content_type=image.content_type,
+            filename=image.filename,
+        )
+    except OutfitIsPhotoLookError:
+        raise _photo_look_unsupported("Uploading a worn photo") from None
+    except PhotoTooLargeError:
+        raise HTTPException(
+            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            detail={"error_code": "PHOTO_TOO_LARGE", "message": "Photo is too large"},
+        ) from None
+    except PhotoInvalidError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={
+                "error_code": "PHOTO_INVALID",
+                "message": "Invalid image file. Supported formats: JPEG, PNG, WebP, HEIC",
+            },
+        ) from None
+
+    return outfit_to_response(outfit)
+
+
+@router.delete("/{outfit_id}/worn-photo", response_model=OutfitResponse)
+async def delete_worn_photo(
+    outfit_id: UUID,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    current_user: Annotated[User, Depends(get_current_user)],
+) -> OutfitResponse:
+    _check_studio_kill_switch()
+    query = select(Outfit).where(and_(Outfit.id == outfit_id, Outfit.user_id == current_user.id))
+    result = await db.execute(query)
+    outfit = result.scalar_one_or_none()
+    if not outfit:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail={"message": "Outfit not found", "error_code": "OUTFIT_NOT_FOUND"},
+        )
+
+    service = OutfitPhotoService(db)
+    outfit = await service.clear_worn_photo(outfit)
 
     return outfit_to_response(outfit)
 

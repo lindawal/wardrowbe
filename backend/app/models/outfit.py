@@ -87,6 +87,16 @@ class Outfit(Base):
     def is_photo_look(self) -> bool:
         return self.photo_path is not None
 
+    # A photo of an item-based outfit actually being worn -- independent of photo_path
+    # above, which is for photo looks (a photo INSTEAD of items). Same ImageService layout.
+    worn_photo_path: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    worn_photo_medium_path: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    worn_photo_thumbnail_path: Mapped[str | None] = mapped_column(String(500), nullable=True)
+
+    @property
+    def has_worn_photo(self) -> bool:
+        return self.worn_photo_path is not None
+
     # Status
     status: Mapped[OutfitStatus] = mapped_column(
         Enum(OutfitStatus, name="outfit_status", create_type=False),
