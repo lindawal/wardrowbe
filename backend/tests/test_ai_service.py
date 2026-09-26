@@ -146,6 +146,152 @@ class TestTagParsing:
         assert tags.formality is None
 
 
+class TestOutfitLookParsing:
+    """Tests for AIService._parse_multi_tags_from_response (Step 1 inspiration looks).
+
+    Unlike _parse_tags_from_response (single main item), this parses a JSON array
+    with one object per garment/accessory, each carrying its own description.
+    """
+
+    def test_parse_json_array(self):
+        service = AIService()
+        response = """
+        [
+            {"type": "t-shirt", "primary_color": "black", "pattern": "solid",
+             "formality": "casual", "fit": "slim", "description": "black slim-fit t-shirt"},
+            {"type": "jeans", "primary_color": "blue", "pattern": "solid",
+             "formality": "casual", "fit": "oversized", "description": "wide baggy jeans"},
+            {"type": "sneakers", "primary_color": "white", "pattern": "solid",
+             "formality": "casual", "description": "white sneakers"}
+        ]
+        """
+        items = service._parse_multi_tags_from_response(response)
+        assert len(items) == 3
+        assert items[0].type == "t-shirt"
+        assert items[0].fit == "slim"
+        assert items[0].description == "black slim-fit t-shirt"
+        assert items[1].type == "jeans"
+        assert items[1].fit == "oversized"
+        assert items[2].type == "sneakers"
+        assert items[2].description == "white sneakers"
+
+    def test_parse_json_array_in_markdown(self):
+        service = AIService()
+        response = """
+        Here you go:
+        ```json
+        [{"type": "jacket", "primary_color": "navy", "description": "navy jacket"}]
+        ```
+        """
+        items = service._parse_multi_tags_from_response(response)
+        assert len(items) == 1
+        assert items[0].type == "jacket"
+        assert items[0].primary_color == "navy"
+        assert items[0].description == "navy jacket"
+
+    def test_parse_single_object_tolerated_as_one_item(self):
+        """A model that ignores the array instruction and returns one object should
+        still produce a one-item list rather than being dropped entirely."""
+        service = AIService()
+        response = '{"type": "dress", "primary_color": "red", "description": "red dress"}'
+        items = service._parse_multi_tags_from_response(response)
+        assert len(items) == 1
+        assert items[0].type == "dress"
+        assert items[0].description == "red dress"
+
+    def test_parse_invalid_json_returns_empty_list(self):
+        service = AIService()
+        items = service._parse_multi_tags_from_response("not json at all")
+        assert items == []
+
+    def test_parse_filters_invalid_values_per_item(self):
+        service = AIService()
+        response = """
+        [
+            {"type": "bogus-type", "primary_color": "chartreuse", "description": "??"},
+            {"type": "coat", "primary_color": "brown", "description": "brown coat"}
+        ]
+        """
+        items = service._parse_multi_tags_from_response(response)
+        assert len(items) == 2
+        assert items[0].type == "unknown"
+        assert items[0].primary_color is None
+        assert items[1].type == "coat"
+        assert items[1].primary_color == "brown"
+
+    def test_parse_missing_description_leaves_it_none(self):
+        service = AIService()
+        response = '[{"type": "belt", "primary_color": "black"}]'
+        items = service._parse_multi_tags_from_response(response)
+        assert len(items) == 1
+        assert items[0].description is None
+
+    def test_single_item_parsing_unaffected_by_refactor(self):
+        """Regression guard: analyze_image()'s single-object path must keep behaving
+        exactly as before now that both parsers share _tags_from_dict/_extract_json."""
+        service = AIService()
+        response = '{"type": "sweater", "primary_color": "blue", "colors": ["blue"]}'
+        tags = service._parse_tags_from_response(response)
+        assert tags.type == "sweater"
+        assert tags.primary_color == "blue"
+        assert tags.description is None
+
+
+class TestAnalyzeOutfitLook:
+    """Tests for AIService.analyze_outfit_look() (Step 1: upload + AI analysis)."""
+
+    @staticmethod
+    def _success_response(content: str) -> httpx.Response:
+        return _mock_response(
+            {
+                "model": "llava:7b",
+                "choices": [{"message": {"content": content}, "finish_reason": "stop"}],
+            }
+        )
+
+    @pytest.mark.asyncio
+    async def test_returns_one_tags_object_per_item(self, tmp_path):
+        from PIL import Image
+
+        image_path = tmp_path / "look.jpg"
+        Image.new("RGB", (10, 10), color="red").save(image_path)
+
+        service = AIService()
+        content = (
+            '[{"type": "t-shirt", "primary_color": "black", "description": "black t-shirt"},'
+            '{"type": "jeans", "primary_color": "blue", "description": "blue jeans"}]'
+        )
+
+        with patch("httpx.AsyncClient.post", return_value=self._success_response(content)) as mock_post:
+            items = await service.analyze_outfit_look(image_path)
+
+        assert len(items) == 2
+        assert items[0].type == "t-shirt"
+        assert items[1].type == "jeans"
+        # Sent as a single vision call with the outfit-look system prompt, not
+        # the single-item clothing_analysis prompt.
+        body = mock_post.call_args.kwargs["json"]
+        assert body["messages"][0]["role"] == "system"
+        assert "outfit photo" in body["messages"][0]["content"].lower()
+
+    @pytest.mark.asyncio
+    async def test_empty_content_returns_empty_list(self, tmp_path):
+        from PIL import Image
+
+        image_path = tmp_path / "look.jpg"
+        Image.new("RGB", (10, 10), color="blue").save(image_path)
+
+        service = AIService()
+        empty = _mock_response(
+            {"model": "llava:7b", "choices": [{"message": {"content": ""}, "finish_reason": "stop"}]}
+        )
+
+        with patch("httpx.AsyncClient.post", return_value=empty):
+            items = await service.analyze_outfit_look(image_path)
+
+        assert items == []
+
+
 class TestClothingTags:
     """Tests for ClothingTags model."""
 

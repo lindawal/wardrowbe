@@ -1,0 +1,51 @@
+{
+  "title": "Inspiration",
+  "subtitle": "Upload a photo of a look you like and AI will break it down item by item.",
+  "uploadButton": "Upload look",
+  "loadError": "Failed to load inspiration looks.",
+  "empty": {
+    "title": "No inspiration looks yet",
+    "description": "Upload a photo of an outfit you like -- from a shop, a magazine, social media -- and AI will identify each piece.",
+    "upload": "Upload a look"
+  },
+  "status": {
+    "pending": "Queued",
+    "analyzing": "Analyzing...",
+    "analyzed": "Analyzed",
+    "error": "Analysis failed"
+  },
+  "upload": {
+    "title": "Upload an inspiration look",
+    "description": "AI will identify each garment in the photo. You can correct any tag afterwards.",
+    "dropzone": "Drag a photo here, or click to choose one",
+    "dropzoneActive": "Drop the photo here",
+    "formatHint": "JPEG, PNG, WebP or HEIC, up to {maxMb}MB",
+    "tooLarge": "That photo is larger than {maxMb}MB.",
+    "invalidType": "Unsupported file type.",
+    "previewAlt": "Look preview",
+    "previewUnavailable": "{name} (preview unavailable)",
+    "removePhoto": "Remove photo",
+    "upload": "Upload",
+    "uploaded": "Look uploaded -- analyzing now",
+    "uploadError": "Failed to upload the photo."
+  },
+  "detail": {
+    "backToList": "Back to inspiration",
+    "analyzing": "AI is identifying the items in this photo...",
+    "errorTitle": "Analysis failed",
+    "retryHint": "Delete this look and upload the photo again to retry.",
+    "itemsTitle": "Items",
+    "noItems": "No items were identified in this photo.",
+    "type": "Type",
+    "primaryColor": "Primary color",
+    "noValue": "None",
+    "description": "Description",
+    "descriptionPlaceholder": "Short description",
+    "deleteLook": "Delete look",
+    "deleteConfirm": "Delete this inspiration look? The photo and its analyzed items will be permanently removed.",
+    "deleted": "Inspiration look deleted",
+    "deleteError": "Failed to delete the look.",
+    "notFound": "Inspiration look not found.",
+    "updateError": "Failed to save the change."
+  }
+}

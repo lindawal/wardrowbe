@@ -1,0 +1,51 @@
+{
+  "title": "インスピレーション",
+  "subtitle": "気に入ったコーディネートの写真をアップロードすると、AIがアイテムごとに分析します。",
+  "uploadButton": "ルックをアップロード",
+  "loadError": "インスピレーションルックの読み込みに失敗しました。",
+  "empty": {
+    "title": "インスピレーションルックはまだありません",
+    "description": "お店の写真、雑誌、SNSなど、気に入ったコーディネートの写真をアップロードすると、AIが各アイテムを識別します。",
+    "upload": "ルックをアップロード"
+  },
+  "status": {
+    "pending": "待機中",
+    "analyzing": "分析中...",
+    "analyzed": "分析済み",
+    "error": "分析に失敗しました"
+  },
+  "upload": {
+    "title": "インスピレーションルックをアップロード",
+    "description": "AIが写真内の各アイテムを識別します。後からタグを修正できます。",
+    "dropzone": "ここに写真をドラッグ、またはクリックして選択",
+    "dropzoneActive": "ここに写真をドロップ",
+    "formatHint": "JPEG、PNG、WebP、HEIC対応、最大{maxMb}MB",
+    "tooLarge": "この写真は{maxMb}MBを超えています。",
+    "invalidType": "サポートされていないファイル形式です。",
+    "previewAlt": "ルックのプレビュー",
+    "previewUnavailable": "{name}(プレビュー不可)",
+    "removePhoto": "写真を削除",
+    "upload": "アップロード",
+    "uploaded": "ルックをアップロードしました -- 分析中",
+    "uploadError": "写真のアップロードに失敗しました。"
+  },
+  "detail": {
+    "backToList": "インスピレーションに戻る",
+    "analyzing": "AIがこの写真のアイテムを識別しています...",
+    "errorTitle": "分析に失敗しました",
+    "retryHint": "このルックを削除して写真を再度アップロードすると、再試行できます。",
+    "itemsTitle": "アイテム",
+    "noItems": "この写真からアイテムは識別されませんでした。",
+    "type": "タイプ",
+    "primaryColor": "メインカラー",
+    "noValue": "なし",
+    "description": "説明",
+    "descriptionPlaceholder": "簡単な説明",
+    "deleteLook": "ルックを削除",
+    "deleteConfirm": "このインスピレーションルックを削除しますか?写真と分析済みのアイテムは完全に削除されます。",
+    "deleted": "インスピレーションルックを削除しました",
+    "deleteError": "ルックの削除に失敗しました。",
+    "notFound": "インスピレーションルックが見つかりません。",
+    "updateError": "変更の保存に失敗しました。"
+  }
+}

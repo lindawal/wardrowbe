@@ -194,7 +194,7 @@ class OutfitPhotoService:
     async def clear_worn_photo(self, outfit: Outfit) -> Outfit:
         old_paths = worn_photo_paths(outfit)
         if not old_paths:
-            return outfit
+            return await load_full_outfit(self.db, outfit.id)
 
         outfit.worn_photo_path = None
         outfit.worn_photo_medium_path = None

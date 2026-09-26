@@ -1,0 +1,51 @@
+{
+  "title": "Inspiration",
+  "subtitle": "Téléchargez la photo d'un look que vous aimez et l'IA le décompose pièce par pièce.",
+  "uploadButton": "Ajouter un look",
+  "loadError": "Impossible de charger les looks d'inspiration.",
+  "empty": {
+    "title": "Aucun look d'inspiration pour le moment",
+    "description": "Téléchargez la photo d'une tenue que vous aimez -- d'une boutique, d'un magazine, des réseaux sociaux -- et l'IA identifiera chaque pièce.",
+    "upload": "Ajouter un look"
+  },
+  "status": {
+    "pending": "En attente",
+    "analyzing": "Analyse en cours...",
+    "analyzed": "Analysé",
+    "error": "Analyse échouée"
+  },
+  "upload": {
+    "title": "Ajouter un look d'inspiration",
+    "description": "L'IA identifiera chaque vêtement sur la photo. Vous pourrez corriger chaque étiquette ensuite.",
+    "dropzone": "Déposez une photo ici, ou cliquez pour en choisir une",
+    "dropzoneActive": "Déposez la photo ici",
+    "formatHint": "JPEG, PNG, WebP ou HEIC, jusqu'à {maxMb}Mo",
+    "tooLarge": "Cette photo dépasse {maxMb}Mo.",
+    "invalidType": "Type de fichier non pris en charge.",
+    "previewAlt": "Aperçu du look",
+    "previewUnavailable": "{name} (aperçu indisponible)",
+    "removePhoto": "Supprimer la photo",
+    "upload": "Télécharger",
+    "uploaded": "Look téléchargé -- analyse en cours",
+    "uploadError": "Impossible de télécharger la photo."
+  },
+  "detail": {
+    "backToList": "Retour à l'inspiration",
+    "analyzing": "L'IA identifie les éléments de cette photo...",
+    "errorTitle": "Analyse échouée",
+    "retryHint": "Supprimez ce look et téléchargez à nouveau la photo pour réessayer.",
+    "itemsTitle": "Éléments",
+    "noItems": "Aucun élément n'a été identifié sur cette photo.",
+    "type": "Type",
+    "primaryColor": "Couleur principale",
+    "noValue": "Aucune",
+    "description": "Description",
+    "descriptionPlaceholder": "Brève description",
+    "deleteLook": "Supprimer le look",
+    "deleteConfirm": "Supprimer ce look d'inspiration ? La photo et ses éléments analysés seront définitivement supprimés.",
+    "deleted": "Look d'inspiration supprimé",
+    "deleteError": "Impossible de supprimer le look.",
+    "notFound": "Look d'inspiration introuvable.",
+    "updateError": "Impossible d'enregistrer la modification."
+  }
+}

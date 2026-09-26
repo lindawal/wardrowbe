@@ -1,0 +1,51 @@
+{
+  "title": "灵感",
+  "subtitle": "上传一张你喜欢的穿搭照片,AI 会逐件为你拆解分析。",
+  "uploadButton": "上传look",
+  "loadError": "加载灵感look失败。",
+  "empty": {
+    "title": "还没有灵感look",
+    "description": "上传一张你喜欢的穿搭照片——来自店铺、杂志或社交媒体——AI 将识别每一件单品。",
+    "upload": "上传一个look"
+  },
+  "status": {
+    "pending": "排队中",
+    "analyzing": "分析中...",
+    "analyzed": "已分析",
+    "error": "分析失败"
+  },
+  "upload": {
+    "title": "上传灵感look",
+    "description": "AI 将识别照片中的每件服饰。之后你可以修正任何标签。",
+    "dropzone": "将照片拖到此处,或点击选择照片",
+    "dropzoneActive": "将照片放到此处",
+    "formatHint": "支持 JPEG、PNG、WebP 或 HEIC,最大 {maxMb}MB",
+    "tooLarge": "该照片超过了 {maxMb}MB。",
+    "invalidType": "不支持的文件类型。",
+    "previewAlt": "Look预览",
+    "previewUnavailable": "{name}(预览不可用)",
+    "removePhoto": "移除照片",
+    "upload": "上传",
+    "uploaded": "Look已上传——正在分析中",
+    "uploadError": "照片上传失败。"
+  },
+  "detail": {
+    "backToList": "返回灵感",
+    "analyzing": "AI 正在识别这张照片中的单品...",
+    "errorTitle": "分析失败",
+    "retryHint": "删除此look并重新上传照片即可重试。",
+    "itemsTitle": "单品",
+    "noItems": "未在这张照片中识别出任何单品。",
+    "type": "类型",
+    "primaryColor": "主色",
+    "noValue": "无",
+    "description": "描述",
+    "descriptionPlaceholder": "简短描述",
+    "deleteLook": "删除look",
+    "deleteConfirm": "删除此灵感look?照片及其分析出的单品将被永久删除。",
+    "deleted": "灵感look已删除",
+    "deleteError": "删除look失败。",
+    "notFound": "未找到该灵感look。",
+    "updateError": "保存更改失败。"
+  }
+}

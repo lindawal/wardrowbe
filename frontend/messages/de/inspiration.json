@@ -1,0 +1,51 @@
+{
+  "title": "Inspiration",
+  "subtitle": "Lade ein Foto eines Looks hoch, den du magst, und die KI zerlegt es Teil für Teil.",
+  "uploadButton": "Look hochladen",
+  "loadError": "Inspiration-Looks konnten nicht geladen werden.",
+  "empty": {
+    "title": "Noch keine Inspiration-Looks",
+    "description": "Lade das Foto eines Outfits hoch, das dir gefällt -- aus einem Shop, einer Zeitschrift, Social Media -- und die KI erkennt jedes einzelne Teil.",
+    "upload": "Look hochladen"
+  },
+  "status": {
+    "pending": "Wartet",
+    "analyzing": "Wird analysiert...",
+    "analyzed": "Analysiert",
+    "error": "Analyse fehlgeschlagen"
+  },
+  "upload": {
+    "title": "Inspiration-Look hochladen",
+    "description": "Die KI erkennt jedes Kleidungsstück auf dem Foto. Du kannst jedes Tag danach korrigieren.",
+    "dropzone": "Foto hier ablegen oder klicken, um eines auszuwählen",
+    "dropzoneActive": "Foto hier ablegen",
+    "formatHint": "JPEG, PNG, WebP oder HEIC, bis zu {maxMb}MB",
+    "tooLarge": "Das Foto ist größer als {maxMb}MB.",
+    "invalidType": "Nicht unterstützter Dateityp.",
+    "previewAlt": "Look-Vorschau",
+    "previewUnavailable": "{name} (Vorschau nicht verfügbar)",
+    "removePhoto": "Foto entfernen",
+    "upload": "Hochladen",
+    "uploaded": "Look hochgeladen -- wird jetzt analysiert",
+    "uploadError": "Foto konnte nicht hochgeladen werden."
+  },
+  "detail": {
+    "backToList": "Zurück zur Inspiration",
+    "analyzing": "Die KI erkennt die Teile auf diesem Foto...",
+    "errorTitle": "Analyse fehlgeschlagen",
+    "retryHint": "Lösche diesen Look und lade das Foto erneut hoch, um es noch einmal zu versuchen.",
+    "itemsTitle": "Teile",
+    "noItems": "Auf diesem Foto wurden keine Teile erkannt.",
+    "type": "Typ",
+    "primaryColor": "Hauptfarbe",
+    "noValue": "Keine",
+    "description": "Beschreibung",
+    "descriptionPlaceholder": "Kurze Beschreibung",
+    "deleteLook": "Look löschen",
+    "deleteConfirm": "Diesen Inspiration-Look löschen? Das Foto und die analysierten Teile werden dauerhaft entfernt.",
+    "deleted": "Inspiration-Look gelöscht",
+    "deleteError": "Look konnte nicht gelöscht werden.",
+    "notFound": "Inspiration-Look nicht gefunden.",
+    "updateError": "Änderung konnte nicht gespeichert werden."
+  }
+}

@@ -17,6 +17,7 @@ from app.workers.notifications import (
     send_notification,
     update_learning_profiles,
 )
+from app.workers.inspiration import analyze_inspiration_look
 from app.workers.queues import IMAGE_PROCESSING_KINDS, TAGGING_QUEUE, queue_for_kind
 from app.workers.settings import get_redis_settings
 from app.workers.tagging import TAGGING_MAX_TRIES, tag_item_image, worker_job_timeout_seconds
@@ -120,6 +121,7 @@ async def shutdown(ctx: dict) -> None:
 class WorkerSettings:
     functions = [
         tag_item_image,
+        analyze_inspiration_look,
         send_notification,
         retry_failed_notifications,
         check_scheduled_notifications,

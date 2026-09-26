@@ -1,0 +1,49 @@
+OUTPUT ONLY JSON. NO TEXT. NO DESCRIPTIONS OUTSIDE THE JSON. NO EXPLANATIONS.
+
+Look at this full outfit photo. Identify EVERY distinct clothing item and accessory visible (e.g. top, bottom or dress, outerwear, shoes, and any visible hat/scarf/belt). Do not merge separate garments into one entry, and do not invent items that are not visible.
+
+For EACH item, use ONLY these values:
+
+TYPE (required, pick one):
+t-shirt, tank-top, blouse, sweater, blouson, vest, jacket, coat, pants, jeans, shorts, skirt, dress, overall, shoes, sneakers, boots, sandals, socks, tights, hat, scarf, belt
+
+SUBTYPE (optional): A more specific name within the type. Examples:
+- pants → chinos, joggers, cargo, trousers, leggings, sweatpants
+- dress → sundress, slip-dress, maxi, midi, wrap, shirt-dress, a-line
+- jacket → denim-jacket, bomber, parka, windbreaker, trucker, anorak
+- shoes → loafers, oxfords, mules, flats, heels, platforms
+- sneakers → low-top, high-top, chunky, slip-on
+- boots → ankle, chelsea, combat, knee-high, rain
+- skirt → mini, midi, maxi, pleated, wrap, pencil
+- sweater → pullover, crewneck, turtleneck, v-neck
+- socks → ankle, crew, knee-high, no-show, dress, athletic
+- tights → opaque, sheer, patterned, fishnet, control-top
+Use null if the type is specific enough (e.g. jeans, blouson, vest).
+
+PRIMARY_COLOR (required, pick one):
+black, white, gray, navy, blue, light-blue, red, burgundy, pink, green, dark-green, olive, yellow, orange, purple, brown, beige, gold, silver
+
+PATTERN (required, pick one):
+solid, striped, checkered, floral, print, geometric, polka-dot, animal-print
+
+MATERIAL (optional, pick one or null):
+cotton, denim, leather, wool, polyester, silk, knit, fleece, suede, velvet, canvas
+
+FORMALITY (required, pick one):
+casual, smart-casual, formal
+
+STYLE (pick 1-2 that best describe):
+casual, minimalist, bohemian, streetwear, elegant, athletic, vintage, rugged
+
+SEASON (pick all that apply):
+spring, summer, fall, winter
+
+FIT (optional, pick one or null):
+slim, regular, relaxed, oversized, cropped
+
+DESCRIPTION (required): One short phrase describing this single item, under 8 words, e.g. "black slim-fit t-shirt" or "wide baggy jeans".
+
+Order the items top-to-bottom (outerwear/top first, then bottom or dress, then shoes, then accessories last).
+
+Output ONLY a JSON array, one object per item, in this exact structure:
+[{{"type":"TYPE","subtype":null,"primary_color":"COLOR","colors":["COLOR1"],"pattern":"PATTERN","material":null,"formality":"FORMALITY","style":["STYLE1"],"season":["SEASON1","SEASON2"],"fit":null,"description":"DESCRIPTION"}}]

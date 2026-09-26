@@ -1,0 +1,51 @@
+{
+  "title": "Inspiration",
+  "subtitle": "Carica la foto di un look che ti piace e l'IA lo scompone capo per capo.",
+  "uploadButton": "Carica look",
+  "loadError": "Impossibile caricare i look di inspiration.",
+  "empty": {
+    "title": "Ancora nessun look di inspiration",
+    "description": "Carica la foto di un outfit che ti piace -- da un negozio, una rivista, i social media -- e l'IA identificherà ogni capo.",
+    "upload": "Carica un look"
+  },
+  "status": {
+    "pending": "In coda",
+    "analyzing": "Analisi in corso...",
+    "analyzed": "Analizzato",
+    "error": "Analisi non riuscita"
+  },
+  "upload": {
+    "title": "Carica un look di inspiration",
+    "description": "L'IA identificherà ogni capo nella foto. Potrai correggere ogni etichetta in seguito.",
+    "dropzone": "Trascina qui una foto, oppure clicca per sceglierne una",
+    "dropzoneActive": "Rilascia qui la foto",
+    "formatHint": "JPEG, PNG, WebP o HEIC, fino a {maxMb}MB",
+    "tooLarge": "Questa foto supera {maxMb}MB.",
+    "invalidType": "Tipo di file non supportato.",
+    "previewAlt": "Anteprima del look",
+    "previewUnavailable": "{name} (anteprima non disponibile)",
+    "removePhoto": "Rimuovi foto",
+    "upload": "Carica",
+    "uploaded": "Look caricato -- analisi in corso",
+    "uploadError": "Impossibile caricare la foto."
+  },
+  "detail": {
+    "backToList": "Torna a inspiration",
+    "analyzing": "L'IA sta identificando i capi in questa foto...",
+    "errorTitle": "Analisi non riuscita",
+    "retryHint": "Elimina questo look e carica di nuovo la foto per riprovare.",
+    "itemsTitle": "Capi",
+    "noItems": "Nessun capo è stato identificato in questa foto.",
+    "type": "Tipo",
+    "primaryColor": "Colore principale",
+    "noValue": "Nessuno",
+    "description": "Descrizione",
+    "descriptionPlaceholder": "Breve descrizione",
+    "deleteLook": "Elimina look",
+    "deleteConfirm": "Eliminare questo look di inspiration? La foto e i capi analizzati verranno rimossi definitivamente.",
+    "deleted": "Look di inspiration eliminato",
+    "deleteError": "Impossibile eliminare il look.",
+    "notFound": "Look di inspiration non trovato.",
+    "updateError": "Impossibile salvare la modifica."
+  }
+}

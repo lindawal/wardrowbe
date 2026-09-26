@@ -49,6 +49,7 @@ class ClothingTags(BaseModel):
 
 TAGGING_PROMPT = load_prompt("clothing_analysis")
 DESCRIPTION_PROMPT = load_prompt("clothing_description")
+OUTFIT_LOOK_TAGGING_PROMPT = load_prompt("outfit_look_analysis")
 
 # Valid values for validation
 VALID_TYPES = {
@@ -242,6 +243,125 @@ def compute_confidence_from_logprobs(logprobs_content: list[dict] | None) -> flo
     return round(weighted_sum / total_weight, 2)
 
 
+_COLOR_ALIASES: dict[str, str] = {
+    "grey": "gray",
+    "light grey": "gray",
+    "light gray": "gray",
+    "dark grey": "gray",
+    "dark gray": "gray",
+    "off-white": "white",
+    "ivory": "white",
+    "wine": "burgundy",
+    "maroon": "burgundy",
+    "forest green": "dark-green",
+    "hunter green": "dark-green",
+    "dark blue": "navy",
+    "royal blue": "blue",
+    "sky blue": "light-blue",
+    "baby blue": "light-blue",
+    "camel": "beige",
+    "khaki": "beige",
+    "rust": "orange",
+    "coral": "pink",
+    "rose": "pink",
+    "mauve": "purple",
+    "lavender": "purple",
+    "mustard": "yellow",
+    "charcoal": "gray",
+}
+
+
+def _extract_json(text: str) -> dict | list | None:
+    """Pull the first JSON value out of a chat response: a bare object/array, one
+    fenced in a ```json``` block, or embedded in surrounding prose."""
+    try:
+        return json.loads(text.strip())
+    except json.JSONDecodeError:
+        pass
+
+    json_match = re.search(r"```(?:json)?\s*([\s\S]*?)\s*```", text)
+    if json_match:
+        try:
+            return json.loads(json_match.group(1))
+        except json.JSONDecodeError:
+            pass
+
+    start_idx = text.find("{")
+    array_idx = text.find("[")
+    if array_idx != -1 and (start_idx == -1 or array_idx < start_idx):
+        bracket_count = 0
+        for i, char in enumerate(text[array_idx:], array_idx):
+            if char == "[":
+                bracket_count += 1
+            elif char == "]":
+                bracket_count -= 1
+                if bracket_count == 0:
+                    json_str = text[array_idx : i + 1]
+                    try:
+                        return json.loads(json_str)
+                    except json.JSONDecodeError:
+                        break
+
+    if start_idx != -1:
+        brace_count = 0
+        for i, char in enumerate(text[start_idx:], start_idx):
+            if char == "{":
+                brace_count += 1
+            elif char == "}":
+                brace_count -= 1
+                if brace_count == 0:
+                    json_str = text[start_idx : i + 1]
+                    try:
+                        return json.loads(json_str)
+                    except json.JSONDecodeError:
+                        break
+    return None
+
+
+def _validate_value(value: str | None, valid_set: set) -> str | None:
+    if value is None:
+        return None
+    value_lower = value.lower().strip()
+    if value_lower in valid_set:
+        return value_lower
+    alias = _COLOR_ALIASES.get(value_lower)
+    if alias and alias in valid_set:
+        return alias
+    return None
+
+
+def _validate_list(values: list, valid_set: set) -> list:
+    if not values:
+        return []
+    return [v.lower().strip() for v in values if v and v.lower().strip() in valid_set]
+
+
+def _tags_from_dict(
+    data: dict, raw_response: str, *, description: str | None = None
+) -> ClothingTags:
+    """Build a validated ClothingTags from one already-parsed JSON object, shared by
+    the single-item (analyze_image) and multi-item (analyze_outfit_look) parsers."""
+    tags = ClothingTags()
+    tags.raw_response = raw_response
+
+    item_type = _validate_value(data.get("type"), VALID_TYPES)
+    tags.type = item_type if item_type else "unknown"
+
+    tags.subtype = data.get("subtype") if data.get("subtype") else None
+    tags.primary_color = _validate_value(data.get("primary_color"), VALID_COLORS)
+    tags.colors = _validate_list(data.get("colors", []), VALID_COLORS)
+    tags.pattern = _validate_value(data.get("pattern"), VALID_PATTERNS)
+    tags.material = _validate_value(data.get("material"), VALID_MATERIALS)
+    tags.formality = _validate_value(data.get("formality"), VALID_FORMALITY)
+    tags.style = _validate_list(data.get("style", []), VALID_STYLES)
+    tags.season = _validate_list(data.get("season", []), VALID_SEASONS)
+    tags.fit = _validate_value(data.get("fit"), VALID_FIT)
+    if description:
+        tags.description = description
+    tags.confidence = compute_tag_completeness(tags)
+    return tags
+
+
 class AIEndpointConfig:
     """Configuration for an AI endpoint."""
 
@@ -345,79 +465,7 @@ class AIService:
             return base64.b64encode(buffer.read()).decode("utf-8")
 
     def _parse_tags_from_response(self, response_text: str) -> ClothingTags:
-        def extract_json(text: str) -> dict | None:
-            try:
-                return json.loads(text.strip())
-            except json.JSONDecodeError:
-                pass
-
-            json_match = re.search(r"```(?:json)?\s*([\s\S]*?)\s*```", text)
-            if json_match:
-                try:
-                    return json.loads(json_match.group(1))
-                except json.JSONDecodeError:
-                    pass
-
-            start_idx = text.find("{")
-            if start_idx != -1:
-                brace_count = 0
-                for i, char in enumerate(text[start_idx:], start_idx):
-                    if char == "{":
-                        brace_count += 1
-                    elif char == "}":
-                        brace_count -= 1
-                        if brace_count == 0:
-                            json_str = text[start_idx : i + 1]
-                            try:
-                                return json.loads(json_str)
-                            except json.JSONDecodeError:
-                                break
-            return None
-
-        COLOR_ALIASES: dict[str, str] = {
-            "grey": "gray",
-            "light grey": "gray",
-            "light gray": "gray",
-            "dark grey": "gray",
-            "dark gray": "gray",
-            "off-white": "white",
-            "ivory": "white",
-            "wine": "burgundy",
-            "maroon": "burgundy",
-            "forest green": "dark-green",
-            "hunter green": "dark-green",
-            "dark blue": "navy",
-            "royal blue": "blue",
-            "sky blue": "light-blue",
-            "baby blue": "light-blue",
-            "camel": "beige",
-            "khaki": "beige",
-            "rust": "orange",
-            "coral": "pink",
-            "rose": "pink",
-            "mauve": "purple",
-            "lavender": "purple",
-            "mustard": "yellow",
-            "charcoal": "gray",
-        }
-
-        def validate_value(value: str | None, valid_set: set) -> str | None:
-            if value is None:
-                return None
-            value_lower = value.lower().strip()
-            if value_lower in valid_set:
-                return value_lower
-            alias = COLOR_ALIASES.get(value_lower)
-            if alias and alias in valid_set:
-                return alias
-            return None
-
-        def validate_list(values: list, valid_set: set) -> list:
-            if not values:
-                return []
-            return [v.lower().strip() for v in values if v and v.lower().strip() in valid_set]
-
-        data = extract_json(response_text)
+        data = _extract_json(response_text)
         if not data:
             logger.warning(f"Could not parse JSON from AI response: {response_text[:200]}")
             return ClothingTags(raw_response=response_text)
@@ -425,30 +473,42 @@ class AIService:
         if isinstance(data, list):
             data = data[0] if data and isinstance(data[0], dict) else {}
 
-        tags = ClothingTags()
-        tags.raw_response = response_text
-
-        item_type = validate_value(data.get("type"), VALID_TYPES)
-        if item_type:
-            tags.type = item_type
-        else:
-            tags.type = "unknown"
-
-        tags.subtype = data.get("subtype") if data.get("subtype") else None
-        tags.primary_color = validate_value(data.get("primary_color"), VALID_COLORS)
-        tags.colors = validate_list(data.get("colors", []), VALID_COLORS)
-        tags.pattern = validate_value(data.get("pattern"), VALID_PATTERNS)
-        tags.material = validate_value(data.get("material"), VALID_MATERIALS)
-        tags.formality = validate_value(data.get("formality"), VALID_FORMALITY)
-        tags.style = validate_list(data.get("style", []), VALID_STYLES)
-        tags.season = validate_list(data.get("season", []), VALID_SEASONS)
-        tags.fit = validate_value(data.get("fit"), VALID_FIT)
-        tags.confidence = compute_tag_completeness(tags)
+        tags = _tags_from_dict(data, response_text)
 
         logger.info(
             f"Parsed tags: type={tags.type}, color={tags.primary_color}, pattern={tags.pattern}"
         )
         return tags
+
+    def _parse_multi_tags_from_response(self, response_text: str) -> list[ClothingTags]:
+        """Like _parse_tags_from_response, but for a JSON array of items (one per
+        garment/accessory in an outfit look) instead of a single object.
+
+        Tolerates a model that (against instructions) still returns a single object
+        by treating it as a one-item list.
+        """
+        data = _extract_json(response_text)
+        if not data:
+            logger.warning(f"Could not parse JSON array from AI response: {response_text[:200]}")
+            return []
+
+        if isinstance(data, dict):
+            data = [data]
+        if not isinstance(data, list):
+            return []
+
+        items: list[ClothingTags] = []
+        for entry in data:
+            if not isinstance(entry, dict):
+                continue
+            description = entry.get("description")
+            description = (
+                description.strip() if isinstance(description, str) and description.strip() else None
+            )
+            items.append(_tags_from_dict(entry, response_text, description=description))
+
+        logger.info(f"Parsed {len(items)} item(s) from outfit look response")
+        return items
 
     async def _call_with_fallback(
         self,
@@ -600,6 +660,35 @@ class AIService:
             raise last_error
 
         return tags
+
+    async def analyze_outfit_look(self, image_path: str | Path) -> list[ClothingTags]:
+        """Analyze a full outfit/inspiration photo, returning one ClothingTags per
+        distinct garment/accessory visible - unlike analyze_image(), which tags a
+        single main item. Each returned ClothingTags also carries a short per-item
+        description, filled from the same AI response rather than a second call.
+        """
+        image_base64 = await asyncio.to_thread(self._preprocess_image, image_path)
+
+        messages = [
+            {"role": "system", "content": OUTFIT_LOOK_TAGGING_PROMPT},
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "image_url",
+                        "image_url": {"url": f"data:image/jpeg;base64,{image_base64}"},
+                    },
+                ],
+            },
+        ]
+
+        content, err, _ = await self._call_with_fallback(messages, "outfit_look_tags")
+        if not content:
+            if err:
+                raise err
+            return []
+
+        return self._parse_multi_tags_from_response(content)
 
     async def check_health(self) -> dict:
         """Check health of all configured AI endpoints."""
