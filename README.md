@@ -147,12 +147,11 @@ cp .env.example .env
 
 #### Step 3: Start Services
 
-`docker-compose.yml` pulls pre-built multi-arch images (`linux/amd64` and `linux/arm64`, so Raspberry Pi and other ARM hosts work) from GitHub Container Registry. No local build tooling is required on the host.
+`docker-compose.yml` builds the backend and frontend images from this repository's own code (`wardrowbe-backend:local` / `wardrowbe-frontend:local`); nothing is pulled from the upstream GHCR images. Every `up` rebuilds from the current checkout, which is quick after the first build thanks to the layer cache.
 
 ```bash
-# Pull the latest published images, then start all containers
-docker compose pull
-docker compose up -d
+# Build the images from the current checkout, then start all containers
+docker compose up -d --build
 
 # Wait for services to be healthy (30 seconds)
 docker compose ps
@@ -165,7 +164,7 @@ curl http://localhost:8000/api/v1/health
 # Should return: {"status":"healthy"}
 ```
 
-To build the images from source instead of pulling them, use the development stack below (`docker-compose.dev.yml`), which builds locally and enables hot reload.
+For hot reload while developing, use the development stack below (`docker-compose.dev.yml`), which additionally mounts the source into the containers.
 
 #### Step 4: Access the App
 
@@ -303,18 +302,16 @@ AI_TEXT_MODEL=llama3.2-vision:11b  # Same model for both tasks
 
 ### Docker Compose (Production)
 
-See [docker-compose.prod.yml](docker-compose.prod.yml) for production configuration. Like the default stack, it pulls pre-built images from GHCR rather than building on the host.
+See [docker-compose.prod.yml](docker-compose.prod.yml) for production configuration. Like the default stack, it builds the images from this repository's code on the host, so the host needs a checkout of the repo.
 
 ```bash
-docker compose -f docker-compose.prod.yml pull
-docker compose -f docker-compose.prod.yml up -d
-docker compose exec backend alembic upgrade head
+docker compose -f docker-compose.prod.yml up -d --build
+docker compose -f docker-compose.prod.yml exec backend alembic upgrade head
 ```
 
-Images are tagged `backend-latest` / `frontend-latest`, and each release also
-publishes `backend-<version>` / `frontend-<version>` (e.g. `backend-1.3.0`). To
-pin a deployment to a specific release, replace the `-latest` tags in the
-compose file with the version, e.g. `ghcr.io/anyesh/wardrowbe:backend-1.3.0`.
+The `Docker Publish` workflow can still publish images to `ghcr.io/<owner>/wardrowbe`
+(`backend-latest` / `frontend-latest`, plus `backend-<version>` per release); the
+compose files no longer use them.
 
 ### Kubernetes
 

@@ -26,6 +26,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { LineageCard } from '@/components/shared/lineage-card';
+import { InspirationSourceCard } from '@/components/inspiration/inspiration-source-card';
 import { CloneToLookbookDialog } from '@/components/shared/clone-to-lookbook-dialog';
 import { FeedbackDialog } from '@/components/feedback-dialog';
 import { LookbookAttributesCard } from '@/components/lookbook/lookbook-attributes-card';
@@ -210,6 +211,9 @@ export default function OutfitDetailPage() {
       </div>
 
       <LineageCard outfit={outfit} />
+      {outfit.inspiration_look_id && (
+        <InspirationSourceCard lookId={outfit.inspiration_look_id} />
+      )}
 
       {isTemplate && <LookbookAttributesCard outfit={outfit} />}
 

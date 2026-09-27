@@ -46,6 +46,45 @@
     "deleted": "Inspiration-Look gelöscht",
     "deleteError": "Look konnte nicht gelöscht werden.",
     "notFound": "Inspiration-Look nicht gefunden.",
-    "updateError": "Änderung konnte nicht gespeichert werden."
+    "updateError": "Änderung konnte nicht gespeichert werden.",
+    "editTags": "Erkannte Tags korrigieren",
+    "notMatchedYet": "Dieser Look wurde noch nicht mit deinem Schrank abgeglichen.",
+    "matchNow": "Mit meinem Schrank abgleichen",
+    "matchError": "Der Look konnte nicht mit deinem Schrank abgeglichen werden."
+  },
+  "match": {
+    "fromWardrobe": "Aus deinem Schrank",
+    "swap": "Tauschen",
+    "leaveOut": "Dieses Teil weglassen",
+    "choose": "Teil auswählen",
+    "noMatch": "Nichts Ähnliches in deinem Schrank.",
+    "nothingPicked": "Kein Teil gewählt -- dieses wird weggelassen.",
+    "alternatives": "Alternativen",
+    "pickAlternative": "Stattdessen {name} nehmen",
+    "showAll": "Alle anzeigen",
+    "pickerTitle": "Teil aus deinem Schrank wählen",
+    "pickerDescription": "Wähle, was du statt dieses Teils tragen würdest.",
+    "onlyType": "Nur {type}",
+    "allTypes": "Alle Teile",
+    "pickerEmpty": "Keine Teile dieses Typs in deinem Schrank.",
+    "updateError": "Das Teil konnte nicht geändert werden.",
+    "rematch": "Neu abgleichen",
+    "rematchConfirm": "Diesen Look erneut mit deinem Schrank abgleichen? Von Hand gewählte Teile werden durch die neuen besten Treffer ersetzt.",
+    "rematched": "Mit deinem Schrank abgeglichen"
+  },
+  "recreate": {
+    "title": "Diesen Look nachstylen",
+    "summary": "{picked} von {total} Teilen aus deinem Schrank gewählt",
+    "button": "So stylen",
+    "description": "Erstellt ein neues Outfit aus den gewählten Teilen. Du kannst es wie jeden anderen Vorschlag annehmen oder ablehnen.",
+    "occasion": "Anlass",
+    "name": "Name (optional)",
+    "namePlaceholder": "z. B. Street-Look",
+    "create": "Outfit erstellen",
+    "created": "Outfit erstellt",
+    "error": "Das Outfit konnte nicht erstellt werden."
+  },
+  "source": {
+    "inspiredBy": "Inspiriert von diesem Foto"
   }
 }

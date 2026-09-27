@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import { api, setAccessToken } from '@/lib/api';
+import type { Outfit } from '@/lib/hooks/use-outfits';
 
 // Helper to set token if available (for NextAuth mode)
 function useSetTokenIfAvailable() {
@@ -11,6 +12,17 @@ function useSetTokenIfAvailable() {
 }
 
 export type InspirationStatus = 'pending' | 'analyzing' | 'analyzed' | 'error';
+
+// Just enough of a wardrobe item to show it as a match (backend WardrobeItemSummary).
+export interface WardrobeItemSummary {
+  id: string;
+  type: string;
+  subtype: string | null;
+  name: string | null;
+  primary_color: string | null;
+  image_url: string | null;
+  thumbnail_url: string | null;
+}
 
 export interface InspirationLookItem {
   id: string;
@@ -28,6 +40,11 @@ export interface InspirationLookItem {
   description: string | null;
   confidence: number | null;
   matched_item_id: string | null;
+  // Resolved on the detail endpoint only (empty/null in the list): the current pick,
+  // and the best wardrobe candidates in rank order (best match + alternatives).
+  // An archived/deleted pick resolves to null.
+  matched_item: WardrobeItemSummary | null;
+  suggested_items: WardrobeItemSummary[];
 }
 
 export interface InspirationLook {
@@ -37,6 +54,9 @@ export interface InspirationLook {
   photo_url: string | null;
   photo_medium_url: string | null;
   photo_thumbnail_url: string | null;
+  // When wardrobe matching last ran; null means never (e.g. analyzed before matching
+  // existed), as opposed to "matched, but nothing fits".
+  matched_at: string | null;
   created_at: string;
   updated_at: string;
   items: InspirationLookItem[];
@@ -117,6 +137,18 @@ export function useUploadInspirationLook() {
   });
 }
 
+function replaceItemInLook(
+  look: InspirationLook | undefined,
+  updatedItem: InspirationLookItem
+): InspirationLook | undefined {
+  return look
+    ? {
+        ...look,
+        items: look.items.map((item) => (item.id === updatedItem.id ? updatedItem : item)),
+      }
+    : look;
+}
+
 export function useUpdateInspirationLookItem() {
   const queryClient = useQueryClient();
 
@@ -132,13 +164,67 @@ export function useUpdateInspirationLookItem() {
     }) => api.patch<InspirationLookItem>(`/inspiration/${lookId}/items/${itemId}`, updates),
     onSuccess: (updatedItem, { lookId }) => {
       queryClient.setQueryData<InspirationLook | undefined>(['inspirationLook', lookId], (look) =>
-        look
-          ? {
-              ...look,
-              items: look.items.map((item) => (item.id === updatedItem.id ? updatedItem : item)),
-            }
-          : look
+        replaceItemInLook(look, updatedItem)
       );
+    },
+  });
+}
+
+// Pick a wardrobe item for one slot (any of the user's items), or clear it with null.
+export function useSetInspirationMatch() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      lookId,
+      itemId,
+      wardrobeItemId,
+    }: {
+      lookId: string;
+      itemId: string;
+      wardrobeItemId: string | null;
+    }) =>
+      api.patch<InspirationLookItem>(`/inspiration/${lookId}/items/${itemId}/match`, {
+        wardrobe_item_id: wardrobeItemId,
+      }),
+    onSuccess: (updatedItem, { lookId }) => {
+      queryClient.setQueryData<InspirationLook | undefined>(['inspirationLook', lookId], (look) =>
+        replaceItemInLook(look, updatedItem)
+      );
+    },
+  });
+}
+
+// Match the look against the wardrobe as it is now; resets manual picks.
+export function useRematchInspirationLook() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (lookId: string) => api.post<InspirationLook>(`/inspiration/${lookId}/match`),
+    onSuccess: (look) => {
+      queryClient.setQueryData(['inspirationLook', look.id], look);
+    },
+  });
+}
+
+export interface RecreateInspirationInput {
+  lookId: string;
+  occasion: string;
+  name?: string;
+}
+
+// Turn the current picks into a regular (pending) outfit.
+export function useRecreateInspirationLook() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ lookId, occasion, name }: RecreateInspirationInput) =>
+      api.post<Outfit>(`/inspiration/${lookId}/recreate`, {
+        occasion,
+        name: name?.trim() ? name.trim() : null,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['outfits'] });
     },
   });
 }

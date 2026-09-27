@@ -35,7 +35,14 @@ services:
 
   # FastAPI Backend
   backend:
-    image: ghcr.io/anyesh/wardrowbe:backend-latest
+    # Built from this repo's own code instead of the upstream image
+    # (ghcr.io/anyesh/wardrowbe), so local changes -- including new migrations --
+    # are what actually runs. pull_policy: build rebuilds on every `up` (cached,
+    # so only changed layers take time) and never tries to pull this tag.
+    build:
+      context: ./backend
+    image: wardrowbe-backend:local
+    pull_policy: build
     container_name: wardrobe-backend
     extra_hosts:
       - "host.docker.internal:host-gateway"
@@ -84,7 +91,11 @@ services:
 
   # Next.js Frontend
   frontend:
-    image: ghcr.io/anyesh/wardrowbe:frontend-latest
+    # Built from this repo's own code, see the backend service.
+    build:
+      context: ./frontend
+    image: wardrowbe-frontend:local
+    pull_policy: build
     container_name: wardrobe-frontend
     environment:
       # NEXT_PUBLIC_API_URL is the pre-1.6 name, still honored so existing .env files keep working.
@@ -102,7 +113,11 @@ services:
 
 # Background Worker for AI Tagging
   worker:
-    image: ghcr.io/anyesh/wardrowbe:backend-latest
+    # Same locally built image as the backend service.
+    build:
+      context: ./backend
+    image: wardrowbe-backend:local
+    pull_policy: build
     container_name: wardrobe-worker
     command: arq app.workers.worker.WorkerSettings
     extra_hosts:
@@ -136,7 +151,11 @@ services:
 # Local image work (rotation, background removal) on its own queue, so a bulk
 # batch of it cannot block AI tagging behind it.
   image-worker:
-    image: ghcr.io/anyesh/wardrowbe:backend-latest
+    # Same locally built image as the backend service.
+    build:
+      context: ./backend
+    image: wardrowbe-backend:local
+    pull_policy: build
     container_name: wardrobe-image-worker
     command: arq app.workers.image_worker.ImageWorkerSettings
     environment:

@@ -46,6 +46,45 @@
     "deleted": "Look d'inspiration supprimé",
     "deleteError": "Impossible de supprimer le look.",
     "notFound": "Look d'inspiration introuvable.",
-    "updateError": "Impossible d'enregistrer la modification."
+    "updateError": "Impossible d'enregistrer la modification.",
+    "editTags": "Corriger les étiquettes détectées",
+    "notMatchedYet": "Ce look n'a pas encore été comparé à votre garde-robe.",
+    "matchNow": "Comparer avec ma garde-robe",
+    "matchError": "Impossible de comparer le look avec votre garde-robe."
+  },
+  "match": {
+    "fromWardrobe": "Dans votre garde-robe",
+    "swap": "Échanger",
+    "leaveOut": "Laisser cette pièce de côté",
+    "choose": "Choisir une pièce",
+    "noMatch": "Rien de similaire dans votre garde-robe.",
+    "nothingPicked": "Aucune pièce choisie -- celle-ci est laissée de côté.",
+    "alternatives": "Alternatives",
+    "pickAlternative": "Utiliser {name} à la place",
+    "showAll": "Tout afficher",
+    "pickerTitle": "Choisir une pièce de votre garde-robe",
+    "pickerDescription": "Choisissez ce que vous porteriez à la place de cette pièce.",
+    "onlyType": "Seulement {type}",
+    "allTypes": "Toutes les pièces",
+    "pickerEmpty": "Aucune pièce de ce type dans votre garde-robe.",
+    "updateError": "Impossible de changer la pièce.",
+    "rematch": "Comparer à nouveau",
+    "rematchConfirm": "Comparer à nouveau ce look avec votre garde-robe ? Les pièces choisies à la main seront remplacées par les nouveaux meilleurs résultats.",
+    "rematched": "Comparé avec votre garde-robe"
+  },
+  "recreate": {
+    "title": "Recréer ce look",
+    "summary": "{picked} pièce(s) sur {total} choisie(s) dans votre garde-robe",
+    "button": "Recréer",
+    "description": "Crée une nouvelle tenue à partir des pièces choisies. Vous pouvez l'accepter ou la rejeter comme toute autre suggestion.",
+    "occasion": "Occasion",
+    "name": "Nom (facultatif)",
+    "namePlaceholder": "p. ex. Look street",
+    "create": "Créer la tenue",
+    "created": "Tenue créée",
+    "error": "Impossible de créer la tenue."
+  },
+  "source": {
+    "inspiredBy": "Inspiré de cette photo"
   }
 }

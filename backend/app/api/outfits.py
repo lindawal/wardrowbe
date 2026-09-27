@@ -179,6 +179,8 @@ class OutfitResponse(BaseModel):
     name: str | None = None
     replaces_outfit_id: UUID | None = None
     cloned_from_outfit_id: UUID | None = None
+    # Set when the outfit was restyled from an inspiration look.
+    inspiration_look_id: UUID | None = None
     source: str
     reasoning: str | None = None
     style_notes: str | None = None
@@ -433,6 +435,7 @@ def outfit_to_response(
         name=outfit.name,
         replaces_outfit_id=outfit.replaces_outfit_id,
         cloned_from_outfit_id=outfit.cloned_from_outfit_id,
+        inspiration_look_id=outfit.inspiration_look_id,
         source=outfit.source.value,
         reasoning=outfit.reasoning,
         style_notes=outfit.style_notes,

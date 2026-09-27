@@ -585,6 +585,7 @@ class TestIncludeItems:
                 o.name = None
                 o.replaces_outfit_id = None
                 o.cloned_from_outfit_id = None
+                o.inspiration_look_id = None
                 o.source = MagicMock(value="on_demand")
                 o.reasoning = "Test"
                 o.style_notes = "Test"

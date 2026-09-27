@@ -46,6 +46,45 @@
     "deleted": "Inspiration look deleted",
     "deleteError": "Failed to delete the look.",
     "notFound": "Inspiration look not found.",
-    "updateError": "Failed to save the change."
+    "updateError": "Failed to save the change.",
+    "editTags": "Correct detected tags",
+    "notMatchedYet": "This look hasn't been matched against your wardrobe yet.",
+    "matchNow": "Match with my wardrobe",
+    "matchError": "Couldn't match the look against your wardrobe."
+  },
+  "match": {
+    "fromWardrobe": "From your wardrobe",
+    "swap": "Swap",
+    "leaveOut": "Leave this piece out",
+    "choose": "Choose a piece",
+    "noMatch": "Nothing similar in your wardrobe.",
+    "nothingPicked": "No piece picked -- this one is left out.",
+    "alternatives": "Alternatives",
+    "pickAlternative": "Use {name} instead",
+    "showAll": "Show all",
+    "pickerTitle": "Choose a piece from your wardrobe",
+    "pickerDescription": "Pick what you'd wear in place of this piece.",
+    "onlyType": "Only {type}",
+    "allTypes": "All pieces",
+    "pickerEmpty": "No pieces of this type in your wardrobe.",
+    "updateError": "Couldn't change the piece.",
+    "rematch": "Match again",
+    "rematchConfirm": "Match this look against your wardrobe again? Pieces you picked by hand will be replaced by the new best matches.",
+    "rematched": "Matched against your wardrobe"
+  },
+  "recreate": {
+    "title": "Restyle this look",
+    "summary": "{picked} of {total} pieces picked from your wardrobe",
+    "button": "Style it",
+    "description": "Creates a new outfit from the picked pieces. You can accept or reject it like any other suggestion.",
+    "occasion": "Occasion",
+    "name": "Name (optional)",
+    "namePlaceholder": "e.g. Street look",
+    "create": "Create outfit",
+    "created": "Outfit created",
+    "error": "Couldn't create the outfit."
+  },
+  "source": {
+    "inspiredBy": "Inspired by this photo"
   }
 }

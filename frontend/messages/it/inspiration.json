@@ -46,6 +46,45 @@
     "deleted": "Look di inspiration eliminato",
     "deleteError": "Impossibile eliminare il look.",
     "notFound": "Look di inspiration non trovato.",
-    "updateError": "Impossibile salvare la modifica."
+    "updateError": "Impossibile salvare la modifica.",
+    "editTags": "Correggi le etichette rilevate",
+    "notMatchedYet": "Questo look non è ancora stato confrontato con il tuo guardaroba.",
+    "matchNow": "Confronta con il mio guardaroba",
+    "matchError": "Impossibile confrontare il look con il tuo guardaroba."
+  },
+  "match": {
+    "fromWardrobe": "Dal tuo guardaroba",
+    "swap": "Cambia",
+    "leaveOut": "Ometti questo capo",
+    "choose": "Scegli un capo",
+    "noMatch": "Niente di simile nel tuo guardaroba.",
+    "nothingPicked": "Nessun capo scelto -- questo viene omesso.",
+    "alternatives": "Alternative",
+    "pickAlternative": "Usa {name} al suo posto",
+    "showAll": "Mostra tutto",
+    "pickerTitle": "Scegli un capo dal tuo guardaroba",
+    "pickerDescription": "Scegli cosa indosseresti al posto di questo capo.",
+    "onlyType": "Solo {type}",
+    "allTypes": "Tutti i capi",
+    "pickerEmpty": "Nessun capo di questo tipo nel tuo guardaroba.",
+    "updateError": "Impossibile cambiare il capo.",
+    "rematch": "Confronta di nuovo",
+    "rematchConfirm": "Confrontare di nuovo questo look con il tuo guardaroba? I capi scelti a mano verranno sostituiti dai nuovi migliori risultati.",
+    "rematched": "Confrontato con il tuo guardaroba"
+  },
+  "recreate": {
+    "title": "Ricrea questo look",
+    "summary": "{picked} capi su {total} scelti dal tuo guardaroba",
+    "button": "Ricrea",
+    "description": "Crea un nuovo outfit con i capi scelti. Puoi accettarlo o rifiutarlo come qualsiasi altro suggerimento.",
+    "occasion": "Occasione",
+    "name": "Nome (facoltativo)",
+    "namePlaceholder": "es. Look street",
+    "create": "Crea outfit",
+    "created": "Outfit creato",
+    "error": "Impossibile creare l'outfit."
+  },
+  "source": {
+    "inspiredBy": "Ispirato a questa foto"
   }
 }

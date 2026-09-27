@@ -1,27 +1,46 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { AlertTriangle, ChevronLeft, Loader2, Trash2 } from 'lucide-react';
+import {
+  AlertTriangle,
+  ChevronLeft,
+  Loader2,
+  RefreshCw,
+  Shirt,
+  Sparkles,
+  Trash2,
+} from 'lucide-react';
 import { toast } from 'sonner';
 
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { InspirationItemCard } from '@/components/inspiration/inspiration-item-card';
-import { useDeleteInspirationLook, useInspirationLook } from '@/lib/hooks/use-inspiration';
+import { RecreateLookDialog } from '@/components/inspiration/recreate-look-dialog';
+import {
+  useDeleteInspirationLook,
+  useInspirationLook,
+  useRematchInspirationLook,
+} from '@/lib/hooks/use-inspiration';
 import { getErrorMessage } from '@/lib/api';
 
 export default function InspirationLookDetailPage() {
   const t = useTranslations('inspiration.detail');
+  const tMatch = useTranslations('inspiration.match');
+  const tRecreate = useTranslations('inspiration.recreate');
   const router = useRouter();
   const params = useParams<{ id: string }>();
   const lookId = params?.id;
 
   const { data: look, isLoading, isError } = useInspirationLook(lookId);
   const deleteMutation = useDeleteInspirationLook();
+  const rematch = useRematchInspirationLook();
+  const [recreateOpen, setRecreateOpen] = useState(false);
 
   const handleDelete = async () => {
     if (!look) return;
@@ -32,6 +51,17 @@ export default function InspirationLookDetailPage() {
       router.push('/dashboard/inspiration');
     } catch (error) {
       toast.error(getErrorMessage(error, t('deleteError')));
+    }
+  };
+
+  const runMatch = async (askFirst: boolean) => {
+    if (!look) return;
+    if (askFirst && !confirm(tMatch('rematchConfirm'))) return;
+    try {
+      await rematch.mutateAsync(look.id);
+      toast.success(tMatch('rematched'));
+    } catch (error) {
+      toast.error(getErrorMessage(error, t('matchError')));
     }
   };
 
@@ -52,6 +82,8 @@ export default function InspirationLookDetailPage() {
   }
 
   const isBusy = look.status === 'pending' || look.status === 'analyzing';
+  const isMatched = look.matched_at !== null;
+  const pickedCount = look.items.filter((item) => item.matched_item !== null).length;
 
   return (
     <div className="space-y-6">
@@ -64,7 +96,7 @@ export default function InspirationLookDetailPage() {
 
       <div className="grid gap-6 md:grid-cols-[320px_1fr]">
         <div className="space-y-3">
-          <div className="relative aspect-[3/4] w-full overflow-hidden rounded-lg bg-muted">
+          <div className="relative aspect-[3/4] w-full overflow-hidden rounded-lg bg-muted md:sticky md:top-4">
             {look.photo_medium_url && (
               <Image src={look.photo_medium_url} alt="" fill unoptimized className="object-cover" />
             )}
@@ -99,6 +131,50 @@ export default function InspirationLookDetailPage() {
             </Alert>
           )}
 
+          {look.status === 'analyzed' && look.items.length > 0 && !isMatched && (
+            <Alert>
+              <Shirt className="h-4 w-4" />
+              <AlertDescription className="space-y-3">
+                <p>{t('notMatchedYet')}</p>
+                <Button size="sm" onClick={() => runMatch(false)} disabled={rematch.isPending}>
+                  {rematch.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  {t('matchNow')}
+                </Button>
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {look.status === 'analyzed' && look.items.length > 0 && isMatched && (
+            <Card>
+              <CardContent className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="font-medium">{tRecreate('title')}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {tRecreate('summary', { picked: pickedCount, total: look.items.length })}
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => runMatch(true)}
+                    disabled={rematch.isPending}
+                  >
+                    {rematch.isPending ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <RefreshCw className="mr-2 h-4 w-4" />
+                    )}
+                    {tMatch('rematch')}
+                  </Button>
+                  <Button onClick={() => setRecreateOpen(true)} disabled={pickedCount === 0}>
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    {tRecreate('button')}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           {look.status === 'analyzed' && (
             <>
               <h2 className="text-lg font-semibold">{t('itemsTitle')}</h2>
@@ -107,7 +183,12 @@ export default function InspirationLookDetailPage() {
               ) : (
                 <div className="space-y-4">
                   {look.items.map((item) => (
-                    <InspirationItemCard key={item.id} lookId={look.id} item={item} />
+                    <InspirationItemCard
+                      key={item.id}
+                      lookId={look.id}
+                      item={item}
+                      matched={isMatched}
+                    />
                   ))}
                 </div>
               )}
@@ -115,6 +196,8 @@ export default function InspirationLookDetailPage() {
           )}
         </div>
       </div>
+
+      <RecreateLookDialog lookId={look.id} open={recreateOpen} onOpenChange={setRecreateOpen} />
     </div>
   );
 }

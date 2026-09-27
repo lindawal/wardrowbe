@@ -128,6 +128,17 @@ class Outfit(Base):
         nullable=True,
     )
 
+    # Set when the outfit was restyled from an inspiration look (POST
+    # /inspiration/{id}/recreate). Deliberately no relationship(): outfit_to_response
+    # only needs the id, and a lazy relationship would be one more attribute that
+    # every outfit loader has to remember to eager-load.
+    inspiration_look_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("inspiration_looks.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
+    )
+
     # Timestamps
     sent_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     viewed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))

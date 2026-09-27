@@ -46,6 +46,45 @@
     "deleted": "인스피레이션 룩이 삭제되었습니다",
     "deleteError": "룩 삭제에 실패했습니다.",
     "notFound": "인스피레이션 룩을 찾을 수 없습니다.",
-    "updateError": "변경 사항을 저장하지 못했습니다."
+    "updateError": "변경 사항을 저장하지 못했습니다.",
+    "editTags": "인식된 태그 수정",
+    "notMatchedYet": "이 룩은 아직 옷장과 비교되지 않았습니다.",
+    "matchNow": "내 옷장과 비교하기",
+    "matchError": "룩을 옷장과 비교하지 못했습니다."
+  },
+  "match": {
+    "fromWardrobe": "내 옷장에서",
+    "swap": "바꾸기",
+    "leaveOut": "이 아이템 빼기",
+    "choose": "아이템 선택",
+    "noMatch": "옷장에 비슷한 아이템이 없습니다.",
+    "nothingPicked": "선택한 아이템 없음 -- 이 아이템은 빠집니다.",
+    "alternatives": "다른 후보",
+    "pickAlternative": "대신 {name} 사용",
+    "showAll": "모두 보기",
+    "pickerTitle": "옷장에서 아이템 선택",
+    "pickerDescription": "이 아이템 대신 입을 것을 고르세요.",
+    "onlyType": "{type}만",
+    "allTypes": "모든 아이템",
+    "pickerEmpty": "옷장에 이 종류의 아이템이 없습니다.",
+    "updateError": "아이템을 변경하지 못했습니다.",
+    "rematch": "다시 비교",
+    "rematchConfirm": "이 룩을 옷장과 다시 비교할까요? 직접 고른 아이템은 새로운 최적 후보로 바뀝니다.",
+    "rematched": "옷장과 비교했습니다"
+  },
+  "recreate": {
+    "title": "이 룩 재현하기",
+    "summary": "{total}개 중 {picked}개를 옷장에서 선택함",
+    "button": "이렇게 코디하기",
+    "description": "선택한 아이템으로 새 코디를 만듭니다. 다른 제안처럼 수락하거나 거절할 수 있습니다.",
+    "occasion": "상황",
+    "name": "이름 (선택)",
+    "namePlaceholder": "예: 스트리트 룩",
+    "create": "코디 만들기",
+    "created": "코디가 만들어졌습니다",
+    "error": "코디를 만들지 못했습니다."
+  },
+  "source": {
+    "inspiredBy": "이 사진에서 영감을 받음"
   }
 }

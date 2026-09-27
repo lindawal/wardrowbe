@@ -60,6 +60,8 @@ export interface Outfit {
   name: string | null;
   replaces_outfit_id: string | null;
   cloned_from_outfit_id: string | null;
+  // Set when the outfit was restyled from an inspiration look.
+  inspiration_look_id: string | null;
   reasoning: string | null;
   style_notes: string | null;
   season: string | null;

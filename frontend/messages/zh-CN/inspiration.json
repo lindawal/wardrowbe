@@ -46,6 +46,45 @@
     "deleted": "灵感look已删除",
     "deleteError": "删除look失败。",
     "notFound": "未找到该灵感look。",
-    "updateError": "保存更改失败。"
+    "updateError": "保存更改失败。",
+    "editTags": "修正识别出的标签",
+    "notMatchedYet": "这个look尚未与你的衣橱进行匹配。",
+    "matchNow": "与我的衣橱匹配",
+    "matchError": "无法将这个look与你的衣橱匹配。"
+  },
+  "match": {
+    "fromWardrobe": "来自你的衣橱",
+    "swap": "更换",
+    "leaveOut": "不要这件单品",
+    "choose": "选择单品",
+    "noMatch": "你的衣橱里没有相似的单品。",
+    "nothingPicked": "未选择单品——这一件将被省略。",
+    "alternatives": "其他选择",
+    "pickAlternative": "改用{name}",
+    "showAll": "显示全部",
+    "pickerTitle": "从你的衣橱中选择单品",
+    "pickerDescription": "选择你会用来代替这件单品的衣物。",
+    "onlyType": "仅{type}",
+    "allTypes": "全部单品",
+    "pickerEmpty": "你的衣橱里没有这种类型的单品。",
+    "updateError": "无法更换单品。",
+    "rematch": "重新匹配",
+    "rematchConfirm": "要重新将这个look与你的衣橱匹配吗？手动选择的单品将被新的最佳匹配替换。",
+    "rematched": "已与你的衣橱匹配"
+  },
+  "recreate": {
+    "title": "复刻这个look",
+    "summary": "已从衣橱中选择 {picked}/{total} 件单品",
+    "button": "就这样搭",
+    "description": "用选中的单品创建一套新穿搭。你可以像其他建议一样采纳或拒绝它。",
+    "occasion": "场合",
+    "name": "名称（可选）",
+    "namePlaceholder": "例如：街头风",
+    "create": "创建穿搭",
+    "created": "穿搭已创建",
+    "error": "无法创建穿搭。"
+  },
+  "source": {
+    "inspiredBy": "灵感来自这张照片"
   }
 }

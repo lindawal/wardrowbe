@@ -17,6 +17,7 @@ function makeOutfit(
     name: null,
     replaces_outfit_id: null,
     cloned_from_outfit_id: null,
+    inspiration_look_id: null,
     reasoning: null,
     style_notes: null,
     season: null,

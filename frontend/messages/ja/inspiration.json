@@ -46,6 +46,45 @@
     "deleted": "インスピレーションルックを削除しました",
     "deleteError": "ルックの削除に失敗しました。",
     "notFound": "インスピレーションルックが見つかりません。",
-    "updateError": "変更の保存に失敗しました。"
+    "updateError": "変更の保存に失敗しました。",
+    "editTags": "検出されたタグを修正",
+    "notMatchedYet": "このルックはまだワードローブと照合されていません。",
+    "matchNow": "ワードローブと照合する",
+    "matchError": "ルックをワードローブと照合できませんでした。"
+  },
+  "match": {
+    "fromWardrobe": "あなたのワードローブから",
+    "swap": "入れ替え",
+    "leaveOut": "このアイテムを外す",
+    "choose": "アイテムを選択",
+    "noMatch": "ワードローブに似たアイテムがありません。",
+    "nothingPicked": "アイテム未選択 -- このアイテムは外されます。",
+    "alternatives": "ほかの候補",
+    "pickAlternative": "代わりに{name}を使う",
+    "showAll": "すべて表示",
+    "pickerTitle": "ワードローブからアイテムを選択",
+    "pickerDescription": "このアイテムの代わりに着るものを選んでください。",
+    "onlyType": "{type}のみ",
+    "allTypes": "すべてのアイテム",
+    "pickerEmpty": "ワードローブにこのタイプのアイテムがありません。",
+    "updateError": "アイテムを変更できませんでした。",
+    "rematch": "再照合",
+    "rematchConfirm": "このルックをもう一度ワードローブと照合しますか？手動で選んだアイテムは新しい最適な候補に置き換えられます。",
+    "rematched": "ワードローブと照合しました"
+  },
+  "recreate": {
+    "title": "このルックを再現",
+    "summary": "{total}点中{picked}点をワードローブから選択済み",
+    "button": "このコーデにする",
+    "description": "選んだアイテムで新しいコーデを作成します。ほかの提案と同じように承認または却下できます。",
+    "occasion": "シーン",
+    "name": "名前（任意）",
+    "namePlaceholder": "例：ストリートルック",
+    "create": "コーデを作成",
+    "created": "コーデを作成しました",
+    "error": "コーデを作成できませんでした。"
+  },
+  "source": {
+    "inspiredBy": "この写真から着想"
   }
 }

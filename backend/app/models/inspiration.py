@@ -56,6 +56,10 @@ class InspirationLook(Base):
         default=InspirationStatus.pending,
     )
     error_message: Mapped[str | None] = mapped_column(Text, nullable=True)
+    # When wardrobe matching (Step 2) last ran for this look. NULL means never --
+    # e.g. looks analyzed before matching existed -- as opposed to "matched, but
+    # nothing in the wardrobe fits", which leaves items with empty suggestions.
+    matched_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(
@@ -110,9 +114,15 @@ class InspirationLookItem(Base):
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
     confidence: Mapped[float | None] = mapped_column(Float, nullable=True)
 
-    # Step 2 will populate this once matching against the wardrobe is implemented.
+    # The wardrobe item currently picked for this slot (Step 2). Matching presets it to
+    # suggested_item_ids[0]; the user can swap it for any other item, or clear it.
     matched_item_id: Mapped[uuid.UUID | None] = mapped_column(
         UUID(as_uuid=True), ForeignKey("clothing_items.id", ondelete="SET NULL"), nullable=True
+    )
+    # Best wardrobe candidates in rank order (best match first). No FK: ids of items
+    # deleted/archived since matching ran are filtered out when the look is read.
+    suggested_item_ids: Mapped[list[uuid.UUID]] = mapped_column(
+        ARRAY(UUID(as_uuid=True)), nullable=False, default=list, server_default=text("'{}'")
     )
 
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())

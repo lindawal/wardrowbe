@@ -11,6 +11,7 @@ from sqlalchemy.orm import selectinload
 from app.config import get_settings
 from app.models.inspiration import InspirationLook, InspirationLookItem, InspirationStatus
 from app.services.ai_service import AIService
+from app.services.inspiration_matching_service import match_look
 from app.workers.db import get_db_session
 from app.workers.tagging import _is_final_attempt, _tagging_call_budget, retry_delay_seconds
 
@@ -41,14 +42,33 @@ async def _mark_error(ctx: dict, look_id: str, error_msg: str) -> None:
         await db.close()
 
 
+async def _load_look_with_items(db, look_id: str) -> InspirationLook:
+    result = await db.execute(
+        select(InspirationLook)
+        .options(selectinload(InspirationLook.items))
+        .where(InspirationLook.id == UUID(look_id))
+        .execution_options(populate_existing=True)
+    )
+    look = result.scalar_one_or_none()
+    if look is None:
+        raise InspirationLookVanishedError(f"Look {look_id} not visible to worker")
+    return look
+
+
 async def analyze_inspiration_look(ctx: dict, look_id: str, image_path: str) -> dict[str, Any]:
     """Analyze an inspiration look's photo item-by-item and store the results.
 
     Mirrors tag_item_image's structure (shared call budget, retry-on-transient-error,
     final attempt marks the row errored) but replaces a *list* of InspirationLookItem
     rows rather than updating fields on a single item -- a full re-analysis, not a
-    merge, since these rows carry no user-entered content of their own until Step 2's
-    matching exists.
+    merge.
+
+    Then matches the new items against the wardrobe (Step 2). That runs in its own
+    session after the items are committed, and the look only flips to `analyzed`
+    once it's done, so the UI never shows an analyzed-but-unmatched look in between.
+    A matching failure is logged and leaves the look unmatched (matched_at NULL, the
+    UI offers a manual re-match) instead of failing the job -- a retry would redo the
+    expensive AI call just to repeat pure database work.
     """
     logger.info(f"Starting AI analysis for inspiration look {look_id}")
 
@@ -118,12 +138,37 @@ async def analyze_inspiration_look(ctx: dict, look_id: str, image_path: str) -> 
                     )
                 )
 
+            # Status stays `analyzing` until matching below has run.
+            look.matched_at = None
+            await db.commit()
+            logger.info(f"Stored {len(items)} item(s) for look {look_id}")
+        finally:
+            await db.close()
+
+        db = get_db_session(ctx)
+        try:
+            look = await _load_look_with_items(db, look_id)
+            matched = True
+            try:
+                await match_look(db, look)
+            except Exception:
+                matched = False
+                logger.exception(
+                    f"Wardrobe matching failed for inspiration look {look_id}; leaving it unmatched"
+                )
+                await db.rollback()
+                look = await _load_look_with_items(db, look_id)
+
             look.status = InspirationStatus.analyzed
             look.error_message = None
             await db.commit()
-            logger.info(f"Stored {len(items)} item(s) for look {look_id}")
 
-            return {"status": "success", "look_id": look_id, "item_count": len(items)}
+            return {
+                "status": "success",
+                "look_id": look_id,
+                "item_count": len(items),
+                "matched": matched,
+            }
         finally:
             await db.close()
 
