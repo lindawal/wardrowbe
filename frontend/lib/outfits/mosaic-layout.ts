@@ -7,8 +7,8 @@ const LONG_ITEM_PRIORITY: Record<string, number> = {
   skirt: 1,
 };
 
-// Card image area is 5:4. A hero takes the right 3/5 (a 3:4 portrait tile), the small
-// tiles share the remaining 2/5 on the left. Without a hero the small tiles use all of it.
+// Card image area is 5:4. A hero takes the left 3/5 (a 3:4 portrait tile), the small
+// tiles share the remaining 2/5 on the right. Without a hero the small tiles use all of it.
 const AREA_WIDTH = 5;
 const AREA_HEIGHT = 4;
 const HERO_WIDTH = 3;

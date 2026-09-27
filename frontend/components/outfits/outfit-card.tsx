@@ -232,7 +232,7 @@ export function OutfitCard({
               />
             </div>
           )}
-          <div className="absolute inset-0 flex gap-0.5 p-2">
+          <div className="absolute inset-0 flex flex-row-reverse gap-0.5 p-2">
             {mosaic.tiles.length > 0 && (
               <div
                 className={cn('grid gap-0.5 min-w-0', mosaic.hero ? 'flex-[2]' : 'flex-1')}
