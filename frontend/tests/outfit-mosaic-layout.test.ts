@@ -1,88 +1,116 @@
 import { describe, expect, it } from 'vitest';
 
-import { buildMosaicLayout, type MosaicLayout } from '@/lib/outfits/mosaic-layout';
+import { buildMosaicLayout, chooseGrid, type MosaicLayout } from '@/lib/outfits/mosaic-layout';
 
-function makeItem(id: string, type: string) {
+type TestItem = { id: string; type: string };
+
+function makeItem(id: string, type: string): TestItem {
   return { id, type };
 }
 
-function tileIds(layout: MosaicLayout<{ id: string; type: string }>) {
+function tileIds(layout: MosaicLayout<TestItem>) {
   return layout.tiles.map((tile) => tile.item.id);
+}
+
+function heroId(layout: MosaicLayout<TestItem>) {
+  return layout.hero?.kind === 'item' ? layout.hero.item.id : layout.hero?.kind ?? null;
 }
 
 describe('buildMosaicLayout', () => {
   it('renders nothing for an outfit without items', () => {
-    const layout = buildMosaicLayout([]);
-    expect(layout).toEqual({ gridClassName: 'grid-cols-1', tiles: [], overflow: 0 });
+    const layout = buildMosaicLayout<TestItem>([]);
+    expect(layout.hero).toBeNull();
+    expect(layout.tiles).toEqual([]);
   });
 
-  it('lets a single item fill the whole area', () => {
+  it('lets a single plain item fill the whole area', () => {
     const layout = buildMosaicLayout([makeItem('a', 'shirt')]);
-    expect(layout.gridClassName).toBe('grid-cols-1');
+    expect(layout.hero).toBeNull();
     expect(tileIds(layout)).toEqual(['a']);
+    expect(layout).toMatchObject({ columns: 1, rows: 1 });
   });
 
-  it('puts two items side by side', () => {
+  it('puts two plain items side by side', () => {
     const layout = buildMosaicLayout([makeItem('a', 'shirt'), makeItem('b', 'shoes')]);
-    expect(layout.gridClassName).toBe('grid-cols-2');
+    expect(layout).toMatchObject({ columns: 2, rows: 1 });
     expect(tileIds(layout)).toEqual(['a', 'b']);
-    expect(layout.tiles.every((tile) => tile.className === '')).toBe(true);
   });
 
-  it('gives the tall tile to trousers among three items and keeps the rest in order', () => {
+  it('makes trousers the hero and keeps the rest in order as small tiles', () => {
     const layout = buildMosaicLayout([
       makeItem('shirt', 'shirt'),
       makeItem('shoes', 'shoes'),
       makeItem('pants', 'pants'),
     ]);
-    expect(layout.gridClassName).toBe('grid-cols-2 grid-rows-2');
-    expect(tileIds(layout)).toEqual(['pants', 'shirt', 'shoes']);
-    expect(layout.tiles.map((tile) => tile.className)).toEqual(['row-span-2', '', '']);
+    expect(heroId(layout)).toBe('pants');
+    expect(tileIds(layout)).toEqual(['shirt', 'shoes']);
+    expect(layout).toMatchObject({ columns: 1, rows: 2 });
   });
 
-  it('keeps the stored order when three items contain no long garment', () => {
-    const layout = buildMosaicLayout([
-      makeItem('shirt', 'shirt'),
-      makeItem('jacket', 'jacket'),
-      makeItem('shoes', 'shoes'),
-    ]);
-    expect(tileIds(layout)).toEqual(['shirt', 'jacket', 'shoes']);
-    expect(layout.tiles[0].className).toBe('row-span-2');
-  });
-
-  it('prefers a dress over jeans for the tall tile', () => {
+  it('prefers a dress over jeans for the hero and still shows the jeans', () => {
     const layout = buildMosaicLayout([
       makeItem('jeans', 'jeans'),
       makeItem('dress', 'dress'),
       makeItem('shoes', 'shoes'),
     ]);
-    expect(tileIds(layout)).toEqual(['dress', 'jeans', 'shoes']);
+    expect(heroId(layout)).toBe('dress');
+    expect(tileIds(layout)).toEqual(['jeans', 'shoes']);
   });
 
-  it('shows four items as a 2x2 grid without a tall tile', () => {
-    const layout = buildMosaicLayout([
-      makeItem('a', 'shirt'),
-      makeItem('b', 'jacket'),
-      makeItem('c', 'shoes'),
-      makeItem('d', 'hat'),
-    ]);
-    expect(layout.gridClassName).toBe('grid-cols-2 grid-rows-2');
-    expect(tileIds(layout)).toEqual(['a', 'b', 'c', 'd']);
-    expect(layout.tiles.every((tile) => tile.className === '')).toBe(true);
-    expect(layout.overflow).toBe(0);
+  it('treats overalls and skirts as hero garments', () => {
+    expect(heroId(buildMosaicLayout([makeItem('a', 'shoes'), makeItem('o', 'overall')]))).toBe('o');
+    expect(heroId(buildMosaicLayout([makeItem('a', 'shoes'), makeItem('s', 'skirt')]))).toBe('s');
   });
 
-  it('shows three items plus an overflow count from five items on, keeping a late long garment visible', () => {
+  it('lets a lone long garment fill the card as hero', () => {
+    const layout = buildMosaicLayout([makeItem('d', 'dress')]);
+    expect(heroId(layout)).toBe('d');
+    expect(layout.tiles).toEqual([]);
+  });
+
+  it('shows every item, never an overflow count', () => {
+    const items = ['shirt', 'jacket', 'shoes', 'hat', 'jeans', 'belt', 'scarf', 'socks'].map(
+      (type, idx) => makeItem(String(idx), type)
+    );
+    const layout = buildMosaicLayout(items);
+    expect(heroId(layout)).toBe('4');
+    expect(tileIds(layout)).toEqual(['0', '1', '2', '3', '5', '6', '7']);
+    expect(layout.columns * layout.rows).toBeGreaterThanOrEqual(7);
+  });
+
+  it('puts a photo in front and keeps all items, the long garment included, as tiles', () => {
+    const layout = buildMosaicLayout(
+      [makeItem('dress', 'dress'), makeItem('shoes', 'shoes'), makeItem('bag', 'belt')],
+      { heroPhoto: '/worn.jpg' }
+    );
+    expect(layout.hero).toEqual({ kind: 'photo', src: '/worn.jpg' });
+    expect(tileIds(layout)).toEqual(['dress', 'shoes', 'bag']);
+  });
+
+  it('shows a photo look without items as a lone hero', () => {
+    const layout = buildMosaicLayout<TestItem>([], { heroPhoto: '/look.jpg' });
+    expect(layout.hero).toEqual({ kind: 'photo', src: '/look.jpg' });
+    expect(layout.tiles).toEqual([]);
+  });
+
+  it('stretches the last tile over empty cells so the grid has no gaps', () => {
     const layout = buildMosaicLayout([
-      makeItem('a', 'shirt'),
-      makeItem('b', 'jacket'),
-      makeItem('c', 'shoes'),
-      makeItem('d', 'hat'),
-      makeItem('e', 'jeans'),
-      makeItem('f', 'belt'),
+      makeItem('pants', 'pants'),
+      ...['a', 'b', 'c', 'd', 'e'].map((id) => makeItem(id, 'shirt')),
     ]);
-    expect(layout.gridClassName).toBe('grid-cols-2 grid-rows-2');
-    expect(tileIds(layout)).toEqual(['e', 'a', 'b']);
-    expect(layout.overflow).toBe(3);
+    expect(layout).toMatchObject({ columns: 2, rows: 3 });
+    expect(layout.tiles.map((tile) => tile.colSpan)).toEqual([1, 1, 1, 1, 2]);
+  });
+});
+
+describe('chooseGrid', () => {
+  it('picks the most square tiles for the narrow side column', () => {
+    expect(chooseGrid(1, 2, 4)).toEqual({ columns: 1, rows: 1 });
+    expect(chooseGrid(2, 2, 4)).toEqual({ columns: 1, rows: 2 });
+    expect(chooseGrid(8, 2, 4)).toEqual({ columns: 2, rows: 4 });
+  });
+
+  it('uses a 2x2 grid for four items on the full area', () => {
+    expect(chooseGrid(4, 5, 4)).toEqual({ columns: 2, rows: 2 });
   });
 });

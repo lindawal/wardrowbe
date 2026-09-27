@@ -134,10 +134,33 @@ export function OutfitCard({
   const clothingTypes = useClothingTypes();
   const itemDisplayName = useItemDisplayName();
   const badge = getSourceBadge(outfit, t);
-  const mosaic = buildMosaicLayout(outfit.items);
   const tags = showTags ? outfit.tags ?? [] : [];
+  // A worn photo (or the photo of a photo look) leads the card; items fill the tiles beside it.
   // The 400px thumbnail of a portrait photo looks soft at card size, so prefer the medium image.
-  const photoSrc = outfit.is_photo_look ? outfit.photo_medium_url || outfit.photo_url : null;
+  const heroPhoto =
+    outfit.worn_photo_medium_url ||
+    outfit.worn_photo_url ||
+    (outfit.is_photo_look ? outfit.photo_medium_url || outfit.photo_url : null);
+  const mosaic = buildMosaicLayout(outfit.items, { heroPhoto });
+
+  const renderItemImage = (item: Outfit['items'][number], sizes: string) =>
+    item.thumbnail_url || item.image_url ? (
+      <Image
+        src={(item.thumbnail_url || item.image_url)!}
+        alt={itemDisplayName(item)}
+        fill
+        className="object-cover"
+        sizes={sizes}
+        loading="lazy"
+      />
+    ) : (
+      <div className="w-full h-full flex items-center justify-center">
+        <span className="text-[10px] text-muted-foreground">
+          {clothingTypes.find((ct) => ct.value === item.type)?.label ?? item.type}
+        </span>
+      </div>
+    );
+
   // Still awaiting a decision: offer quick review actions right on the card.
   const isPendingReview =
     outfit.status === 'pending' || outfit.status === 'sent' || outfit.status === 'viewed';
@@ -209,49 +232,43 @@ export function OutfitCard({
               />
             </div>
           )}
-          {photoSrc ? (
-            <Image
-              src={photoSrc}
-              alt={getCardTitle(outfit, t)}
-              fill
-              className="object-contain"
-              sizes="(max-width: 768px) 100vw, 33vw"
-              loading="lazy"
-            />
-          ) : (
-            <div className={cn('absolute inset-0 grid gap-0.5 p-2', mosaic.gridClassName)}>
-              {mosaic.tiles.map(({ item, className }, idx) => (
-                <div
-                  key={`${item.id}-${idx}`}
-                  className={cn('relative rounded overflow-hidden bg-background', className)}
-                >
-                  {item.thumbnail_url || item.image_url ? (
-                    <Image
-                      src={(item.thumbnail_url || item.image_url)!}
-                      alt={itemDisplayName(item)}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 768px) 50vw, 25vw"
-                      loading="lazy"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <span className="text-[10px] text-muted-foreground">
-                        {clothingTypes.find((ct) => ct.value === item.type)?.label ?? item.type}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              ))}
-              {mosaic.overflow > 0 && (
-                <div className="relative rounded overflow-hidden bg-background flex items-center justify-center">
-                  <span className="text-sm font-medium text-muted-foreground">
-                    +{mosaic.overflow}
-                  </span>
-                </div>
-              )}
-            </div>
-          )}
+          <div className="absolute inset-0 flex gap-0.5 p-2">
+            {mosaic.tiles.length > 0 && (
+              <div
+                className={cn('grid gap-0.5 min-w-0', mosaic.hero ? 'flex-[2]' : 'flex-1')}
+                style={{
+                  gridTemplateColumns: `repeat(${mosaic.columns}, minmax(0, 1fr))`,
+                  gridTemplateRows: `repeat(${mosaic.rows}, minmax(0, 1fr))`,
+                }}
+              >
+                {mosaic.tiles.map(({ item, colSpan }, idx) => (
+                  <div
+                    key={`${item.id}-${idx}`}
+                    className="relative rounded overflow-hidden bg-background"
+                    style={colSpan > 1 ? { gridColumn: `span ${colSpan} / span ${colSpan}` } : undefined}
+                  >
+                    {renderItemImage(item, '(max-width: 768px) 25vw, 12vw')}
+                  </div>
+                ))}
+              </div>
+            )}
+            {mosaic.hero && (
+              <div className="relative flex-[3] min-w-0 rounded overflow-hidden bg-background">
+                {mosaic.hero.kind === 'photo' ? (
+                  <Image
+                    src={mosaic.hero.src}
+                    alt={getCardTitle(outfit, t)}
+                    fill
+                    className="object-contain"
+                    sizes="(max-width: 768px) 60vw, 20vw"
+                    loading="lazy"
+                  />
+                ) : (
+                  renderItemImage(mosaic.hero.item, '(max-width: 768px) 60vw, 20vw')
+                )}
+              </div>
+            )}
+          </div>
           {badge && (
             <div
               className={cn(
