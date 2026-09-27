@@ -51,6 +51,12 @@ TAGGING_PROMPT = load_prompt("clothing_analysis")
 DESCRIPTION_PROMPT = load_prompt("clothing_description")
 OUTFIT_LOOK_TAGGING_PROMPT = load_prompt("outfit_look_analysis")
 
+# Longest image side sent to the vision model. 512 is plenty for a single garment,
+# but in a full-body photo head and feet shrink to a few pixels at that size and
+# the model starts guessing (hats, shoes) instead of seeing.
+ITEM_IMAGE_MAX_SIZE = 512
+OUTFIT_LOOK_IMAGE_MAX_SIZE = 1024
+
 # Valid values for validation
 VALID_TYPES = {
     "t-shirt",
@@ -440,9 +446,11 @@ class AIService:
             headers["Authorization"] = f"Bearer {self.api_key}"
         return headers
 
-    def _preprocess_image(self, image_path: str | Path) -> str:
+    def _preprocess_image(
+        self, image_path: str | Path, max_size: int = ITEM_IMAGE_MAX_SIZE
+    ) -> str:
         """
-        Preprocess image for AI analysis.
+        Preprocess image for AI analysis: longest side scaled down to max_size.
         Returns base64-encoded JPEG string.
         """
         with Image.open(image_path) as img:
@@ -453,8 +461,7 @@ class AIService:
             # Auto-orient based on EXIF
             img = ImageOps.exif_transpose(img)
 
-            # Resize to max 512x512 for faster AI processing
-            max_size = 512
+            # Scale down for faster AI processing (never up)
             img.thumbnail((max_size, max_size), Image.Resampling.LANCZOS)
 
             # Convert to JPEG bytes
@@ -666,8 +673,11 @@ class AIService:
         distinct garment/accessory visible - unlike analyze_image(), which tags a
         single main item. Each returned ClothingTags also carries a short per-item
         description, filled from the same AI response rather than a second call.
+        Sent at a higher resolution than single items, see OUTFIT_LOOK_IMAGE_MAX_SIZE.
         """
-        image_base64 = await asyncio.to_thread(self._preprocess_image, image_path)
+        image_base64 = await asyncio.to_thread(
+            self._preprocess_image, image_path, OUTFIT_LOOK_IMAGE_MAX_SIZE
+        )
 
         messages = [
             {"role": "system", "content": OUTFIT_LOOK_TAGGING_PROMPT},

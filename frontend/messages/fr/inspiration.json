@@ -50,7 +50,10 @@
     "editTags": "Corriger les étiquettes détectées",
     "notMatchedYet": "Ce look n'a pas encore été comparé à votre garde-robe.",
     "matchNow": "Comparer avec ma garde-robe",
-    "matchError": "Impossible de comparer le look avec votre garde-robe."
+    "matchError": "Impossible de comparer le look avec votre garde-robe.",
+    "deleteItem": "Retirer la pièce",
+    "deleteItemConfirm": "Retirer cette pièce du look ?",
+    "deleteItemError": "Impossible de retirer la pièce."
   },
   "match": {
     "fromWardrobe": "Dans votre garde-robe",
@@ -86,5 +89,19 @@
   },
   "source": {
     "inspiredBy": "Inspiré de cette photo"
+  },
+  "addItem": {
+    "button": "Ajouter une pièce",
+    "title": "Ajouter une pièce",
+    "description": "Ajoutez une pièce que l'IA n'a pas repérée. Vous pourrez affiner ses étiquettes ensuite.",
+    "type": "Type",
+    "typePlaceholder": "Choisir un type",
+    "primaryColor": "Couleur principale",
+    "colorPlaceholder": "Facultatif",
+    "descriptionLabel": "Description (facultative)",
+    "descriptionPlaceholder": "p. ex. baskets en cuir blanc",
+    "submit": "Ajouter",
+    "added": "Pièce ajoutée",
+    "error": "Impossible d'ajouter la pièce."
   }
 }

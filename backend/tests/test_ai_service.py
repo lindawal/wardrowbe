@@ -1,4 +1,4 @@
-from unittest.mock import patch
+from unittest.mock import AsyncMock, patch
 
 import httpx
 import pytest
@@ -662,3 +662,42 @@ class TestReasoningEffort:
                 await service.generate_text("suggest an outfit")
 
         assert mock_post.call_count == 1
+
+
+class TestPreprocessImageSize:
+    """Full-body inspiration photos go out at a higher resolution than single items."""
+
+    @staticmethod
+    def _decoded_size(image_base64: str) -> tuple[int, int]:
+        import base64
+        import io
+
+        from PIL import Image
+
+        with Image.open(io.BytesIO(base64.b64decode(image_base64))) as img:
+            return img.size
+
+    def test_single_items_stay_at_512(self, tmp_path):
+        from PIL import Image
+
+        path = tmp_path / "item.jpg"
+        Image.new("RGB", (2000, 1000), color="red").save(path)
+
+        assert self._decoded_size(AIService()._preprocess_image(path)) == (512, 256)
+
+    @pytest.mark.asyncio
+    async def test_outfit_looks_are_sent_at_1024(self, tmp_path):
+        from PIL import Image
+
+        path = tmp_path / "look.jpg"
+        Image.new("RGB", (1000, 2000), color="red").save(path)
+
+        service = AIService()
+        with patch.object(
+            service, "_call_with_fallback", new_callable=AsyncMock, return_value=("[]", None, None)
+        ) as call:
+            await service.analyze_outfit_look(path)
+
+        messages = call.call_args.args[0]
+        url = messages[1]["content"][0]["image_url"]["url"]
+        assert self._decoded_size(url.split(",", 1)[1]) == (512, 1024)

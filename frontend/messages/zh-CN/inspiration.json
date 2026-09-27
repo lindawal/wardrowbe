@@ -50,7 +50,10 @@
     "editTags": "修正识别出的标签",
     "notMatchedYet": "这个look尚未与你的衣橱进行匹配。",
     "matchNow": "与我的衣橱匹配",
-    "matchError": "无法将这个look与你的衣橱匹配。"
+    "matchError": "无法将这个look与你的衣橱匹配。",
+    "deleteItem": "移除单品",
+    "deleteItemConfirm": "要从这个look中移除这件单品吗？",
+    "deleteItemError": "无法移除单品。"
   },
   "match": {
     "fromWardrobe": "来自你的衣橱",
@@ -86,5 +89,19 @@
   },
   "source": {
     "inspiredBy": "灵感来自这张照片"
+  },
+  "addItem": {
+    "button": "添加单品",
+    "title": "添加单品",
+    "description": "添加AI遗漏的单品。之后可以再完善它的标签。",
+    "type": "类型",
+    "typePlaceholder": "选择类型",
+    "primaryColor": "主色",
+    "colorPlaceholder": "可选",
+    "descriptionLabel": "描述（可选）",
+    "descriptionPlaceholder": "例如：白色皮革运动鞋",
+    "submit": "添加",
+    "added": "单品已添加",
+    "error": "无法添加单品。"
   }
 }

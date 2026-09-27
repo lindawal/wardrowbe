@@ -106,3 +106,10 @@ class InspirationLookItemUpdate(BaseModel):
     @classmethod
     def _validate_season(cls, v: list[str] | None) -> list[str]:
         return _validate_list(v, VALID_SEASONS, "season")
+
+
+class InspirationLookItemCreate(InspirationLookItemUpdate):
+    """A piece added by hand (one the AI missed). Only `type` is required; every
+    other tag uses the same vocabulary and validation as a correction."""
+
+    type: str

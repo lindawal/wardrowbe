@@ -50,7 +50,10 @@
     "editTags": "Correggi le etichette rilevate",
     "notMatchedYet": "Questo look non è ancora stato confrontato con il tuo guardaroba.",
     "matchNow": "Confronta con il mio guardaroba",
-    "matchError": "Impossibile confrontare il look con il tuo guardaroba."
+    "matchError": "Impossibile confrontare il look con il tuo guardaroba.",
+    "deleteItem": "Rimuovi capo",
+    "deleteItemConfirm": "Rimuovere questo capo dal look?",
+    "deleteItemError": "Impossibile rimuovere il capo."
   },
   "match": {
     "fromWardrobe": "Dal tuo guardaroba",
@@ -86,5 +89,19 @@
   },
   "source": {
     "inspiredBy": "Ispirato a questa foto"
+  },
+  "addItem": {
+    "button": "Aggiungi capo",
+    "title": "Aggiungi un capo",
+    "description": "Aggiungi un capo che l'IA non ha rilevato. Potrai affinare le etichette in seguito.",
+    "type": "Tipo",
+    "typePlaceholder": "Scegli un tipo",
+    "primaryColor": "Colore principale",
+    "colorPlaceholder": "Facoltativo",
+    "descriptionLabel": "Descrizione (facoltativa)",
+    "descriptionPlaceholder": "es. sneaker in pelle bianca",
+    "submit": "Aggiungi",
+    "added": "Capo aggiunto",
+    "error": "Impossibile aggiungere il capo."
   }
 }

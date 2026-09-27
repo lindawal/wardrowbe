@@ -9,6 +9,7 @@ import {
   AlertTriangle,
   ChevronLeft,
   Loader2,
+  Plus,
   RefreshCw,
   Shirt,
   Sparkles,
@@ -20,6 +21,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { AddLookItemDialog } from '@/components/inspiration/add-look-item-dialog';
 import { InspirationItemCard } from '@/components/inspiration/inspiration-item-card';
 import { RecreateLookDialog } from '@/components/inspiration/recreate-look-dialog';
 import {
@@ -41,6 +43,8 @@ export default function InspirationLookDetailPage() {
   const deleteMutation = useDeleteInspirationLook();
   const rematch = useRematchInspirationLook();
   const [recreateOpen, setRecreateOpen] = useState(false);
+  const [addItemOpen, setAddItemOpen] = useState(false);
+  const tAdd = useTranslations('inspiration.addItem');
 
   const handleDelete = async () => {
     if (!look) return;
@@ -192,12 +196,17 @@ export default function InspirationLookDetailPage() {
                   ))}
                 </div>
               )}
+              <Button variant="outline" className="w-full" onClick={() => setAddItemOpen(true)}>
+                <Plus className="mr-2 h-4 w-4" />
+                {tAdd('button')}
+              </Button>
             </>
           )}
         </div>
       </div>
 
       <RecreateLookDialog lookId={look.id} open={recreateOpen} onOpenChange={setRecreateOpen} />
+      <AddLookItemDialog lookId={look.id} open={addItemOpen} onOpenChange={setAddItemOpen} />
     </div>
   );
 }

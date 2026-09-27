@@ -2,9 +2,10 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 
+import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Input } from '@/components/ui/input';
@@ -22,6 +23,7 @@ import { withCurrent, type EditableTags } from '@/lib/item-tags';
 import { useClothingColors, useClothingTypes } from '@/lib/hooks/use-translated-constants';
 import { useTagOptions } from '@/lib/hooks/use-items';
 import {
+  useDeleteInspirationLookItem,
   useUpdateInspirationLookItem,
   type InspirationLookItem,
   type InspirationLookItemUpdate,
@@ -51,6 +53,7 @@ export function InspirationItemCard({ lookId, item, matched }: InspirationItemCa
   const clothingColors = useClothingColors();
   const { data: tagOptions } = useTagOptions();
   const updateItem = useUpdateInspirationLookItem();
+  const deleteItem = useDeleteInspirationLookItem();
 
   const [description, setDescription] = useState(item.description ?? '');
   // Before the look is matched, correcting tags is all there is to do here.
@@ -78,6 +81,14 @@ export function InspirationItemCard({ lookId, item, matched }: InspirationItemCa
     );
   };
 
+  const handleDelete = () => {
+    if (!confirm(t('deleteItemConfirm'))) return;
+    deleteItem.mutate(
+      { lookId, itemId: item.id },
+      { onError: (error) => toast.error(getErrorMessage(error, t('deleteItemError'))) }
+    );
+  };
+
   const primaryColorChoices = tagOptions
     ? withCurrent(tagOptions.colors, item.primary_color)
     : clothingColors.map((c) => c.value);
@@ -87,11 +98,27 @@ export function InspirationItemCard({ lookId, item, matched }: InspirationItemCa
   return (
     <Card>
       <CardContent className="space-y-4 p-4">
-        <div className="min-w-0">
-          <p className="font-medium">{typeLabel}</p>
-          {item.description && (
-            <p className="text-sm italic text-muted-foreground">&ldquo;{item.description}&rdquo;</p>
-          )}
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0">
+            <p className="font-medium">{typeLabel}</p>
+            {item.description && (
+              <p className="text-sm italic text-muted-foreground">
+                &ldquo;{item.description}&rdquo;
+              </p>
+            )}
+          </div>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="-mr-2 -mt-2 shrink-0 text-muted-foreground hover:text-destructive"
+            aria-label={t('deleteItem')}
+            title={t('deleteItem')}
+            onClick={handleDelete}
+            disabled={deleteItem.isPending}
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
         </div>
 
         {matched && <WardrobeMatch lookId={lookId} item={item} />}

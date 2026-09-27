@@ -50,7 +50,10 @@
     "editTags": "検出されたタグを修正",
     "notMatchedYet": "このルックはまだワードローブと照合されていません。",
     "matchNow": "ワードローブと照合する",
-    "matchError": "ルックをワードローブと照合できませんでした。"
+    "matchError": "ルックをワードローブと照合できませんでした。",
+    "deleteItem": "アイテムを削除",
+    "deleteItemConfirm": "このアイテムをルックから削除しますか？",
+    "deleteItemError": "アイテムを削除できませんでした。"
   },
   "match": {
     "fromWardrobe": "あなたのワードローブから",
@@ -86,5 +89,19 @@
   },
   "source": {
     "inspiredBy": "この写真から着想"
+  },
+  "addItem": {
+    "button": "アイテムを追加",
+    "title": "アイテムを追加",
+    "description": "AIが見落としたアイテムを追加します。タグは後から調整できます。",
+    "type": "タイプ",
+    "typePlaceholder": "タイプを選択",
+    "primaryColor": "メインカラー",
+    "colorPlaceholder": "任意",
+    "descriptionLabel": "説明（任意）",
+    "descriptionPlaceholder": "例：白いレザースニーカー",
+    "submit": "追加",
+    "added": "アイテムを追加しました",
+    "error": "アイテムを追加できませんでした。"
   }
 }

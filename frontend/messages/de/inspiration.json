@@ -50,7 +50,10 @@
     "editTags": "Erkannte Tags korrigieren",
     "notMatchedYet": "Dieser Look wurde noch nicht mit deinem Schrank abgeglichen.",
     "matchNow": "Mit meinem Schrank abgleichen",
-    "matchError": "Der Look konnte nicht mit deinem Schrank abgeglichen werden."
+    "matchError": "Der Look konnte nicht mit deinem Schrank abgeglichen werden.",
+    "deleteItem": "Teil entfernen",
+    "deleteItemConfirm": "Dieses Teil aus dem Look entfernen?",
+    "deleteItemError": "Das Teil konnte nicht entfernt werden."
   },
   "match": {
     "fromWardrobe": "Aus deinem Schrank",
@@ -86,5 +89,19 @@
   },
   "source": {
     "inspiredBy": "Inspiriert von diesem Foto"
+  },
+  "addItem": {
+    "button": "Teil hinzufügen",
+    "title": "Teil hinzufügen",
+    "description": "Füge ein Teil hinzu, das die KI übersehen hat. Die Tags kannst du danach verfeinern.",
+    "type": "Typ",
+    "typePlaceholder": "Typ wählen",
+    "primaryColor": "Hauptfarbe",
+    "colorPlaceholder": "Optional",
+    "descriptionLabel": "Beschreibung (optional)",
+    "descriptionPlaceholder": "z. B. weiße Leder-Sneaker",
+    "submit": "Hinzufügen",
+    "added": "Teil hinzugefügt",
+    "error": "Das Teil konnte nicht hinzugefügt werden."
   }
 }

@@ -50,7 +50,10 @@
     "editTags": "修正辨識出的標籤",
     "notMatchedYet": "這個look尚未與你的衣櫥進行比對。",
     "matchNow": "與我的衣櫥比對",
-    "matchError": "無法將這個look與你的衣櫥比對。"
+    "matchError": "無法將這個look與你的衣櫥比對。",
+    "deleteItem": "移除單品",
+    "deleteItemConfirm": "要從這個look中移除這件單品嗎？",
+    "deleteItemError": "無法移除單品。"
   },
   "match": {
     "fromWardrobe": "來自你的衣櫥",
@@ -86,5 +89,19 @@
   },
   "source": {
     "inspiredBy": "靈感來自這張照片"
+  },
+  "addItem": {
+    "button": "新增單品",
+    "title": "新增單品",
+    "description": "新增AI遺漏的單品。之後可以再完善它的標籤。",
+    "type": "類型",
+    "typePlaceholder": "選擇類型",
+    "primaryColor": "主色",
+    "colorPlaceholder": "選填",
+    "descriptionLabel": "描述（選填）",
+    "descriptionPlaceholder": "例如：白色皮革運動鞋",
+    "submit": "新增",
+    "added": "單品已新增",
+    "error": "無法新增單品。"
   }
 }

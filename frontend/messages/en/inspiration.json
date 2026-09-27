@@ -50,7 +50,10 @@
     "editTags": "Correct detected tags",
     "notMatchedYet": "This look hasn't been matched against your wardrobe yet.",
     "matchNow": "Match with my wardrobe",
-    "matchError": "Couldn't match the look against your wardrobe."
+    "matchError": "Couldn't match the look against your wardrobe.",
+    "deleteItem": "Remove piece",
+    "deleteItemConfirm": "Remove this piece from the look?",
+    "deleteItemError": "Couldn't remove the piece."
   },
   "match": {
     "fromWardrobe": "From your wardrobe",
@@ -86,5 +89,19 @@
   },
   "source": {
     "inspiredBy": "Inspired by this photo"
+  },
+  "addItem": {
+    "button": "Add piece",
+    "title": "Add a piece",
+    "description": "Add a piece the AI missed. You can refine its tags afterwards.",
+    "type": "Type",
+    "typePlaceholder": "Choose a type",
+    "primaryColor": "Primary color",
+    "colorPlaceholder": "Optional",
+    "descriptionLabel": "Description (optional)",
+    "descriptionPlaceholder": "e.g. white leather sneakers",
+    "submit": "Add",
+    "added": "Piece added",
+    "error": "Couldn't add the piece."
   }
 }

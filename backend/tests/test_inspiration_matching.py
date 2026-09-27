@@ -775,3 +775,143 @@ class TestRecreateOutfit:
             await db_session.execute(select(Outfit).where(Outfit.id == UUID(outfit_id)))
         ).scalar_one()
         assert outfit.inspiration_look_id is None
+
+
+# --- adding and removing pieces by hand ----------------------------------------
+
+
+class TestAddItem:
+    @pytest.mark.asyncio
+    async def test_adds_piece_last_and_matches_it(
+        self, client: AsyncClient, auth_headers, test_user, db_session: AsyncSession
+    ):
+        sneakers = await _add_item(db_session, test_user.id, "sneakers", primary_color="white")
+        look = await _make_look(db_session, test_user.id, [{"type": "t-shirt"}])
+
+        response = await client.post(
+            f"{INSPIRATION_ENDPOINT}/{look.id}/items",
+            json={"type": "Sneakers", "primary_color": "white", "description": "white sneakers"},
+            headers=auth_headers,
+        )
+
+        assert response.status_code == 201
+        data = response.json()
+        assert data["type"] == "sneakers"
+        assert data["position"] == 1
+        assert data["description"] == "white sneakers"
+        assert data["matched_item"]["id"] == str(sneakers.id)
+
+        detail = await client.get(f"{INSPIRATION_ENDPOINT}/{look.id}", headers=auth_headers)
+        assert [i["type"] for i in detail.json()["items"]] == ["t-shirt", "sneakers"]
+
+    @pytest.mark.asyncio
+    async def test_never_matched_look_stays_unmatched(
+        self, client: AsyncClient, auth_headers, test_user, db_session: AsyncSession
+    ):
+        await _add_item(db_session, test_user.id, "sneakers")
+        look = await _make_look(db_session, test_user.id, [], matched=False)
+
+        response = await client.post(
+            f"{INSPIRATION_ENDPOINT}/{look.id}/items",
+            json={"type": "sneakers"},
+            headers=auth_headers,
+        )
+
+        assert response.status_code == 201
+        assert response.json()["position"] == 0
+        assert response.json()["matched_item"] is None
+        assert response.json()["suggested_items"] == []
+
+    @pytest.mark.asyncio
+    async def test_type_is_required_and_validated(
+        self, client: AsyncClient, auth_headers, test_user, db_session: AsyncSession
+    ):
+        look = await _make_look(db_session, test_user.id, [])
+
+        missing = await client.post(
+            f"{INSPIRATION_ENDPOINT}/{look.id}/items",
+            json={"primary_color": "black"},
+            headers=auth_headers,
+        )
+        invalid = await client.post(
+            f"{INSPIRATION_ENDPOINT}/{look.id}/items",
+            json={"type": "cape"},
+            headers=auth_headers,
+        )
+
+        assert missing.status_code == 422
+        assert invalid.status_code == 422
+
+    @pytest.mark.asyncio
+    async def test_409_while_analyzing(
+        self, client: AsyncClient, auth_headers, test_user, db_session: AsyncSession
+    ):
+        look = await _make_look(
+            db_session, test_user.id, [], status=InspirationStatus.analyzing, matched=False
+        )
+
+        response = await client.post(
+            f"{INSPIRATION_ENDPOINT}/{look.id}/items",
+            json={"type": "t-shirt"},
+            headers=auth_headers,
+        )
+
+        assert response.status_code == 409
+
+    @pytest.mark.asyncio
+    async def test_404_for_someone_elses_look(
+        self, client: AsyncClient, auth_headers, db_session: AsyncSession
+    ):
+        other = await _other_user(db_session)
+        look = await _make_look(db_session, other.id, [])
+
+        response = await client.post(
+            f"{INSPIRATION_ENDPOINT}/{look.id}/items",
+            json={"type": "t-shirt"},
+            headers=auth_headers,
+        )
+
+        assert response.status_code == 404
+
+
+class TestDeleteItem:
+    @pytest.mark.asyncio
+    async def test_removes_the_piece(
+        self, client: AsyncClient, auth_headers, test_user, db_session: AsyncSession
+    ):
+        look = await _make_look(db_session, test_user.id, [{"type": "t-shirt"}, {"type": "hat"}])
+        hat_id = (await _look_items(db_session, look.id))[1].id
+
+        response = await client.delete(
+            f"{INSPIRATION_ENDPOINT}/{look.id}/items/{hat_id}", headers=auth_headers
+        )
+
+        assert response.status_code == 204
+        assert [i.type for i in await _look_items(db_session, look.id)] == ["t-shirt"]
+
+    @pytest.mark.asyncio
+    async def test_404_for_missing_item(
+        self, client: AsyncClient, auth_headers, test_user, db_session: AsyncSession
+    ):
+        look = await _make_look(db_session, test_user.id, [{"type": "t-shirt"}])
+
+        response = await client.delete(
+            f"{INSPIRATION_ENDPOINT}/{look.id}/items/{uuid4()}", headers=auth_headers
+        )
+
+        assert response.status_code == 404
+
+    @pytest.mark.asyncio
+    async def test_404_for_someone_elses_look(
+        self, client: AsyncClient, auth_headers, db_session: AsyncSession
+    ):
+        other = await _other_user(db_session)
+        look = await _make_look(db_session, other.id, [{"type": "t-shirt"}])
+        item_id = (await _look_items(db_session, look.id))[0].id
+
+        response = await client.delete(
+            f"{INSPIRATION_ENDPOINT}/{look.id}/items/{item_id}", headers=auth_headers
+        )
+
+        assert response.status_code == 404
+        assert len(await _look_items(db_session, look.id)) == 1

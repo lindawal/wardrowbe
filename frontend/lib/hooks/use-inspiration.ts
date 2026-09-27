@@ -170,6 +170,37 @@ export function useUpdateInspirationLookItem() {
   });
 }
 
+// Partial like an update, but `type` is required: a piece the AI missed.
+export type InspirationLookItemCreate = InspirationLookItemUpdate & { type: string };
+
+export function useAddInspirationLookItem() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ lookId, item }: { lookId: string; item: InspirationLookItemCreate }) =>
+      api.post<InspirationLookItem>(`/inspiration/${lookId}/items`, item),
+    onSuccess: (newItem, { lookId }) => {
+      queryClient.setQueryData<InspirationLook | undefined>(['inspirationLook', lookId], (look) =>
+        look ? { ...look, items: [...look.items, newItem] } : look
+      );
+    },
+  });
+}
+
+export function useDeleteInspirationLookItem() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ lookId, itemId }: { lookId: string; itemId: string }) =>
+      api.delete<void>(`/inspiration/${lookId}/items/${itemId}`),
+    onSuccess: (_data, { lookId, itemId }) => {
+      queryClient.setQueryData<InspirationLook | undefined>(['inspirationLook', lookId], (look) =>
+        look ? { ...look, items: look.items.filter((item) => item.id !== itemId) } : look
+      );
+    },
+  });
+}
+
 // Pick a wardrobe item for one slot (any of the user's items), or clear it with null.
 export function useSetInspirationMatch() {
   const queryClient = useQueryClient();

@@ -208,6 +208,35 @@ class InspirationService:
         await self.db.refresh(item)
         return item
 
+    async def add_item(self, look: InspirationLook, fields: dict) -> InspirationLookItem:
+        """Add a piece by hand -- one the AI missed. `fields` is expected to already be
+        validated (InspirationLookItemCreate.model_dump(exclude_unset=True)).
+
+        Only on analyzed looks: a running analysis replaces all items when it lands.
+        The new piece goes last and, if the look has been matched, is matched right
+        away like the AI-found ones.
+        """
+        if look.status != InspirationStatus.analyzed:
+            raise InspirationLookNotAnalyzedError(str(look.id))
+
+        position = max((i.position for i in look.items), default=-1) + 1
+        item = InspirationLookItem(position=position, **fields)
+        look.items.append(item)
+        await self.db.flush()
+
+        if look.matched_at is not None:
+            await rematch_item(self.db, look, item)
+
+        await self.db.commit()
+        await self.db.refresh(item)
+        return item
+
+    async def delete_item(self, look: InspirationLook, item_id: UUID) -> None:
+        """Remove a piece, e.g. one the AI saw that isn't actually in the photo."""
+        item = self._find_item(look, item_id)
+        look.items.remove(item)  # delete-orphan cascade deletes the row
+        await self.db.commit()
+
     async def set_match(
         self, look: InspirationLook, item_id: UUID, wardrobe_item_id: UUID | None
     ) -> InspirationLookItem:

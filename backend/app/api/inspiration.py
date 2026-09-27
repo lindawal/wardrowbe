@@ -20,7 +20,7 @@ from app.database import get_db
 from app.models.inspiration import InspirationLook, InspirationLookItem, InspirationStatus
 from app.models.item import ClothingItem
 from app.models.user import User
-from app.schemas.inspiration import InspirationLookItemUpdate
+from app.schemas.inspiration import InspirationLookItemCreate, InspirationLookItemUpdate
 from app.services.inspiration_service import (
     InspirationLookItemNotFoundError,
     InspirationLookNotAnalyzedError,
@@ -333,6 +333,47 @@ async def get_inspiration_look(
     service = InspirationService(db)
     look = await _get_look_or_404(service, look_id, current_user.id)
     return await _resolved_look_response(service, look)
+
+
+@router.post(
+    "/{look_id}/items",
+    response_model=InspirationLookItemResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+async def add_inspiration_look_item(
+    look_id: UUID,
+    request: InspirationLookItemCreate,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    current_user: Annotated[User, Depends(get_current_user)],
+) -> InspirationLookItemResponse:
+    """Add a piece the AI missed. Matched against the wardrobe right away if the
+    look has been matched."""
+    service = InspirationService(db)
+    look = await _get_look_or_404(service, look_id, current_user.id)
+
+    try:
+        item = await service.add_item(look, request.model_dump(exclude_unset=True))
+    except InspirationLookNotAnalyzedError:
+        raise _not_analyzed() from None
+
+    return await _resolved_item_response(service, look, item)
+
+
+@router.delete("/{look_id}/items/{item_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_inspiration_look_item(
+    look_id: UUID,
+    item_id: UUID,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    current_user: Annotated[User, Depends(get_current_user)],
+) -> None:
+    """Remove a piece, e.g. one the AI saw that isn't actually in the photo."""
+    service = InspirationService(db)
+    look = await _get_look_or_404(service, look_id, current_user.id)
+
+    try:
+        await service.delete_item(look, item_id)
+    except InspirationLookItemNotFoundError:
+        raise _item_not_found() from None
 
 
 @router.patch("/{look_id}/items/{item_id}", response_model=InspirationLookItemResponse)
