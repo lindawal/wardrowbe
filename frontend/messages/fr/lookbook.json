@@ -28,6 +28,9 @@
     "allSeasons": "Toutes les saisons",
     "anyWeather": "Toute météo",
     "clear": "Effacer les filtres",
+    "item": "Avec : {name}",
+    "itemFallback": "Article",
+    "removeItem": "Retirer le filtre d'article",
     "season": "Saison",
     "weather": "Météo"
   },

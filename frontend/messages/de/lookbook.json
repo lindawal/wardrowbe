@@ -28,6 +28,9 @@
     "allSeasons": "Alle Jahreszeiten",
     "anyWeather": "Jedes Wetter",
     "clear": "Filter zurücksetzen",
+    "item": "Mit: {name}",
+    "itemFallback": "Kleidungsstück",
+    "removeItem": "Kleidungsstück-Filter entfernen",
     "season": "Jahreszeit",
     "weather": "Wetter"
   },

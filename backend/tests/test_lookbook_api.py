@@ -107,6 +107,24 @@ class TestLookbookListFilters:
         assert _ids(response) == {str(cold_winter.id)}
 
     @pytest.mark.asyncio
+    async def test_item_filter_matches_outfits_containing_the_item(
+        self, client: AsyncClient, test_user, auth_headers, db_session: AsyncSession
+    ):
+        shirt = _make_item(test_user.id, "shirt")
+        pants = _make_item(test_user.id, "pants")
+        await _persist(db_session, shirt, pants)
+        with_shirt = _make_outfit(test_user.id, items=[shirt, pants])
+        without_shirt = _make_outfit(test_user.id, items=[pants])
+        dated_with_shirt = _make_outfit(test_user.id, is_lookbook=False, items=[shirt])
+        await _persist(db_session, with_shirt, without_shirt, dated_with_shirt)
+
+        response = await client.get(
+            f"/api/v1/outfits?is_lookbook=true&item_id={shirt.id}", headers=auth_headers
+        )
+        assert response.status_code == 200
+        assert _ids(response) == {str(with_shirt.id)}
+
+    @pytest.mark.asyncio
     async def test_invalid_filter_values_are_ignored(
         self, client: AsyncClient, test_user, auth_headers, db_session: AsyncSession
     ):

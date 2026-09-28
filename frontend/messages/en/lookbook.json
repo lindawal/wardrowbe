@@ -28,6 +28,9 @@
     "allSeasons": "All seasons",
     "anyWeather": "Any weather",
     "clear": "Clear filters",
+    "item": "With: {name}",
+    "itemFallback": "Item",
+    "removeItem": "Remove item filter",
     "season": "Season",
     "weather": "Weather"
   },

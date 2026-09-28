@@ -28,6 +28,9 @@
     "allSeasons": "すべての季節",
     "anyWeather": "すべての天気",
     "clear": "フィルターをクリア",
+    "item": "含む: {name}",
+    "itemFallback": "アイテム",
+    "removeItem": "アイテムの絞り込みを解除",
     "season": "季節",
     "weather": "天気"
   },

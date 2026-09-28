@@ -33,6 +33,8 @@ class OutfitListFilters:
     family_member_view: bool = False
     search: str | None = None
     cloned_from_outfit_id: UUID | None = None
+    # Outfits that contain this clothing item.
+    item_id: UUID | None = None
     # Each list matches outfits carrying any of its values; different lists are ANDed.
     tags: list[str] | None = None
     seasons: list[str] | None = None
@@ -132,6 +134,9 @@ class OutfitService:
 
         if filters.cloned_from_outfit_id is not None:
             clauses.append(Outfit.cloned_from_outfit_id == filters.cloned_from_outfit_id)
+
+        if filters.item_id is not None:
+            clauses.append(Outfit.items.any(OutfitItem.item_id == filters.item_id))
 
         if filters.tags:
             clauses.append(Outfit.tags.overlap(filters.tags))

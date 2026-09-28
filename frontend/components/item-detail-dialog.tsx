@@ -28,6 +28,7 @@ import {
   Plus,
   Star,
   ImageIcon,
+  BookMarked,
 } from 'lucide-react';
 import {
   Dialog,
@@ -323,120 +324,142 @@ export function ItemDetailDialog({ item, open, onOpenChange }: ItemDetailDialogP
                 cannot be reached at all. */}
             <div className="flex-1 min-w-0 overflow-x-auto overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:flex-none">
               <div className="flex w-max ml-auto items-center gap-1">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleToggleFavorite}
-                  disabled={updateItem.isPending}
-                  title={t('titles.toggleFavorite')}
-                >
-                  <Heart
-                    className={`h-5 w-5 ${
-                      item.favorite ? 'fill-red-500 text-red-500' : 'text-muted-foreground'
-                    }`}
-                  />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setShowPairingsDialog(true)}
-                  disabled={item.status !== 'ready'}
-                  title={t('titles.findMatchingOutfits')}
-                >
-                  <Layers className="h-5 w-5" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => {
-                    onOpenChange(false);
-                    router.push(`/dashboard/suggest?item=${item.id}`);
-                  }}
-                  disabled={item.status !== 'ready'}
-                  title={t('titles.suggestOutfit')}
-                >
-                  <Sparkles className="h-5 w-5 text-primary" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleReanalyze}
-                  disabled={isAnalyzing}
-                  title={isAnalyzing ? t('titles.analysisInProgress') : t('titles.reanalyzeWithAI')}
-                >
-                  <RefreshCw
-                    className={`h-5 w-5 ${isAnalyzing ? 'animate-spin text-primary' : ''}`}
-                  />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => handleRotate('ccw')}
-                  disabled={rotateImage.isPending}
-                  title={t('titles.rotateLeft')}
-                >
-                  {rotateImage.isPending ? (
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                  ) : (
-                    <RotateCcw className="h-5 w-5" />
-                  )}
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => handleRotate('cw')}
-                  disabled={rotateImage.isPending}
-                  title={t('titles.rotateRight')}
-                >
-                  {rotateImage.isPending ? (
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                  ) : (
-                    <RotateCw className="h-5 w-5" />
-                  )}
-                </Button>
-                {features?.background_removal && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={handleRemoveBackground}
-                    disabled={removeBackground.isPending || !item.image_url}
-                    title={t('titles.removeBackground')}
-                  >
-                    {removeBackground.isPending ? (
-                      <Loader2 className="h-5 w-5 animate-spin" />
-                    ) : (
-                      <Eraser className="h-5 w-5" />
-                    )}
-                  </Button>
+                {/* View menu: actions on the item itself. */}
+                {!isEditing && (
+                  <>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={handleToggleFavorite}
+                      disabled={updateItem.isPending}
+                      title={t('titles.toggleFavorite')}
+                    >
+                      <Heart
+                        className={`h-5 w-5 ${
+                          item.favorite ? 'fill-red-500 text-red-500' : 'text-muted-foreground'
+                        }`}
+                      />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => setShowPairingsDialog(true)}
+                      disabled={item.status !== 'ready'}
+                      title={t('titles.findMatchingOutfits')}
+                    >
+                      <Layers className="h-5 w-5" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => {
+                        onOpenChange(false);
+                        router.push(`/dashboard/suggest?item=${item.id}`);
+                      }}
+                      disabled={item.status !== 'ready'}
+                      title={t('titles.suggestOutfit')}
+                    >
+                      <Sparkles className="h-5 w-5 text-primary" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => {
+                        onOpenChange(false);
+                        router.push(`/dashboard/lookbook?item=${item.id}`);
+                      }}
+                      title={t('titles.showInLookbook')}
+                      aria-label={t('titles.showInLookbook')}
+                    >
+                      <BookMarked className="h-5 w-5" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={handleReanalyze}
+                      disabled={isAnalyzing}
+                      title={isAnalyzing ? t('titles.analysisInProgress') : t('titles.reanalyzeWithAI')}
+                    >
+                      <RefreshCw
+                        className={`h-5 w-5 ${isAnalyzing ? 'animate-spin text-primary' : ''}`}
+                      />
+                    </Button>
+                  </>
                 )}
-                {item.original_image_path && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={handleRestoreOriginal}
-                    disabled={restoreOriginal.isPending}
-                    title={t('titles.undoBackgroundRemoval')}
-                  >
-                    {restoreOriginal.isPending ? (
-                      <Loader2 className="h-5 w-5 animate-spin" />
-                    ) : (
-                      <Undo2 className="h-5 w-5" />
+                {/* Edit menu: image tools, only while editing. */}
+                {isEditing && (
+                  <>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleRotate('ccw')}
+                      disabled={rotateImage.isPending}
+                      title={t('titles.rotateLeft')}
+                    >
+                      {rotateImage.isPending ? (
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                      ) : (
+                        <RotateCcw className="h-5 w-5" />
+                      )}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleRotate('cw')}
+                      disabled={rotateImage.isPending}
+                      title={t('titles.rotateRight')}
+                    >
+                      {rotateImage.isPending ? (
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                      ) : (
+                        <RotateCw className="h-5 w-5" />
+                      )}
+                    </Button>
+                    {features?.background_removal && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={handleRemoveBackground}
+                        disabled={removeBackground.isPending || !item.image_url}
+                        title={t('titles.removeBackground')}
+                      >
+                        {removeBackground.isPending ? (
+                          <Loader2 className="h-5 w-5 animate-spin" />
+                        ) : (
+                          <Eraser className="h-5 w-5" />
+                        )}
+                      </Button>
                     )}
-                  </Button>
+                    {item.original_image_path && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={handleRestoreOriginal}
+                        disabled={restoreOriginal.isPending}
+                        title={t('titles.undoBackgroundRemoval')}
+                      >
+                        {restoreOriginal.isPending ? (
+                          <Loader2 className="h-5 w-5 animate-spin" />
+                        ) : (
+                          <Undo2 className="h-5 w-5" />
+                        )}
+                      </Button>
+                    )}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => replaceImageInputRef.current?.click()}
+                      disabled={replaceImage.isPending}
+                      title={t('titles.replaceImage')}
+                    >
+                      {replaceImage.isPending ? (
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                      ) : (
+                        <ImagePlus className="h-5 w-5" />
+                      )}
+                    </Button>
+                  </>
                 )}
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => replaceImageInputRef.current?.click()}
-                  disabled={replaceImage.isPending}
-                  title={t('titles.replaceImage')}
-                >
-                  {replaceImage.isPending ? (
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                  ) : (
-                    <ImagePlus className="h-5 w-5" />
-                  )}
-                </Button>
                 <input
                   ref={replaceImageInputRef}
                   type="file"

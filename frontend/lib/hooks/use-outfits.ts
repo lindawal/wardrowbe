@@ -111,6 +111,8 @@ export interface OutfitFilters {
   has_source_item?: boolean;
   search?: string;
   cloned_from_outfit_id?: string;
+  // Only outfits that contain this clothing item.
+  item_id?: string;
   // Each list matches outfits with any of its values.
   tags?: string[];
   seasons?: string[];
@@ -179,6 +181,7 @@ export function buildOutfitListParams(
   if (filters.search) params.search = filters.search;
   if (filters.cloned_from_outfit_id)
     params.cloned_from_outfit_id = filters.cloned_from_outfit_id;
+  if (filters.item_id) params.item_id = filters.item_id;
   if (filters.tags?.length) params.tags = filters.tags.join(',');
   if (filters.seasons?.length) params.seasons = filters.seasons.join(',');
   if (filters.weather_tags?.length) params.weather_tags = filters.weather_tags.join(',');

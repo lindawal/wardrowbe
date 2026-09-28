@@ -28,6 +28,9 @@
     "allSeasons": "所有季節",
     "anyWeather": "所有天氣",
     "clear": "清除篩選",
+    "item": "包含：{name}",
+    "itemFallback": "單品",
+    "removeItem": "移除單品篩選",
     "season": "季節",
     "weather": "天氣"
   },

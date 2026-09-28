@@ -712,6 +712,7 @@ async def list_outfits(
     cloned_from_outfit_id: UUID | None = Query(
         None, description="Filter to wear instances of a specific template"
     ),
+    item_id: UUID | None = Query(None, description="Only outfits containing this clothing item"),
     tags: str | None = Query(None, max_length=500, description="Comma-separated lookbook tags"),
     seasons: str | None = Query(None, max_length=100, description="Comma-separated seasons"),
     weather_tags: str | None = Query(
@@ -738,6 +739,7 @@ async def list_outfits(
         family_member_view=family_member_id is not None,
         search=search,
         cloned_from_outfit_id=cloned_from_outfit_id,
+        item_id=item_id,
         tags=parse_csv_tags(tags),
         seasons=parse_csv_seasons(seasons),
         weather_tags=parse_csv_weather_tags(weather_tags),

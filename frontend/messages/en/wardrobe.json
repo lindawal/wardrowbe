@@ -203,6 +203,7 @@
       "rotateLeft": "Rotate left",
       "rotateRight": "Rotate right",
       "setAsPrimary": "Set as primary",
+      "showInLookbook": "Show outfits with this item in the lookbook",
       "suggestOutfit": "Create outfit with this item",
       "toggleFavorite": "Toggle favorite",
       "undoBackgroundRemoval": "Undo background removal"

@@ -28,6 +28,9 @@
     "allSeasons": "전체 계절",
     "anyWeather": "전체 날씨",
     "clear": "필터 초기화",
+    "item": "포함: {name}",
+    "itemFallback": "아이템",
+    "removeItem": "아이템 필터 제거",
     "season": "계절",
     "weather": "날씨"
   },

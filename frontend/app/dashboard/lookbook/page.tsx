@@ -4,7 +4,7 @@ import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { BookMarked, Camera, Loader2, Plus, Search, X } from 'lucide-react';
+import { BookMarked, Camera, Loader2, Plus, Search, Shirt, X } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -24,7 +24,12 @@ import {
   useLookbookTags,
   type OutfitFilters,
 } from '@/lib/hooks/use-outfits';
-import { useLookbookSeasons, useWeatherTags } from '@/lib/hooks/use-translated-constants';
+import { useItem } from '@/lib/hooks/use-items';
+import {
+  useItemDisplayName,
+  useLookbookSeasons,
+  useWeatherTags,
+} from '@/lib/hooks/use-translated-constants';
 import { formatTag } from '@/lib/lookbook/tags';
 import {
   buildLookbookQuery,
@@ -92,6 +97,7 @@ function LookbookContent() {
       seasons: urlState.season ? [urlState.season] : undefined,
       weather_tags: urlState.weather ? [urlState.weather] : undefined,
       search: urlState.q || undefined,
+      item_id: urlState.item || undefined,
     }),
     [urlState]
   );
@@ -99,6 +105,9 @@ function LookbookContent() {
   const { data, isLoading, isError, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useLookbookOutfits(filters);
   const { data: tagData } = useLookbookTags();
+  const { data: filterItem } = useItem(urlState.item ?? '');
+  const itemDisplayName = useItemDisplayName();
+  const filterItemName = filterItem ? itemDisplayName(filterItem) : t('filters.itemFallback');
 
   const outfits = data?.pages.flatMap((page) => page.outfits) ?? [];
   const total = data?.pages[0]?.total ?? 0;
@@ -230,6 +239,28 @@ function LookbookContent() {
             ))}
           </SelectContent>
         </Select>
+        {urlState.item && (
+          <button
+            type="button"
+            onClick={() => updateUrl({ item: null })}
+            className={cn(chipClass(true), 'max-w-full')}
+            aria-label={t('filters.removeItem')}
+            title={t('filters.removeItem')}
+          >
+            {filterItem?.thumbnail_url || filterItem?.image_url ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={filterItem.thumbnail_url || filterItem.image_url}
+                alt=""
+                className="h-5 w-5 rounded-full object-cover"
+              />
+            ) : (
+              <Shirt className="h-4 w-4" />
+            )}
+            <span className="truncate">{t('filters.item', { name: filterItemName })}</span>
+            <X className="h-3.5 w-3.5 shrink-0" />
+          </button>
+        )}
         {filtersActive && (
           <Button variant="ghost" size="sm" onClick={clearFilters}>
             <X className="h-4 w-4 mr-1" />

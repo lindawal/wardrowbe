@@ -63,18 +63,29 @@ describe('lookbook url state', () => {
     const state = parseLookbookParams(
       new URLSearchParams('tag=Work&season=winter&weather=foggy&q=%20office%20')
     );
-    expect(state).toEqual({ tag: 'work', season: 'winter', weather: null, q: 'office' });
+    expect(state).toEqual({ tag: 'work', season: 'winter', weather: null, q: 'office', item: null });
   });
 
   it('round-trips through the query string', () => {
-    const state = { tag: 'date night', season: 'summer', weather: 'warm', q: 'linen' } as const;
+    const state = {
+      tag: 'date night',
+      season: 'summer',
+      weather: 'warm',
+      q: 'linen',
+      item: '0b5c9a1e-2f3d-4c6b-8a7e-1d2c3b4a5f60',
+    } as const;
     expect(parseLookbookParams(new URLSearchParams(buildLookbookQuery(state)))).toEqual(state);
   });
 
   it('builds an empty query and reports no active filters for the default state', () => {
-    const empty = { tag: null, season: null, weather: null, q: '' };
+    const empty = { tag: null, season: null, weather: null, q: '', item: null };
     expect(buildLookbookQuery(empty)).toBe('');
     expect(hasActiveLookbookFilters(empty)).toBe(false);
     expect(hasActiveLookbookFilters({ ...empty, weather: 'rain' })).toBe(true);
+    expect(hasActiveLookbookFilters({ ...empty, item: '0b5c9a1e-2f3d-4c6b-8a7e-1d2c3b4a5f60' })).toBe(true);
+  });
+
+  it('ignores an item param that is not a uuid', () => {
+    expect(parseLookbookParams(new URLSearchParams('item=../etc')).item).toBeNull();
   });
 });
