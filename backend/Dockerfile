@@ -14,8 +14,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY requirements.txt requirements-extras.txt ./
 RUN pip install --no-cache-dir -r requirements.txt -r requirements-extras.txt
 
-# Pre-download rembg model so first request is instant
-RUN python -c "from rembg import new_session; new_session()"
+# Pre-download the rembg model the app actually uses (BG_REMOVAL_MODEL, default
+# u2net) so the first background removal is instant. The model name must be
+# explicit: rembg's own default is bria-rmbg (~1 GB), which the app never loads.
+# REMBG_HOME points at a shared path because the app runs as appuser, not root,
+# and would otherwise re-download into its own home after every container recreate.
+# World-writable so a different BG_REMOVAL_MODEL can still be fetched at runtime.
+ARG BG_REMOVAL_MODEL=u2net
+ENV REMBG_HOME=/opt/rembg
+RUN python -c "from rembg import new_session; new_session('${BG_REMOVAL_MODEL}')" \
+    && chmod -R a+rwX /opt/rembg
 
 # Copy application code
 COPY . .
