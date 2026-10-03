@@ -163,8 +163,16 @@ def compute_tag_completeness(tags: "ClothingTags") -> float:
     return round(score, 2)
 
 
+# Mistral's OpenAI-compatible API answers unknown or unsupported body fields with a 422
+# validation error naming the field, not a 400, so both status codes count as a rejection.
+_PARAM_REJECTION_STATUSES = (400, 422)
+
+
 def _response_rejects_logprobs(response: httpx.Response) -> bool:
-    return response.status_code == 400 and "logprobs" in response.text.lower()
+    return (
+        response.status_code in _PARAM_REJECTION_STATUSES
+        and "logprobs" in response.text.lower()
+    )
 
 
 _REASONING_EFFORT_REJECTION_MARKERS = (
@@ -182,7 +190,7 @@ def _response_rejects_reasoning_effort(response: httpx.Response) -> bool:
     # "low", true, or false)` and never mention reasoning_effort at all. Matching only the
     # OpenAI wording would leave those Ollama users with every request failing, because the
     # default effort is sent on every call and the strip-and-retry would never fire.
-    if response.status_code != 400:
+    if response.status_code not in _PARAM_REJECTION_STATUSES:
         return False
     text = response.text.lower()
     return any(marker in text for marker in _REASONING_EFFORT_REJECTION_MARKERS)
