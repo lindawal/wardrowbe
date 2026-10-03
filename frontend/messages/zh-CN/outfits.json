@@ -134,6 +134,14 @@
     "replacements": "替换",
     "worn": "已穿着"
   },
+  "itemFilter": {
+    "dialogDescription": "从衣橱中选择一件单品，查看包含它的所有穿搭和搭配。",
+    "dialogTitle": "按衣物筛选",
+    "empty": "还没有包含 {name} 的穿搭。",
+    "generate": "生成搭配",
+    "generateMore": "生成更多搭配",
+    "pick": "按单品筛选"
+  },
   "itemPicker": {
     "loadingMore": "加载更多...",
     "noItems": "未找到单品",
@@ -193,7 +201,7 @@
     }
   },
   "newOutfit": "新建穿搭",
-  "search": "搜索造型册...",
+  "search": "搜索穿搭...",
   "subtitle": "您的造型、穿着记录和 AI 建议",
   "title": "穿搭",
   "totalCount": "共{count}组",

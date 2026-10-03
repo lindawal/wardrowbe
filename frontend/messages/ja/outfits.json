@@ -134,6 +134,14 @@
     "replacements": "差し替え",
     "worn": "着用済み"
   },
+  "itemFilter": {
+    "dialogDescription": "クローゼットからアイテムを選ぶと、そのアイテムを含むすべてのコーデと組み合わせが表示されます。",
+    "dialogTitle": "アイテムで絞り込む",
+    "empty": "{name} を使ったコーデはまだありません。",
+    "generate": "組み合わせを作成",
+    "generateMore": "さらに組み合わせを作成",
+    "pick": "アイテムで絞り込む"
+  },
   "itemPicker": {
     "loadingMore": "読み込み中...",
     "noItems": "アイテムが見つかりません",
@@ -193,7 +201,7 @@
     }
   },
   "newOutfit": "新しいコーデ",
-  "search": "ルックブックを検索...",
+  "search": "コーデを検索...",
   "subtitle": "あなたのコーデ、着用履歴、AIの提案",
   "title": "コーデ",
   "totalCount": "合計 {count}",

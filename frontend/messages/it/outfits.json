@@ -134,6 +134,14 @@
     "replacements": "Sostituzioni",
     "worn": "Indossati"
   },
+  "itemFilter": {
+    "dialogDescription": "Scegli un capo del tuo guardaroba per vedere tutti gli outfit e gli abbinamenti che lo includono.",
+    "dialogTitle": "Filtra per capo d’abbigliamento",
+    "empty": "Ancora nessun outfit con {name}.",
+    "generate": "Genera abbinamenti",
+    "generateMore": "Genera altri abbinamenti",
+    "pick": "Filtra per capo"
+  },
   "itemPicker": {
     "loadingMore": "Caricamento altro...",
     "noItems": "Nessun capo trovato",
@@ -193,7 +201,7 @@
     }
   },
   "newOutfit": "Nuovo outfit",
-  "search": "Cerca nel lookbook...",
+  "search": "Cerca outfit...",
   "subtitle": "I tuoi look, outfit indossati e suggerimenti IA",
   "title": "Outfit",
   "totalCount": "{count} totali",

@@ -134,6 +134,14 @@
     "replacements": "Ersatz",
     "worn": "Getragen"
   },
+  "itemFilter": {
+    "dialogDescription": "Wähle ein Teil aus deinem Kleiderschrank, um alle Outfits und Kombinationen damit zu sehen.",
+    "dialogTitle": "Nach Kleidungsstück filtern",
+    "empty": "Noch keine Outfits mit {name}.",
+    "generate": "Kombinationen erzeugen",
+    "generateMore": "Weitere Kombinationen erzeugen",
+    "pick": "Nach Teil filtern"
+  },
   "itemPicker": {
     "loadingMore": "Mehr wird geladen...",
     "noItems": "Keine Stücke gefunden",
@@ -193,7 +201,7 @@
     }
   },
   "newOutfit": "Neues Outfit",
-  "search": "Lookbook durchsuchen...",
+  "search": "Outfits durchsuchen...",
   "subtitle": "Deine Looks, getragenen Outfits und KI-Vorschläge",
   "title": "Outfits",
   "totalCount": "{count} insgesamt",

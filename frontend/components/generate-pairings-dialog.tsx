@@ -71,7 +71,7 @@ export function GeneratePairingsDialog({
   const handleViewPairings = () => {
     onOpenChange(false);
     setGeneratedPairings(null);
-    router.push('/dashboard/pairings');
+    router.push(item ? `/dashboard/outfits?filter=pairings&item=${item.id}` : '/dashboard/outfits?filter=pairings');
   };
 
   const handleClose = () => {

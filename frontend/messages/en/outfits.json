@@ -134,6 +134,14 @@
     "replacements": "Replacements",
     "worn": "Worn"
   },
+  "itemFilter": {
+    "dialogDescription": "Pick an item from your wardrobe to see every outfit and pairing that includes it.",
+    "dialogTitle": "Filter by clothing item",
+    "empty": "No outfits with {name} yet.",
+    "generate": "Generate pairings",
+    "generateMore": "Generate more pairings",
+    "pick": "Filter by item"
+  },
   "itemPicker": {
     "loadingMore": "Loading more...",
     "noItems": "No items found",
@@ -193,7 +201,7 @@
     }
   },
   "newOutfit": "New Outfit",
-  "search": "Search lookbook...",
+  "search": "Search outfits...",
   "subtitle": "Your looks, worn outfits, and AI suggestions",
   "title": "Outfits",
   "totalCount": "{count} total",

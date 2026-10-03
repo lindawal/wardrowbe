@@ -134,6 +134,14 @@
     "replacements": "대체",
     "worn": "착용함"
   },
+  "itemFilter": {
+    "dialogDescription": "옷장에서 아이템을 선택하면 해당 아이템이 포함된 모든 코디와 조합을 볼 수 있어요.",
+    "dialogTitle": "옷으로 필터링",
+    "empty": "아직 {name}이(가) 포함된 코디가 없어요.",
+    "generate": "조합 생성",
+    "generateMore": "조합 더 생성",
+    "pick": "아이템으로 필터"
+  },
   "itemPicker": {
     "loadingMore": "더 불러오는 중...",
     "noItems": "아이템이 없어요",
@@ -193,7 +201,7 @@
     }
   },
   "newOutfit": "새 코디",
-  "search": "룩북 검색...",
+  "search": "코디 검색...",
   "subtitle": "내 룩, 착용한 코디, AI 추천",
   "title": "코디",
   "totalCount": "총 {count}개",

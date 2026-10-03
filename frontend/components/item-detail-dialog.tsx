@@ -366,7 +366,7 @@ export function ItemDetailDialog({ item, open, onOpenChange }: ItemDetailDialogP
                       size="icon"
                       onClick={() => {
                         onOpenChange(false);
-                        router.push(`/dashboard/lookbook?item=${item.id}`);
+                        router.push(`/dashboard/outfits?item=${item.id}`);
                       }}
                       title={t('titles.showInLookbook')}
                       aria-label={t('titles.showInLookbook')}

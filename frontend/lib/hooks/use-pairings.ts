@@ -75,6 +75,7 @@ export function useGeneratePairings() {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['pairings'] });
+      queryClient.invalidateQueries({ queryKey: ['outfits'] });
       queryClient.invalidateQueries({ queryKey: ['pairings', 'item', variables.itemId] });
     },
   });
@@ -93,6 +94,7 @@ export function useDeletePairing() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pairings'] });
+      queryClient.invalidateQueries({ queryKey: ['outfits'] });
     },
   });
 }

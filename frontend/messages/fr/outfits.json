@@ -134,6 +134,14 @@
     "replacements": "Remplacements",
     "worn": "Portées"
   },
+  "itemFilter": {
+    "dialogDescription": "Choisis une pièce de ta garde-robe pour voir toutes les tenues et associations qui la contiennent.",
+    "dialogTitle": "Filtrer par vêtement",
+    "empty": "Aucune tenue avec {name} pour l’instant.",
+    "generate": "Générer des associations",
+    "generateMore": "Générer d’autres associations",
+    "pick": "Filtrer par pièce"
+  },
   "itemPicker": {
     "loadingMore": "Chargement...",
     "noItems": "Aucun article trouvé",
@@ -193,7 +201,7 @@
     }
   },
   "newOutfit": "Nouvelle tenue",
-  "search": "Rechercher dans le lookbook...",
+  "search": "Rechercher des tenues...",
   "subtitle": "Vos looks, tenues portées et suggestions IA",
   "title": "Tenues",
   "totalCount": "{count} au total",

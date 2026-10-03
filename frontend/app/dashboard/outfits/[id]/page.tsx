@@ -57,7 +57,7 @@ export default function OutfitDetailPage() {
   const lightbox = useLightbox();
   const outfitId = params?.id;
   const fromLookbook = searchParams.get('from') === 'lookbook';
-  const backHref = fromLookbook ? '/dashboard/lookbook' : '/dashboard/outfits';
+  const backHref = fromLookbook ? '/dashboard/outfits?filter=my-looks' : '/dashboard/outfits';
 
   const { data: outfit, isLoading } = useOutfit(outfitId);
   const deleteMutation = useDeleteOutfit();

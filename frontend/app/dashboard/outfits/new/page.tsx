@@ -236,7 +236,7 @@ export default function StudioEditorPage() {
       router.push(
         markWorn
           ? '/dashboard/outfits?filter=worn'
-          : '/dashboard/lookbook'
+          : '/dashboard/outfits?filter=my-looks'
       );
     } catch (error) {
       toast.error(getErrorMessage(error, t('new.saveError')));

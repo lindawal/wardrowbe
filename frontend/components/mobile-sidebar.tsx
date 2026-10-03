@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { X, Home, Shirt, Sparkles, Layers, LayoutGrid, BookMarked, Camera, History, BarChart3, Brain, Settings, HelpCircle, Users, Bell, HeartHandshake } from 'lucide-react';
+import { X, Home, Shirt, Sparkles, LayoutGrid, Camera, History, BarChart3, Brain, Settings, HelpCircle, Users, Bell, HeartHandshake } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { FAMILY_ENABLED } from '@/lib/features';
 import { useTranslations } from 'next-intl';
@@ -22,9 +22,7 @@ export function MobileSidebar({ open, onClose }: MobileSidebarProps) {
     { name: t('wardrobe'), href: '/dashboard/wardrobe', icon: Shirt },
     { name: t('suggestOutfit'), href: '/dashboard/suggest', icon: Sparkles },
     { name: t('outfits'), href: '/dashboard/outfits', icon: LayoutGrid },
-    { name: t('lookbook'), href: '/dashboard/lookbook', icon: BookMarked },
     { name: t('inspiration'), href: '/dashboard/inspiration', icon: Camera },
-    { name: t('pairings'), href: '/dashboard/pairings', icon: Layers },
     { name: t('history'), href: '/dashboard/history', icon: History },
     ...(FAMILY_ENABLED ? [{ name: t('familyFeed'), href: '/dashboard/family/feed', icon: HeartHandshake }] : []),
     { name: t('analytics'), href: '/dashboard/analytics', icon: BarChart3 },
