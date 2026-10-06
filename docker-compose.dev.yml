@@ -7,28 +7,12 @@
 #
 # Hot reload is enabled for both frontend and backend - no rebuilds needed.
 #
-# Optional HTTPS (via Caddy):
+# Optional HTTPS (via the standalone Caddy in ~/.docker/caddy):
 #   1. Add to /etc/hosts: 127.0.0.1 wardrobe.local
 #   2. Change NEXTAUTH_URL below to https://wardrobe.local
 #   3. Access: https://wardrobe.local (accept self-signed cert warning)
 
 services:
-  # Caddy reverse proxy with automatic HTTPS
-  caddy:
-    image: caddy:2-alpine
-    container_name: wardrobe-caddy
-    ports:
-      - '80:80'
-      - '443:443'
-    volumes:
-      - ./Caddyfile.dev:/etc/caddy/Caddyfile:ro
-      - caddy_data:/data
-      - caddy_config:/config
-    depends_on:
-      - frontend
-      - backend
-    restart: unless-stopped
-
   backend:
     build:
       context: ./backend
@@ -52,7 +36,7 @@ services:
     environment:
       NODE_ENV: development
       # For local dev, use http://localhost:3000 (simpler, no cert issues)
-      NEXTAUTH_URL: http://localhost:${FRONTEND_PORT:-3000}
+      NEXTAUTH_URL: https://wardrobe.local #http://localhost:${FRONTEND_PORT:-3000}
       BACKEND_URL: http://backend:8000
       WATCHPACK_POLLING: 'true'
 
@@ -81,6 +65,4 @@ services:
       DATABASE_ECHO: 'false'
 
 volumes:
-  caddy_data:
-  caddy_config:
   frontend_node_modules:
