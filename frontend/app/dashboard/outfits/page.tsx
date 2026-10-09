@@ -164,6 +164,8 @@ interface ExtraFilters {
   tag: string | null;
   season: LookbookSeason | null;
   weather: WeatherTag | null;
+  // List view only: the calendar needs the dated copies.
+  hideWornCopies?: boolean;
 }
 
 function chipToFilters(chip: FilterChip, extra: ExtraFilters): OutfitFilters {
@@ -196,6 +198,8 @@ function chipToFilters(chip: FilterChip, extra: ExtraFilters): OutfitFilters {
       return filters;
     case 'all':
     default:
+      // Worn copies of a template have their own chip; here the template carries the count.
+      if (extra.hideWornCopies) filters.hide_worn_copies = true;
       return filters;
   }
 }
@@ -256,8 +260,9 @@ function OutfitsPageContent() {
         tag: urlExtra.tag,
         season: urlExtra.season,
         weather: urlExtra.weather,
+        hideWornCopies: view === 'list',
       }),
-    [chip, debouncedSearch, itemFilter, urlExtra.tag, urlExtra.season, urlExtra.weather],
+    [chip, view, debouncedSearch, itemFilter, urlExtra.tag, urlExtra.season, urlExtra.weather],
   );
   const { data: filterItem } = useItem(itemFilter ?? '');
   const filterItemName = filterItem ? itemDisplayName(filterItem) : tl('filters.itemFallback');

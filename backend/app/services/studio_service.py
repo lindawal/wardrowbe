@@ -370,7 +370,9 @@ class StudioService:
             occasion=template.occasion,
             scheduled_for=target_date,
             source=OutfitSource.manual,
-            status=OutfitStatus.pending,
+            # Already worn, so it belongs under the "worn" filter right away.
+            status=OutfitStatus.accepted,
+            responded_at=datetime.now(UTC),
             cloned_from_outfit_id=template.id,
             source_item_id=template.source_item_id,
             name=template.name,

@@ -52,7 +52,8 @@
     "photo": "照片",
     "replacement": "替换",
     "studio": "工作室",
-    "worn": "已穿着"
+    "worn": "已穿着",
+    "wornTimes": "已穿 {count} 次"
   },
   "cloneToLookbook": {
     "description": "为这套造型命名，方便日后查找和再次穿着。",

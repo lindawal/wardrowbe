@@ -52,7 +52,8 @@
     "photo": "写真",
     "replacement": "差し替え",
     "studio": "スタジオ",
-    "worn": "着用済み"
+    "worn": "着用済み",
+    "wornTimes": "{count}回着用"
   },
   "cloneToLookbook": {
     "description": "このコーデに名前を付けて、後から見つけてまた着られるようにしましょう。",

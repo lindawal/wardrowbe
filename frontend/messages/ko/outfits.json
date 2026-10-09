@@ -52,7 +52,8 @@
     "photo": "사진",
     "replacement": "대체",
     "studio": "스튜디오",
-    "worn": "착용함"
+    "worn": "착용함",
+    "wornTimes": "{count}회 착용"
   },
   "cloneToLookbook": {
     "description": "이 룩에 이름을 붙이면 나중에 찾아서 다시 입을 수 있어요.",

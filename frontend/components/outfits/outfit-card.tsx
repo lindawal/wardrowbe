@@ -110,7 +110,9 @@ function getCardTitle(outfit: Outfit, t: any): string {
   return t('outfitFallback', { occasion });
 }
 function getMetaLabel(outfit: Outfit, t: any): string {
-  if (!outfit.scheduled_for) return t('lookbookTemplate');
+  if (!outfit.scheduled_for) {
+    return outfit.worn_count ? t('wornTimes', { count: outfit.worn_count }) : t('lookbookTemplate');
+  }
   try {
     return formatDistanceToNow(parseISO(outfit.scheduled_for), {
       addSuffix: true,

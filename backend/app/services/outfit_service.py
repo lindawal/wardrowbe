@@ -3,7 +3,7 @@ from datetime import date, datetime
 from uuid import UUID
 
 from fastapi import HTTPException, status
-from sqlalchemy import Select, and_, func, select
+from sqlalchemy import Select, and_, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -33,6 +33,9 @@ class OutfitListFilters:
     family_member_view: bool = False
     search: str | None = None
     cloned_from_outfit_id: UUID | None = None
+    # Hide the dated copies that "wear today" makes from a lookbook template; the template
+    # carries the wear count instead.
+    hide_worn_copies: bool = False
     # Outfits that contain this clothing item.
     item_id: UUID | None = None
     # Each list matches outfits carrying any of its values; different lists are ANDed.
@@ -135,6 +138,11 @@ class OutfitService:
         if filters.cloned_from_outfit_id is not None:
             clauses.append(Outfit.cloned_from_outfit_id == filters.cloned_from_outfit_id)
 
+        if filters.hide_worn_copies:
+            clauses.append(
+                or_(Outfit.cloned_from_outfit_id.is_(None), Outfit.scheduled_for.is_(None))
+            )
+
         if filters.item_id is not None:
             clauses.append(Outfit.items.any(OutfitItem.item_id == filters.item_id))
 
@@ -170,6 +178,22 @@ class OutfitService:
 
         result = await self.db.execute(query)
         return list(result.scalars().all())
+
+    async def count_wear_copies(self, template_ids: list[UUID]) -> dict[UUID, int]:
+        """How often each lookbook template was worn, i.e. its dated "wear today" copies."""
+        if not template_ids:
+            return {}
+        result = await self.db.execute(
+            select(Outfit.cloned_from_outfit_id, func.count())
+            .where(
+                and_(
+                    Outfit.cloned_from_outfit_id.in_(template_ids),
+                    Outfit.scheduled_for.is_not(None),
+                )
+            )
+            .group_by(Outfit.cloned_from_outfit_id)
+        )
+        return {template_id: count for template_id, count in result.all()}
 
     async def list_with_filters(
         self, filters: OutfitListFilters, page: int, page_size: int

@@ -279,6 +279,8 @@ async def test_wear_today(db_session, studio_user, wardrobe_items):
     assert wear.scheduled_for == today
     assert wear.cloned_from_outfit_id == template.id
     assert len(wear.items) == 3
+    # Already worn, so it must show up under the "worn" filter right away.
+    assert wear.status == OutfitStatus.accepted
 
     await db_session.refresh(shirt)
     assert shirt.wear_count == 1
@@ -481,3 +483,36 @@ async def test_items_ordered_canonically(db_session, studio_user, wardrobe_items
     types_in_order = [oi.item.type for oi in sorted(outfit.items, key=lambda x: x.position)]
     assert types_in_order.index("t-shirt") < types_in_order.index("jeans")
     assert types_in_order.index("jeans") < types_in_order.index("sneakers")
+
+
+@pytest.mark.asyncio
+async def test_worn_copies_hidden_and_counted_on_template(db_session, studio_user, wardrobe_items):
+    from app.services.outfit_service import OutfitListFilters, OutfitService
+
+    service = StudioService(db_session)
+    template = await service.create_from_scratch(
+        user=studio_user,
+        item_ids=[wardrobe_items[0].id, wardrobe_items[1].id],
+        occasion="casual",
+        name="Daily look",
+        scheduled_for=None,
+        mark_worn=False,
+        source_item_id=None,
+    )
+    await db_session.commit()
+    for day in (date.today(), date.today() - timedelta(days=1)):
+        await service.wear_today(user=studio_user, template_id=template.id, scheduled_for=day)
+    await db_session.commit()
+
+    outfit_service = OutfitService(db_session)
+    outfits, total = await outfit_service.list_with_filters(
+        OutfitListFilters(user_id=studio_user.id, hide_worn_copies=True), 1, 20
+    )
+    assert total == 1
+    assert [o.id for o in outfits] == [template.id]
+    assert await outfit_service.count_wear_copies([template.id]) == {template.id: 2}
+
+    _, total_all = await outfit_service.list_with_filters(
+        OutfitListFilters(user_id=studio_user.id), 1, 20
+    )
+    assert total_all == 3

@@ -52,7 +52,8 @@
     "photo": "Foto",
     "replacement": "Sostituzione",
     "studio": "Studio",
-    "worn": "Indossati"
+    "worn": "Indossati",
+    "wornTimes": "Indossato {count} volte"
   },
   "cloneToLookbook": {
     "description": "Dai un nome a questo look per poterlo ritrovare e indossare di nuovo.",

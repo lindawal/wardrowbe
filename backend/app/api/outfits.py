@@ -179,6 +179,8 @@ class OutfitResponse(BaseModel):
     name: str | None = None
     replaces_outfit_id: UUID | None = None
     cloned_from_outfit_id: UUID | None = None
+    # Only filled by the list endpoint, for lookbook templates: how often they were worn.
+    worn_count: int | None = None
     # Set when the outfit was restyled from an inspiration look.
     inspiration_look_id: UUID | None = None
     source: str
@@ -243,6 +245,7 @@ class BulkOutfitFilters(BaseModel):
     item_type: str | None = None
     search: str | None = None
     cloned_from_outfit_id: UUID | None = None
+    hide_worn_copies: bool = False
     # Must mirror the list filters, or a filtered select-all delete would reach hidden outfits.
     tags: list[str] | None = None
     seasons: list[str] | None = None
@@ -712,6 +715,9 @@ async def list_outfits(
     cloned_from_outfit_id: UUID | None = Query(
         None, description="Filter to wear instances of a specific template"
     ),
+    hide_worn_copies: bool = Query(
+        False, description="Hide dated wear copies of lookbook templates"
+    ),
     item_id: UUID | None = Query(None, description="Only outfits containing this clothing item"),
     tags: str | None = Query(None, max_length=500, description="Comma-separated lookbook tags"),
     seasons: str | None = Query(None, max_length=100, description="Comma-separated seasons"),
@@ -739,6 +745,7 @@ async def list_outfits(
         family_member_view=family_member_id is not None,
         search=search,
         cloned_from_outfit_id=cloned_from_outfit_id,
+        hide_worn_copies=hide_worn_copies,
         item_id=item_id,
         tags=parse_csv_tags(tags),
         seasons=parse_csv_seasons(seasons),
@@ -750,6 +757,11 @@ async def list_outfits(
     wore_instead_map = await fetch_wore_instead_items_map(db, outfits, user_id=current_user.id)
 
     outfit_responses = [outfit_to_response(o, wore_instead_map) for o in outfits]
+    template_ids = [o.id for o in outfits if o.scheduled_for is None]
+    worn_counts = await service.count_wear_copies(template_ids)
+    for response in outfit_responses:
+        if response.id in worn_counts:
+            response.worn_count = worn_counts[response.id]
 
     return OutfitListResponse(
         outfits=outfit_responses,
@@ -804,6 +816,7 @@ async def bulk_delete_outfits(
             cloned_from_outfit_id=request.filters.cloned_from_outfit_id
             if request.filters
             else None,
+            hide_worn_copies=bool(request.filters and request.filters.hide_worn_copies),
             tags=parse_csv_tags(",".join(request.filters.tags))
             if request.filters and request.filters.tags
             else None,
